@@ -73,4 +73,7 @@ ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
 - Every full-height section uses `h-screen h-[100dvh]` so mobile browser chrome does not
   clip the layout.
 - Deployment is handled by `.github/workflows/deploy.yml`, which builds the site and
-  publishes `dist/` to GitHub Pages.
+  publishes `dist/` to GitHub Pages. It runs on pushes to `master` and can be started
+  by hand from the Actions tab (`workflow_dispatch`).
+- The custom domain lives in the repository's Pages settings. Because the site is
+  published from a workflow rather than a branch, no `CNAME` file is needed in the repo.
