@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kevink-im",
+  "compatibility_date": "2026-08-03",
+  // No "main" — this Worker serves the Vite build directly, with no server code.
+  "assets": {
+    "directory": "./dist",
+    // The site is a single-page React app, so unknown paths return index.html
+    // rather than a 404 and let the client render the route.
+    "not_found_handling": "single-page-application"
+  }
+}

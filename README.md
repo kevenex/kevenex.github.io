@@ -72,8 +72,11 @@ ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
   dropped mid-decode.
 - Every full-height section uses `h-screen h-[100dvh]` so mobile browser chrome does not
   clip the layout.
-- Deployment is handled by `.github/workflows/deploy.yml`, which builds the site and
-  publishes `dist/` to GitHub Pages. It runs on pushes to `master` and can be started
-  by hand from the Actions tab (`workflow_dispatch`).
-- The custom domain lives in the repository's Pages settings. Because the site is
-  published from a workflow rather than a branch, no `CNAME` file is needed in the repo.
+- The live site is deployed by Cloudflare Workers Builds, which watches this repository
+  and builds on every push. `wrangler.jsonc` describes the deploy: no `main` entry point,
+  just the Vite output in `dist/` served as static assets, with unknown paths falling back
+  to `index.html` for the single-page app. Wrangler is pinned in `devDependencies` so the
+  build and local `npx wrangler deploy --dry-run` agree on a version.
+- `.github/workflows/deploy.yml` is a second, independent deploy to GitHub Pages, kept
+  from before the Cloudflare setup. It runs on pushes to `master` and can be started by
+  hand from the Actions tab (`workflow_dispatch`).
