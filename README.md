@@ -77,6 +77,4 @@ ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
   just the Vite output in `dist/` served as static assets, with unknown paths falling back
   to `index.html` for the single-page app. Wrangler is pinned in `devDependencies` so the
   build and local `npx wrangler deploy --dry-run` agree on a version.
-- `.github/workflows/deploy.yml` is a second, independent deploy to GitHub Pages, kept
-  from before the Cloudflare setup. It runs on pushes to `master` and can be started by
-  hand from the Actions tab (`workflow_dispatch`).
+  Cloudflare is the only deploy path — there is no GitHub Pages workflow.
