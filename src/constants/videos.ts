@@ -1,9 +1,13 @@
-const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P';
-
+/*
+ * Background loops are served from the site itself rather than the original
+ * CloudFront links, so the page does not depend on those generated-asset URLs
+ * staying alive. Sources are re-encoded to 1080p H.264 CRF 26 (~8.8 MB total,
+ * down from ~52 MB) — visually equivalent for muted background video.
+ */
 export const VIDEOS = {
-  hero: `${CDN}/hf_20260622_083515_290e5a10-0b95-41af-a5e2-32b6389baa4d.mp4`,
-  cinematic: `${CDN}/hf_20260622_092455_089c54f8-3b03-4966-9df1-e9746063d0ef.mp4`,
-  metrics: `${CDN}/hf_20260622_095810_ecea3dd2-fc5e-4e41-8696-4219290b6589.mp4`,
-  technology: `${CDN}/hf_20260622_095750_32a52ce0-2005-45c9-9093-41f03fde9530.mp4`,
-  footer: `${CDN}/hf_20260622_080203_fd7f4f85-3a86-4837-8192-85e7bfe68e75.mp4`,
+  hero: '/videos/hero.mp4',
+  cinematic: '/videos/cinematic.mp4',
+  metrics: '/videos/metrics.mp4',
+  technology: '/videos/technology.mp4',
+  footer: '/videos/footer.mp4',
 } as const;
