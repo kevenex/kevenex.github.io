@@ -4,6 +4,12 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # The Project Wick journal is pulled from another repository at build time, so
+  # a deploy is how the site learns the agent has written anything. That repo is
+  # pushed roughly every two days; rebuilding daily keeps the lag under a day
+  # without needing to know exactly when the push lands.
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
   contents: read
@@ -24,6 +30,16 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+
+      # Refresh public/project-wick/journal.json from the agent's repository.
+      # The script swallows its own network failures and leaves the committed
+      # snapshot in place, so a GitHub blip costs the journal its freshness
+      # rather than costing the site its deploy.
+      - name: Sync the Project Wick journal
+        run: npm run sync:wick
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - run: npm run build
       - uses: actions/configure-pages@v5
         with:
