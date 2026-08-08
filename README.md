@@ -30,7 +30,7 @@ npm run dev
 
 ```
 public/
-  videos/                  Five background loops (1080p H.264, ~8.8 MB total)
+  videos/                  Four background loops (1080p H.264, ~5.3 MB total)
   flyer-fable/             Standalone flight game — see below
     index.html             The whole game: markup, styles, scene, flight loop
     three.min.js           Three.js r0.160.0, self-hosted
@@ -52,7 +52,7 @@ src/
     Hero.tsx               Mouse-scrubbed hero video + scramble headings
     CinematicText.tsx      Scroll-driven 3D text section
     Projects.tsx           Translucent project cards linking to sub-pages
-    Technology.tsx         Adaptive intelligence capabilities
+    Technology.tsx         Adaptive intelligence: an interactive career roadmap
     Architecture.tsx       Three-layer breakdown (no video)
     Footer.tsx             Split video/footer layout
     ScrambleIn.tsx         Entrance reveal text animation
@@ -64,11 +64,15 @@ src/
 
 ## Background video
 
-The five loops are served from `public/videos/` rather than the CloudFront URLs
+The four loops are served from `public/videos/` rather than the CloudFront URLs
 they originated from, so the site does not break if those generated-asset links
 expire. Each was re-encoded to 1080p H.264 CRF 26 with `+faststart`, taking the
-set from ~52 MB to ~8.8 MB (SSIM 0.975–0.987 against the sources) — the
-originals ran at 5–17 Mbps, far above what a muted background loop needs.
+set to ~5.3 MB total (SSIM 0.975–0.987 against the sources) — the originals ran
+at 5–17 Mbps, far above what a muted background loop needs.
+
+The Adaptive Intelligence section (`Technology.tsx`) dropped its loop entirely —
+an interactive career timeline reads better against a plain background than
+a video underneath it.
 
 To swap a clip, drop the replacement in `public/videos/` under the same name.
 Re-encode anything large first:

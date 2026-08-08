@@ -8,6 +8,5 @@ export const VIDEOS = {
   hero: '/videos/hero.mp4',
   cinematic: '/videos/cinematic.mp4',
   metrics: '/videos/metrics.mp4',
-  technology: '/videos/technology.mp4',
   footer: '/videos/footer.mp4',
 } as const;
