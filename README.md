@@ -192,6 +192,15 @@ Doing it at build time rather than from the browser is the whole design:
   Pushes made with `GITHUB_TOKEN` do not start another workflow run, so it
   cannot loop.
 
+That commit-back is also what makes the journal survive a builder other than
+`deploy.yml`. The repo has a Cloudflare Workers project (`kevink-im`) wired to
+it, and any external builder runs its own `npm run build` without the sync step
+— so it ships whatever `journal.json` is committed. Because the workflow keeps
+that file current, such a build is still at most a day behind, and the push
+itself fires the webhook that starts it. The sync is deliberately *not* part of
+`npm run build`: a build should not reach the network or rewrite a tracked file
+behind whoever ran it.
+
 Two details keep that commit honest. The script **only writes the file when the
 content changes** — a run where the agent has not pushed leaves it byte-identical
 rather than churning a timestamp, so the history is one commit per agent push
