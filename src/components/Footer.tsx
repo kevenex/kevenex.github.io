@@ -1,4 +1,4 @@
-import SynapseXLogo from './SynapseXLogo';
+import KevinKLogo from './KevinKLogo';
 import { VIDEOS } from '../constants/videos';
 
 export default function Footer() {
@@ -19,20 +19,20 @@ export default function Footer() {
         <div className="flex w-full flex-col justify-between p-10 sm:p-16 md:w-1/2">
           <div>
             <div className="mb-8 flex items-center gap-2.5">
-              <SynapseXLogo className="text-white/70" width={18} height={18} />
+              <KevinKLogo className="text-white/70" width={18} height={18} />
               <span className="text-[15px] font-medium tracking-tight text-white/70">
-                SynapseX
+                KevinK
               </span>
             </div>
 
             <p className="max-w-sm text-[14px] leading-relaxed text-white/40 sm:text-[15px]">
-              The next evolution of human-machine interaction. Built for those who refuse
-              to be limited by biology alone.
+              Personal website build by Kevin Kim. Built with Claude Code, curiosity, and
+              for entertainment purposes only.
             </p>
           </div>
 
           <p className="mt-12 text-[12px] text-white/25">
-            © 2026 SynapseX Labs. All rights reserved.
+            © 2026 KevinK. All rights reserved.
           </p>
         </div>
       </div>

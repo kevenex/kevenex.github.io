@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ScrambleText from './ScrambleText';
 import SquashHamburger from './SquashHamburger';
-import SynapseXLogo from './SynapseXLogo';
+import KevinKLogo from './KevinKLogo';
 
 const PILL_SPRING = { type: 'spring' as const, stiffness: 350, damping: 28 };
 
@@ -17,7 +17,7 @@ type NavLink =
 
 const NAV_LINKS: NavLink[] = [
   { label: 'About', target: () => window.innerHeight },
-  { label: 'Metrics', target: () => window.innerHeight * 2 },
+  { label: 'Projects', target: () => window.innerHeight * 2 },
   { label: 'Flyer Fable', href: '/flyer-fable/' },
 ];
 
@@ -54,14 +54,14 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
               scrollTo(0);
             }}
           >
-            <SynapseXLogo className="text-white" width={18} height={18} />
-            <span className="text-[16px] font-medium tracking-tight text-white">SynapseX</span>
+            <KevinKLogo className="text-white" width={18} height={18} />
+            <span className="text-[16px] font-medium tracking-tight text-white">KevinK</span>
           </motion.a>
 
           <motion.div
             className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
             /* Space Mono is monospace, so the open width is just the label
-               characters (5 + 7 + 11) plus gaps, padding and the button. */
+               characters (5 + 8 + 11) plus gaps, padding and the button. */
             animate={{ width: isOpen ? 368 : 48 }}
             transition={PILL_SPRING}
           >
@@ -137,9 +137,9 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
               scrollTo(0);
             }}
           >
-            <SynapseXLogo className="text-white" width={14} height={14} />
+            <KevinKLogo className="text-white" width={14} height={14} />
             <span className="whitespace-nowrap text-[13px] font-medium tracking-tight text-white">
-              SynapseX
+              KevinK
             </span>
           </a>
         </motion.div>

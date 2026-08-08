@@ -1,7 +1,8 @@
-# SynapseX
+# KevinK
 
-Single-page landing site for **SynapseX**, a futuristic neural-AI interface product.
-Black canvas, white type, full-viewport video backgrounds, and Space Mono throughout.
+Personal site for **Kevin Kim**. Black canvas, white type, full-viewport video
+backgrounds, and Space Mono throughout. The homepage is a single scrolling page;
+projects live as their own pages under `public/`.
 
 ## Stack
 
@@ -42,14 +43,14 @@ src/
     Navbar.tsx             Fixed nav with expanding menu capsule
     Hero.tsx               Mouse-scrubbed hero video + scramble headings
     CinematicText.tsx      Scroll-driven 3D text section
-    Metrics.tsx            Performance metrics grid
+    Projects.tsx           Translucent project cards linking to sub-pages
     Technology.tsx         Adaptive intelligence capabilities
     Architecture.tsx       Three-layer breakdown (no video)
     Footer.tsx             Split video/footer layout
     ScrambleIn.tsx         Entrance reveal text animation
     ScrambleText.tsx       Hover-driven scramble text
     SquashHamburger.tsx    Animated hamburger/close icon
-    SynapseXLogo.tsx       4-fold symmetric SVG mark
+    KevinKLogo.tsx         4-fold symmetric SVG mark
 ```
 
 ## Background video

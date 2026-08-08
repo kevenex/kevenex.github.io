@@ -3,17 +3,17 @@ const QUADRANT_PATH =
 
 const ROTATIONS = [0, 90, 180, 270];
 
-interface SynapseXLogoProps {
+interface KevinKLogoProps {
   className?: string;
   width?: number;
   height?: number;
 }
 
-export default function SynapseXLogo({
+export default function KevinKLogo({
   className,
   width = 18,
   height = 18,
-}: SynapseXLogoProps) {
+}: KevinKLogoProps) {
   return (
     <svg
       className={className}
