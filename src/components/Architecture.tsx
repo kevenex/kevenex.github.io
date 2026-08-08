@@ -1,9 +1,23 @@
 import { motion } from 'framer-motion';
 
-const LAYERS = [
-  { index: 'Layer 1', name: 'Capture' },
-  { index: 'Layer 2', name: 'Process' },
-  { index: 'Layer 3', name: 'Interface' },
+const MEDIUM_PROFILE = 'https://medium.com/@kevinsunkim';
+
+const ARTICLES = [
+  {
+    index: '01',
+    title: '3 Ways Blockchain Technology Can Help Game Developers',
+    href: 'https://medium.com/blockchain-review/3-ways-blockchain-technology-can-help-game-developers-e27ab5414ec7',
+  },
+  {
+    index: '02',
+    title: 'What is Cryptocurrency & Why the Term Doesn’t Apply to Most Coins & Tokens Today',
+    href: 'https://medium.com/blockchain-review/what-is-cryptocurrency-why-the-term-doesnt-apply-to-most-coins-tokens-today-ca971cbb48ac',
+  },
+  {
+    index: '03',
+    title: 'How Blockchain Technology can Transform Game Skins Trading',
+    href: 'https://medium.com/blockchain-review/how-blockchain-technology-can-transform-game-skins-trading-ac6e45167cdf',
+  },
 ];
 
 export default function Architecture() {
@@ -17,16 +31,16 @@ export default function Architecture() {
           transition={{ duration: 1.0 }}
         >
           <p className="mb-8 text-[13px] uppercase tracking-[0.2em] text-white/40 sm:text-[14px]">
-            Architecture
+            Writing
           </p>
 
           <h2 className="mb-10 text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
-            Three layers. Zero friction.
+            Three essays. Zero filler.
           </h2>
 
           <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/45 sm:text-[17px]">
-            Sensor layer captures raw bioelectric signals. Processing layer isolates
-            intent. Interface layer delivers structured output to any connected system.
+            Longer-form thinking on blockchain, product, and the ideas that didn't make
+            the roadmap. Full essays live on Medium.
           </p>
         </motion.div>
 
@@ -37,20 +51,38 @@ export default function Architecture() {
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 1.2, delay: 0.4 }}
         >
-          {LAYERS.map((layer) => (
-            <div
-              key={layer.index}
-              className="flex h-[72px] w-full max-w-md items-center justify-between rounded-lg border border-white/10 px-6"
+          {ARTICLES.map((article) => (
+            <motion.a
+              key={article.index}
+              href={article.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full max-w-md flex-col gap-1 rounded-lg border border-white/10 px-6 py-4 text-left transition-colors hover:border-white/25 hover:bg-white/[0.04] sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:py-0 sm:h-[72px]"
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 28 }}
             >
-              <span className="text-[12px] uppercase tracking-[0.15em] text-white/30">
-                {layer.index}
+              <span className="shrink-0 text-[12px] uppercase tracking-[0.15em] text-white/30">
+                {article.index}
               </span>
-              <span className="text-[16px] font-light text-white sm:text-[18px]">
-                {layer.name}
+              <span className="text-[15px] font-light leading-snug text-white sm:text-right sm:text-[17px]">
+                {article.title}
               </span>
-            </div>
+            </motion.a>
           ))}
         </motion.div>
+
+        <motion.a
+          href={MEDIUM_PROFILE}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-10 text-[13px] uppercase tracking-[0.15em] text-white/50 transition-colors hover:text-white sm:text-[14px]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 1.0, delay: 0.6 }}
+        >
+          Read more on Medium &rarr;
+        </motion.a>
       </div>
     </section>
   );

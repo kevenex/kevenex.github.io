@@ -76,7 +76,7 @@ export default function Projects() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-6 pb-32 pt-32">
         <div className="mx-auto w-full max-w-6xl">
           <motion.p
-            className="mb-14 text-center text-[13px] uppercase tracking-[0.2em] text-white/40 sm:mb-20 sm:text-[14px]"
+            className="mb-14 text-center text-[13px] uppercase tracking-[0.2em] text-white/75 sm:mb-20 sm:text-[14px]"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
