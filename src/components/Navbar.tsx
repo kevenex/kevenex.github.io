@@ -128,21 +128,23 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </motion.div>
         </div>
 
-        <motion.button
-          type="button"
+        <motion.a
+          href="/resume/Kevin-Kim-Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex h-12 items-center gap-2 rounded-full bg-white px-6 text-black"
           whileHover={{ scale: 1.03, backgroundColor: '#e2e2e6' }}
           whileTap={{ scale: 0.97 }}
           onMouseEnter={() => setHovered('Download')}
           onMouseLeave={() => setHovered(null)}
         >
-          <i className="bi bi-apple text-[17px]" aria-hidden="true" />
+          <i className="bi bi-file-earmark-pdf text-[17px]" aria-hidden="true" />
           <ScrambleText
             text="Download"
             isHovered={hovered === 'Download'}
             className="text-[15px] font-medium"
           />
-        </motion.button>
+        </motion.a>
       </div>
 
       {/* Mobile */}
@@ -223,14 +225,16 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           animate={{ width: isOpen ? 0 : 'auto' }}
           transition={PILL_SPRING}
         >
-          <motion.button
-            type="button"
+          <motion.a
+            href="/resume/Kevin-Kim-Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-black"
             whileTap={{ scale: 0.97 }}
           >
-            <i className="bi bi-apple text-[14px]" aria-hidden="true" />
+            <i className="bi bi-file-earmark-pdf text-[14px]" aria-hidden="true" />
             <span className="whitespace-nowrap text-[13px] font-medium">Download</span>
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </motion.nav>

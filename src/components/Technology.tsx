@@ -3,22 +3,24 @@ import { VIDEOS } from '../constants/videos';
 
 const CAPABILITIES = [
   {
-    title: 'Cortical Mapping',
-    description: 'Real-time spatial reconstruction of active neural regions.',
+    title: 'Platform Launches',
+    description: 'Directed rollouts from discovery to deployment, growing partner adoption 300%.',
   },
   {
-    title: 'Signal Isolation',
-    description: 'Separates cognitive intent from biological noise.',
+    title: 'Data Migration',
+    description: 'Led a multi-month migration unifying legacy systems onto a modern cloud platform.',
   },
   {
-    title: 'State Prediction',
-    description: 'Anticipates cognitive transitions before they occur.',
+    title: 'Cross-Functional Leadership',
+    description: 'Aligned product, engineering, and business teams around a shared roadmap.',
   },
   {
-    title: 'Loop Feedback',
-    description: 'Closed-loop adjustment based on outcome correlation.',
+    title: 'Customer Discovery',
+    description: 'Turned stakeholder input and market research into prioritized decisions.',
   },
 ];
+
+const COMPANIES = ['Plusgrade', 'ATB Financial', 'Brim Financial', 'Canadian Tire', 'IBM', 'Intrepid Ventures'];
 
 export default function Technology() {
   return (
@@ -53,8 +55,9 @@ export default function Technology() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 1.0, delay: 0.2 }}
           >
-            The system learns your neural baseline within 72 hours. From there, every
-            cognitive state is mapped, predicted, and optimized in real time.
+            6+ years turning ambiguous problems into shipped products — from platform
+            launches to enterprise-scale data migrations, fluent in translating market
+            signals into roadmap decisions.
           </motion.p>
         </div>
 
@@ -82,6 +85,23 @@ export default function Technology() {
                 {item.description}
               </p>
             </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 sm:mt-12 sm:pt-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1.0, delay: 0.4 }}
+        >
+          {COMPANIES.map((name) => (
+            <span
+              key={name}
+              className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/35 sm:text-[12px]"
+            >
+              {name}
+            </span>
           ))}
         </motion.div>
       </div>
