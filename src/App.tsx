@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import CinematicText from './components/CinematicText';
-import Metrics from './components/Metrics';
+import Projects from './components/Projects';
 import Technology from './components/Technology';
 import Architecture from './components/Architecture';
 import Footer from './components/Footer';
@@ -25,7 +25,7 @@ export default function App() {
       <Navbar entranceComplete={entranceComplete} />
       <Hero entranceComplete={entranceComplete} />
       <CinematicText />
-      <Metrics />
+      <Projects />
       <Technology />
       <Architecture />
       <Footer />

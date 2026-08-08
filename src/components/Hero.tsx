@@ -175,9 +175,9 @@ export default function Hero({ entranceComplete }: HeroProps) {
               animate={entranceComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
               transition={{ duration: 0.9, ease: EASE_OUT_CUBIC, delay: 0.2 }}
             >
-              Built at the intersection of neuroscience and artificial intelligence.
-              SynapseX continuously maps neural pathways, cognitive load, and physiological
-              states into a single adaptive intelligence layer.
+              A personal site by Kevin Kim. KevinK collects the projects, experiments and
+              half-finished ideas worth keeping — built with Claude Code, out of curiosity,
+              and for the fun of it.
             </motion.p>
           </div>
 

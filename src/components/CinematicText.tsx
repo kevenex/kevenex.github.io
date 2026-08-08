@@ -54,11 +54,10 @@ export default function CinematicText() {
           className="max-w-5xl select-none px-6 text-center font-sans text-[22px] font-normal leading-[1.35] tracking-[-0.02em] text-white sm:px-12 sm:text-[30px] md:text-[36px] lg:text-[42px]"
           style={{ transform, opacity }}
         >
-          A neural-AI interface built on the architecture of the human nervous system.
-          SynapseX translates synaptic activity into computational intelligence. Every
-          signal becomes measurable, structured, and visible. It continuously reconstructs
-          internal state as a dynamic neural map. Biological noise is filtered into
-          actionable cognitive patterns.
+          KevinK is a personal site, and a place to put things down. Some of it is
+          finished, some of it is half an idea that got out of hand. Every project here
+          started as a question worth answering. None of it is trying to be a product.
+          It is built for curiosity, and for the fun of building it.
         </motion.p>
       </div>
     </section>
