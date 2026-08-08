@@ -212,13 +212,13 @@
       /* ------------------------------------------------------- provenance */
 
       /* Where this page's content came from and how old it is. On a page that
-         is a mirror of another repository, that is not a footnote. */
+         is a mirror of another repository, that is not a footnote. One
+         paragraph rather than a flex row: it is a sentence, and flex would put
+         a gap between every word-run it treats as an item. */
       .provenance {
         margin-top: 28px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px 18px;
         font-size: 11.5px;
+        line-height: 1.6;
         color: rgba(255, 255, 255, 0.45);
       }
       .provenance a {
@@ -654,7 +654,7 @@
           which is the point, and also why reading them feels like reading over a shoulder.
         </p>
 
-        <div class="provenance" id="provenance"></div>
+        <p class="provenance" id="provenance"></p>
 
         <div class="kpi" id="kpi"></div>
         <div id="thread"></div>
@@ -759,17 +759,22 @@
         function renderHeader(data) {
           var commit = data.source && data.source.commit;
 
-          add($('provenance'), 'Synced ' + relative(data.syncedAt) + ' from ');
+          /* The commit is the honest anchor for "how current is this?" — it is
+             the moment the agent's host last pushed. The mirror's own clock is
+             not shown because it would only ever repeat this one: the snapshot
+             is rewritten when the content changes and at no other time. */
           if (commit) {
+            add($('provenance'), 'Mirrored from ');
             var link = document.createElement('a');
             link.href = commit.url;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             link.textContent = commit.shortSha;
+            link.title = commit.message;
             $('provenance').appendChild(link);
-            add($('provenance'), ', pushed ' + shortDate(commit.date));
+            add($('provenance'), ', pushed ' + relative(commit.date) + ' on ' + shortDate(commit.date) + '. ');
           }
-          add($('provenance'), ' · ' + data.totals.entries + ' entries mirrored, nothing edited');
+          add($('provenance'), data.totals.entries + ' entries, nothing edited or left out.');
 
           var lastRunNote = data.lastRun
             ? 'The agent stamps this itself at the end of a run.'

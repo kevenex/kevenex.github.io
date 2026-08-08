@@ -177,10 +177,29 @@ Doing it at build time rather than from the browser is the whole design:
   when it fails the page is blank rather than stale.
 - The generated JSON **is committed**, and is the fallback. The script swallows
   its own network errors and leaves the committed copy in place, so a GitHub
-  outage or a rate limit costs the journal its freshness, never the deploy.
+  outage or a rate limit costs the journal its freshness, never the deploy. It
+  is not a silent fallback: on Actions it raises a `::warning::` annotation
+  naming the error and the snapshot's age, so a sync that has been broken for a
+  week is visible in the workflow list.
 - `deploy.yml` therefore also runs on a daily `schedule`, because a deploy is
   now the only way the site learns the agent has written anything. (GitHub
   disables scheduled workflows after 60 days without repository activity.)
+- After syncing, the workflow **commits the refreshed snapshot back to
+  `master`** — which is why `permissions.contents` is `write`. That keeps the
+  offline fallback current and gives the agent's output a history in this repo.
+  The push is best-effort (`continue-on-error`, one rebase retry): a deploy must
+  never fail over bookkeeping, and the next run carries the same content anyway.
+  Pushes made with `GITHUB_TOKEN` do not start another workflow run, so it
+  cannot loop.
+
+Two details keep that commit honest. The script **only writes the file when the
+content changes** — a run where the agent has not pushed leaves it byte-identical
+rather than churning a timestamp, so the history is one commit per agent push
+instead of one per day. And it reads every file **pinned to the commit SHA it
+resolved up front**, never at the branch name, so a CDN-cached raw file cannot
+land in a snapshot labelled with a newer commit. The consequence is that
+`syncedAt` means "when this mirror last changed", which is why the page displays
+the source commit's date instead.
 
 Refresh the snapshot by hand with `npm run sync:wick`. On a machine that cannot
 reach the GitHub API, point it at a checkout instead:

@@ -51,30 +51,45 @@ const STATE_FILES = [
 
 const API = 'https://api.github.com';
 
-/* Unauthenticated is fine — the repo is public and a build makes a handful of
-   requests — but CI hands us a token anyway, and using it moves us from 60
-   requests an hour per runner IP to 5,000. */
-function headers(accept = 'application/vnd.github+json') {
+/*
+ * Only the API gets the token. Unauthenticated it allows 60 requests an hour
+ * per runner IP, which a busy Actions runner can genuinely exhaust; with the
+ * token CI hands us it is 5,000. raw.githubusercontent.com is deliberately left
+ * anonymous — the repository is public, raw has no rate limit worth minding,
+ * and an Authorization header there is a way to turn a working fetch into a 401
+ * for no benefit.
+ */
+function headers(url, accept) {
   const h = { accept, 'user-agent': 'kevink.im-wick-sync' };
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-  if (token) h.authorization = `Bearer ${token}`;
+  if (token && url.startsWith(API)) h.authorization = `Bearer ${token}`;
   return h;
 }
 
 async function getJson(url) {
-  const res = await fetch(url, { headers: headers() });
+  const res = await fetch(url, { headers: headers(url, 'application/vnd.github+json') });
   if (!res.ok) throw new Error(`GET ${url} → ${res.status} ${res.statusText}`);
   return res.json();
 }
 
 async function getText(url) {
-  const res = await fetch(url, { headers: headers('text/plain') });
+  const res = await fetch(url, { headers: headers(url, 'text/plain') });
   if (!res.ok) throw new Error(`GET ${url} → ${res.status} ${res.statusText}`);
   return res.text();
 }
 
+/*
+ * Files are read at the commit resolved up front, never at the branch name.
+ * Two reasons: a branch-name raw URL is CDN-cached and can hand back a file
+ * older than the commit this run is about to record as its provenance, and the
+ * agent pushes while builds are running. Pinning makes the snapshot a coherent
+ * picture of one commit rather than a mix of whatever each request happened to
+ * see. `ref` is the SHA once resolve() has run, the branch name before that.
+ */
+let ref = branch;
+
 function rawUrl(path) {
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${branch}/${path}`;
+  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${ref}/${path}`;
 }
 
 // ----------------------------------------------------------------- markdown
@@ -269,24 +284,28 @@ function githubSource() {
     async resolve() {
       const meta = await getJson(`${API}/repos/${OWNER}/${REPO}`);
       if (meta.default_branch) branch = meta.default_branch;
+      ref = branch;
 
       const commits = await getJson(`${API}/repos/${OWNER}/${REPO}/commits?sha=${branch}&per_page=1`);
       const head = commits[0];
-      return head
-        ? {
-            sha: head.sha,
-            shortSha: head.sha.slice(0, 7),
-            date: head.commit.committer.date,
-            message: head.commit.message.split('\n')[0],
-            url: head.html_url,
-          }
-        : null;
+      if (!head) return null;
+
+      ref = head.sha; // everything read from here on is pinned to this commit
+      return {
+        sha: head.sha,
+        shortSha: head.sha.slice(0, 7),
+        date: head.commit.committer.date,
+        message: head.commit.message.split('\n')[0],
+        url: head.html_url,
+      };
     },
     async listJournal() {
-      const dir = await getJson(`${API}/repos/${OWNER}/${REPO}/contents/journal?ref=${branch}`);
+      const dir = await getJson(`${API}/repos/${OWNER}/${REPO}/contents/journal?ref=${ref}`);
+      // The API's own download_url carries a short-lived token in the query
+      // string; rawUrl at the pinned SHA is the same bytes without one.
       return dir
         .filter((e) => e.type === 'file' && e.name.endsWith('.md'))
-        .map((e) => ({ path: e.path, url: e.download_url || rawUrl(e.path) }));
+        .map((e) => ({ path: e.path, url: rawUrl(e.path) }));
     },
     read(path) {
       return getText(rawUrl(path));
@@ -394,12 +413,38 @@ async function main() {
     state,
   };
 
-  await writeFile(OUT, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+  const summary =
+    `${data.totals.entries} entries across ${data.totals.days} day(s), ` +
+    `${data.totals.words} words, at ${data.source.commit?.shortSha ?? 'unknown'}`;
 
-  console.log(
-    `wick sync: ${data.totals.entries} entries across ${data.totals.days} day(s), ` +
-      `${data.totals.words} words, at ${data.source.commit?.shortSha ?? 'unknown'} → ${OUT}`,
-  );
+  /*
+   * A run where the agent has not pushed since the last one must leave the file
+   * byte-identical, or `syncedAt` alone makes it look changed. That matters
+   * beyond tidiness: CI commits this file back when it differs, and a
+   * timestamp-only diff would put a no-op commit in the history every single
+   * day instead of one commit per push the agent actually makes.
+   *
+   * The consequence is that `syncedAt` means "when this mirror last changed",
+   * not "when the script last ran" — which is the more useful of the two on a
+   * page that displays it as the mirror's age.
+   */
+  if (await unchanged(data)) {
+    console.log(`wick sync: no change — ${summary}`);
+    return;
+  }
+
+  await writeFile(OUT, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+  console.log(`wick sync: ${summary} → ${OUT}`);
+}
+
+async function unchanged(data) {
+  try {
+    const previous = JSON.parse(await readFile(OUT, 'utf8'));
+    const strip = (value) => JSON.stringify({ ...value, syncedAt: null });
+    return strip(previous) === strip(data);
+  } catch {
+    return false; // no snapshot yet, or an unreadable one — write it
+  }
 }
 
 /*
@@ -412,7 +457,18 @@ main().catch(async (err) => {
   console.error(`wick sync failed: ${err.message}`);
   try {
     const snapshot = JSON.parse(await readFile(OUT, 'utf8'));
+    const age = Math.round((Date.now() - new Date(snapshot.syncedAt).getTime()) / 864e5);
     console.error(`  keeping committed snapshot from ${snapshot.syncedAt} (${snapshot.totals.entries} entries)`);
+
+    /* Falling back silently is how a journal page quietly stops updating for a
+       month. On Actions this prints an annotation against the run, so a broken
+       sync is visible in the workflow list without anyone reading the log. */
+    if (process.env.GITHUB_ACTIONS) {
+      console.log(
+        `::warning title=Project Wick journal not refreshed::${err.message} — the site was built from ` +
+          `the committed snapshot, ${age} day(s) old. The journal page is stale, not broken.`,
+      );
+    }
   } catch {
     console.error('  and there is no committed snapshot to fall back to');
     process.exitCode = 1;
