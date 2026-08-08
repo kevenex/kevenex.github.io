@@ -15,11 +15,33 @@ type NavLink =
   | { label: string; target: () => number; href?: never }
   | { label: string; href: string; target?: never };
 
+/*
+ * "Wick" rather than "Project Wick": the agent named itself, so the short form
+ * is the real name, and at four entries the open pill is close enough to the
+ * viewport edge on a small laptop that eight characters matter.
+ */
 const NAV_LINKS: NavLink[] = [
   { label: 'About', target: () => window.innerHeight },
   { label: 'Projects', target: () => window.innerHeight * 2 },
   { label: 'Flyer Fable', href: '/flyer-fable/' },
+  { label: 'Wick', href: '/project-wick/' },
 ];
+
+/*
+ * The open width has to be a number for the spring to animate it, so it is
+ * measured rather than laid out. Space Mono is monospace at 0.6em, which makes
+ * a 16px label exactly 9.6px per character — everything else is the fixed
+ * chrome around the labels: the button's left margin and width, the leading
+ * padding, one gap between each pair of links, and a trailing inset.
+ */
+const NAV_OPEN_WIDTH = Math.round(
+  6 +
+    36 +
+    16 +
+    NAV_LINKS.reduce((total, link) => total + link.label.length * 9.6, 0) +
+    (NAV_LINKS.length - 1) * 24 +
+    32
+);
 
 interface NavbarProps {
   entranceComplete: boolean;
@@ -59,10 +81,8 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </motion.a>
 
           <motion.div
-            className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
-            /* Space Mono is monospace, so the open width is just the label
-               characters (5 + 8 + 11) plus gaps, padding and the button. */
-            animate={{ width: isOpen ? 368 : 48 }}
+            className="flex h-12 shrink-0 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
+            animate={{ width: isOpen ? NAV_OPEN_WIDTH : 48 }}
             transition={PILL_SPRING}
           >
             <button
@@ -163,8 +183,12 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
             <SquashHamburger isOpen={isOpen} mobile />
           </button>
 
+          {/* The mobile pill is sized by the viewport, not by its contents, so
+              a fourth label has to be bought out of the gaps and the type: at
+              12px with gap-4 the four labels need ~294px and a 360px phone
+              gives the pill 312px. Narrower than that still clips the tail. */}
           <motion.div
-            className="flex items-center gap-5 whitespace-nowrap pl-3"
+            className="flex items-center gap-4 whitespace-nowrap pl-3"
             animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : 15 }}
             transition={{ duration: 0.25, delay: isOpen ? 0.1 : 0 }}
             style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
@@ -174,7 +198,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="whitespace-nowrap text-[13px] font-normal text-white/85"
+                  className="whitespace-nowrap text-[12px] font-normal text-white/85"
                 >
                   {link.label}
                 </a>
@@ -183,7 +207,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
                   key={link.label}
                   type="button"
                   onClick={() => scrollTo(link.target())}
-                  className="text-[13px] font-normal text-white/85"
+                  className="text-[12px] font-normal text-white/85"
                 >
                   {link.label}
                 </button>

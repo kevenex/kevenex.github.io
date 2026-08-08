@@ -34,6 +34,8 @@ public/
   flyer-fable/             Standalone flight game — see below
     index.html             The whole game: markup, styles, scene, flight loop
     three.min.js           Three.js r0.160.0, self-hosted
+  project-wick/            Product one-pager — see below
+    index.html             The whole page: copy, styles, four inline-SVG figures
   favicon.svg
 src/
   App.tsx                  Page composition + entrance timing
@@ -104,6 +106,31 @@ Local changes on top of upstream are each marked with a `SITE:` comment:
 
 To pull in upstream changes, re-copy `index.html` and re-apply the `SITE:`
 blocks — they are contiguous and commented for that purpose.
+
+## Project Wick (`/project-wick/`)
+
+A product one-pager for an hourly journaling agent: strategy, the nested
+feedback loops, the permission boundary, and a phased execution plan. Reachable
+from the nav and from the Projects cards.
+
+It sits in `public/` for the same reason the flyer does — it is prose and
+drawings, needs nothing React provides, and the site has no router, so putting
+it through the SPA would add a bundle dependency and buy nothing.
+
+The four figures are hand-authored inline SVG: no chart library, no runtime, no
+external images. Two conventions hold across all of them:
+
+- **`currentColor` for strokes and text**, so a figure inherits the page
+  foreground instead of hardcoding white in a dozen places.
+- **One literal hue (`--gate`, amber) with one meaning** — the human, or an
+  action halted waiting on one. It appears in the figures, in the prose, and on
+  the roadmap bar for the phase that tests the permission gate, and it is never
+  used decoratively.
+
+Wide drawings scroll inside their own `overflow-x: auto` box rather than
+shrinking until the labels stop being readable; the page body never scrolls
+sideways. Type sizes inside the SVGs come from shared classes on the wrapper
+(`.t-node`, `.t-small`, …) so every figure lands on the same scale.
 
 ## Notes
 
