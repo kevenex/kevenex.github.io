@@ -35,8 +35,13 @@ public/
     index.html             The whole game: markup, styles, scene, flight loop
     three.min.js           Three.js r0.160.0, self-hosted
   project-wick/            Product one-pager — see below
-    index.html             The whole page: copy, styles, four inline-SVG figures
+    index.html             The whole page: copy, styles, six inline-SVG figures
+    journal.json           Generated: the agent's journal, mirrored at build time
+    journal/
+      index.html           Reader for journal.json — entries plus the state files
   favicon.svg
+scripts/
+  sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
 src/
   App.tsx                  Page composition + entrance timing
   index.css                Fonts, Tailwind, global reset, Lenis classes
@@ -111,7 +116,8 @@ blocks — they are contiguous and commented for that purpose.
 
 A product one-pager for an hourly journaling agent: strategy, the nested
 feedback loops, the two-stage implementation, the permission boundary, and a
-phased execution plan.
+phased execution plan. Its sibling at `/project-wick/journal/` publishes what
+the agent has actually written — see below.
 
 **Nothing on the site links here.** There is no Projects card and no nav entry,
 and the page carries `<meta name="robots" content="noindex, nofollow">`. It is
@@ -129,7 +135,7 @@ It sits in `public/` for the same reason the flyer does — it is prose and
 drawings, needs nothing React provides, and the site has no router, so putting
 it through the SPA would add a bundle dependency and buy nothing.
 
-The five figures are hand-authored inline SVG: no chart library, no runtime, no
+The six figures are hand-authored inline SVG: no chart library, no runtime, no
 external images. Three conventions hold across all of them:
 
 - **`currentColor` for strokes and text**, so a figure inherits the page
@@ -146,6 +152,72 @@ Wide drawings scroll inside their own `overflow-x: auto` box rather than
 shrinking until the labels stop being readable; the page body never scrolls
 sideways.
 
+### The journal (`/project-wick/journal/`)
+
+The one-pager is the argument; the journal page is the evidence. It renders
+every entry the agent has written, plus the four files it keeps between runs
+(`identity`, `personality`, `continuity`, `pending-approval`). Same visual
+system, same two hues, same unlisted terms — it is linked from the one-pager and
+the one-pager only.
+
+The content comes from a different repository,
+[`kevenex/project-wick`](https://github.com/kevenex/project-wick), which the
+agent's host pushes to roughly every two days.
+
+**How it gets here.** `scripts/sync-wick-journal.mjs` reads that repository —
+`journal/*.md` and `state/*` — and writes one flat
+`public/project-wick/journal.json`. The deploy workflow runs it before
+`npm run build`, so the JSON in the artifact is as fresh as the deploy. The page
+then does a single same-origin `fetch` of that file and renders it.
+
+Doing it at build time rather than from the browser is the whole design:
+
+- A browser-side integration would need the GitHub contents API on every visit
+  just to learn which day files exist. That is rate-limited per visitor IP, and
+  when it fails the page is blank rather than stale.
+- The generated JSON **is committed**, and is the fallback. The script swallows
+  its own network errors and leaves the committed copy in place, so a GitHub
+  outage or a rate limit costs the journal its freshness, never the deploy. It
+  is not a silent fallback: on Actions it raises a `::warning::` annotation
+  naming the error and the snapshot's age, so a sync that has been broken for a
+  week is visible in the workflow list.
+- `deploy.yml` therefore also runs on a daily `schedule`, because a deploy is
+  now the only way the site learns the agent has written anything. (GitHub
+  disables scheduled workflows after 60 days without repository activity.)
+- After syncing, the workflow **commits the refreshed snapshot back to
+  `master`** — which is why `permissions.contents` is `write`. That keeps the
+  offline fallback current and gives the agent's output a history in this repo.
+  The push is best-effort (`continue-on-error`, one rebase retry): a deploy must
+  never fail over bookkeeping, and the next run carries the same content anyway.
+  Pushes made with `GITHUB_TOKEN` do not start another workflow run, so it
+  cannot loop.
+
+Two details keep that commit honest. The script **only writes the file when the
+content changes** — a run where the agent has not pushed leaves it byte-identical
+rather than churning a timestamp, so the history is one commit per agent push
+instead of one per day. And it reads every file **pinned to the commit SHA it
+resolved up front**, never at the branch name, so a CDN-cached raw file cannot
+land in a snapshot labelled with a newer commit. The consequence is that
+`syncedAt` means "when this mirror last changed", which is why the page displays
+the source commit's date instead.
+
+Refresh the snapshot by hand with `npm run sync:wick`. On a machine that cannot
+reach the GitHub API, point it at a checkout instead:
+`WICK_LOCAL_REPO=../project-wick npm run sync:wick`.
+
+**The parser repairs as it reads, on purpose.** The agent's write path is a
+known-broken JSON tool call — the defect the one-pager describes in §06 — and it
+produces day files with literal `\n` where line breaks belong, headings glued to
+the end of the previous line, and a final entry that is sometimes cut off
+mid-sentence. The script undoes the first two so the entries are readable and
+*marks* the third rather than hiding it: a truncated entry renders with a red
+border and says it was cut off. A mirror that quietly tidied the breakage would
+be a worse record than the one the agent keeps.
+
+Facts that appear on both pages — entry counts, the state of the open defect —
+come from the repository. When the one-pager's prose and the journal's data
+disagree, the one-pager is the one that is out of date.
+
 ## Notes
 
 - The hero video never autoplays. It sits paused at `0` and is scrubbed by horizontal
@@ -154,7 +226,8 @@ sideways.
 - Every full-height section uses `h-screen h-[100dvh]` so mobile browser chrome does not
   clip the layout.
 - Deployment is handled by `.github/workflows/deploy.yml`, which builds the site and
-  publishes `dist/` to GitHub Pages. It runs on pushes to `master` and can be started
-  by hand from the Actions tab (`workflow_dispatch`).
+  publishes `dist/` to GitHub Pages. It runs on pushes to `master`, once a day on a
+  schedule (to pick up the Project Wick journal), and can be started by hand from the
+  Actions tab (`workflow_dispatch`).
 - The custom domain lives in the repository's Pages settings. Because the site is
   published from a workflow rather than a branch, no `CNAME` file is needed in the repo.

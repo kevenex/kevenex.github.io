@@ -7,6 +7,13 @@
   the URL. That is obscurity, not access control — the page is still served
   publicly and this repository is public, so treat nothing here as private.
 
+  It has a sibling now: journal/ renders the agent's entries, mirrored from
+  github.com/kevenex/project-wick by scripts/sync-wick-journal.mjs at build
+  time. The two link to each other and to the repository; neither is linked to
+  from anywhere else. Facts that appear on both pages — entry counts, the state
+  of the open defect — come from the repository, so when this page's prose and
+  that page's data disagree, this page is the one that is out of date.
+
   A standalone static page, same as /flyer-fable/: it lives in public/ so Vite
   copies it to dist/ verbatim and GitHub Pages serves it as an ordinary
   document. Nothing here needs React, and the site has no router, so putting a
@@ -103,6 +110,13 @@
         border-bottom: 1px solid var(--hair);
       }
 
+      #topbar nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
       #topbar a.back {
         display: inline-flex;
         align-items: center;
@@ -121,6 +135,15 @@
         background: rgba(255, 255, 255, 0.14);
         border-color: rgba(255, 255, 255, 0.3);
       }
+      /* The outbound links are secondary to "back" — same shape, no fill. */
+      #topbar a.back.ghost {
+        background: none;
+      }
+      @media (max-width: 560px) {
+        #topbar a.back.ghost.repo {
+          display: none;
+        }
+      }
 
       #topbar .status {
         font-size: 11px;
@@ -128,6 +151,11 @@
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.4);
         white-space: nowrap;
+      }
+      @media (max-width: 720px) {
+        #topbar .status {
+          display: none;
+        }
       }
 
       /* --------------------------------------------------------------- page */
@@ -196,6 +224,18 @@
       strong {
         color: #fff;
         font-weight: 700;
+      }
+
+      /* Prose links are underlined rather than coloured: the page has exactly
+         two hues and neither of them means "link". */
+      main a {
+        color: #fff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: rgba(255, 255, 255, 0.35);
+      }
+      main a:hover {
+        text-decoration-color: rgba(255, 255, 255, 0.8);
       }
 
       code {
@@ -621,10 +661,22 @@
   </head>
 
   <body>
-    <!-- This is a leaf page, so it needs a way back, same as the flyer. -->
+    <!-- This is a leaf page, so it needs a way back, same as the flyer — and
+         since v3 it is no longer the only Wick page, so it also needs a way
+         across to the journal and out to the agent's repository. -->
     <div id="topbar">
-      <a class="back" href="/">← KevinK</a>
-      <span class="status">One-pager · v2 · live</span>
+      <nav>
+        <a class="back" href="/">← KevinK</a>
+        <a class="back ghost" href="/project-wick/journal/">Journal</a>
+        <a
+          class="back ghost repo"
+          href="https://github.com/kevenex/project-wick"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Repository ↗</a
+        >
+      </nav>
+      <span class="status">One-pager · v3 · live</span>
     </div>
 
     <main>
@@ -639,6 +691,11 @@
         <p class="deck" style="margin-top: 14px">
           It is running. Hourly, by cron, on a Hermes VPS routing through OpenRouter. The first
           day produced real entries, three genuine defects, and one finding that changed the plan.
+        </p>
+        <p class="deck" style="margin-top: 14px">
+          The entries are readable. Everything the agent has written is mirrored from its
+          repository onto the <a href="/project-wick/journal/">journal page</a> — unedited, including
+          the runs that broke halfway through. This page is the argument; that one is the evidence.
         </p>
 
         <blockquote>
@@ -656,8 +713,8 @@
           </div>
           <div class="tile">
             <span class="label">Entries, day one</span>
-            <span class="value">3</span>
-            <span class="sub">07:57, 08:00, 09:00 — inside the 3–6 target</span>
+            <span class="value">22</span>
+            <span class="sub">Against a 3–6 target. Counted from the repo, not the plan.</span>
           </div>
           <div class="tile">
             <span class="label">Runs that produced an entry</span>
@@ -712,7 +769,9 @@
 
         <p style="margin-top: 26px">
           Wick attacks all three on the smallest surface that can hold them: a plain directory, a
-          cron entry, and a journal. No repo, no sync, no path to anywhere public.
+          cron entry, and a journal. From where the agent sits that is still the whole world — no
+          repo, no sync, no path to anywhere public. The mirror described in §13 is a copy taken
+          from outside the box, not a door added to it.
         </p>
       </section>
 
@@ -1541,11 +1600,11 @@
                 <td class="broke">Any parse failure — P2 is not done</td>
               </tr>
               <tr>
-                <td>Entries / day</td>
-                <td>Is judgment calibrated, or is it just producing?</td>
-                <td>3–6</td>
-                <td>3 on day one</td>
-                <td>&lt;2 for two days, or &gt;8 in one</td>
+                <td class="broke">Entries / day</td>
+                <td class="broke">Is judgment calibrated, or is it just producing?</td>
+                <td class="broke">3–6</td>
+                <td class="broke">22 on day one</td>
+                <td class="broke">&lt;2 for two days, or &gt;8 in one — tripped</td>
               </tr>
               <tr>
                 <td>Tick runs</td>
@@ -1725,12 +1784,106 @@
         </ul>
       </section>
 
+      <!-- =================================================== record ====== -->
+      <section id="record">
+        <span class="eyebrow">13 — The record</span>
+        <h2>The journal is public. The agent still cannot publish it.</h2>
+        <p>
+          The directory Wick writes into is exported to
+          <a href="https://github.com/kevenex/project-wick" target="_blank" rel="noopener noreferrer"
+            >github.com/kevenex/project-wick</a
+          >
+          every couple of days, and this site reads that repository when it builds and renders it at
+          <a href="/project-wick/journal/">/project-wick/journal/</a> — every entry, unedited, with
+          the four state files underneath. Nothing is selected and nothing is tidied.
+        </p>
+        <p>
+          The distinction that keeps §08 honest is the direction of the arrow. The export runs
+          outside the agent's process; Wick's fence lists <strong>any git operation</strong> as
+          ask-first, and the approval queue is still empty, so nothing in that repository was put
+          there by Wick. It is a photocopy of the box, not an exit from it. P6 in §09 is about
+          giving the agent a route of its own, and it is still blocked on P5.
+        </p>
+
+        <figure>
+          <div class="figwrap wide">
+            <svg viewBox="0 0 860 320" role="img"
+              aria-label="The export path. Wick writes files into the box — the journal and state directories — and that is the only thing it does. A host-run export copies the box to the public repository project-wick every couple of days. The site's build reads that repository and renders the journal page at kevink.im. A separate line from Wick directly to the repository is drawn crossed out and in amber: any git operation is ask-first, and the approval queue is empty, so the agent has never taken that path.">
+              <defs>
+                <marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
+                </marker>
+              </defs>
+
+              <rect class="box" x="20" y="70" width="210" height="80" rx="12" />
+              <text class="t-node" x="125" y="103" text-anchor="middle">the box</text>
+              <text class="t-small" x="125" y="123" text-anchor="middle">journal/ + state/</text>
+              <text class="t-tiny" x="125" y="141" text-anchor="middle">on the Hermes VPS</text>
+
+              <path class="flow" d="M 230 110 L 314 110" marker-end="url(#a6)" />
+              <text class="t-tiny" x="272" y="98" text-anchor="middle">export</text>
+              <text class="t-tiny" x="272" y="130" text-anchor="middle">~2 days</text>
+
+              <rect class="box" x="318" y="70" width="212" height="80" rx="12" />
+              <text class="t-node" x="424" y="103" text-anchor="middle">project-wick</text>
+              <text class="t-small" x="424" y="123" text-anchor="middle">public repository</text>
+              <text class="t-tiny" x="424" y="141" text-anchor="middle">code · journal · state</text>
+
+              <path class="flow" d="M 530 110 L 614 110" marker-end="url(#a6)" />
+              <text class="t-tiny" x="572" y="98" text-anchor="middle">read at</text>
+              <text class="t-tiny" x="572" y="130" text-anchor="middle">build time</text>
+
+              <rect class="box" x="618" y="70" width="222" height="80" rx="12" />
+              <text class="t-node" x="729" y="103" text-anchor="middle">this site</text>
+              <text class="t-small" x="729" y="123" text-anchor="middle">/project-wick/journal/</text>
+              <text class="t-tiny" x="729" y="141" text-anchor="middle">a static snapshot, no live calls</text>
+
+              <!-- the agent, and the one edge it has never been allowed to take -->
+              <rect class="box" x="20" y="222" width="210" height="72" rx="12" />
+              <text class="t-node" x="125" y="252" text-anchor="middle">WICK</text>
+              <text class="t-tiny" x="125" y="272" text-anchor="middle">writes files, and nothing else</text>
+
+              <path class="flow" d="M 125 222 L 125 156" marker-end="url(#a6)" />
+              <text class="t-tiny" x="139" y="192">write_file</text>
+
+              <path class="gate-line" d="M 230 258 L 424 258 L 424 156" stroke-dasharray="5 5" />
+              <text class="t-node gate-text" x="424" y="200" text-anchor="middle">✕</text>
+              <text class="t-tiny gate-text" x="300" y="282" opacity="0.9">any git operation is ask-first</text>
+              <text class="t-tiny" x="300" y="298">the queue is still empty</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>Figure 6 — how the record gets out.</b> Two paths lead to the repository and only one
+            of them is drawn solid. The site never calls GitHub while a visitor is reading: the
+            journal is baked into the deploy, so the page can be a day behind the repository but it
+            cannot break when GitHub does. <span class="gate-word">The amber path is the one Wick
+            does not have</span> — same colour, same meaning as everywhere else on this page.
+          </figcaption>
+        </figure>
+
+        <div class="verdict" style="margin-top: 30px">
+          <p>
+            <strong>The first thing the record contradicts is this page.</strong> Day one produced
+            twenty-two entries against a target of three to six, which trips the wire in §10 on its
+            first day. Bet 02 says the agent should decline four wakes in five; the journal says it
+            declined almost none. That number is not in the plan, it is in the repository, and it is
+            visible only because the entries are published rather than summarised. Publishing the
+            evidence was supposed to make claims like Bet 02 gradeable. It did — immediately, and
+            against the claim.
+          </p>
+        </div>
+      </section>
+
       <footer>
-        Project Wick · one-pager v2 · running hourly on a Hermes VPS via OpenRouter.
+        Project Wick · one-pager v3 · running hourly on a Hermes VPS via OpenRouter.
         <br />
         The agent named itself on first run and the name stuck.
         <br />
-        <a href="/">← back to KevinK</a>
+        <a href="/project-wick/journal/">read the journal →</a> ·
+        <a href="https://github.com/kevenex/project-wick" target="_blank" rel="noopener noreferrer"
+          >the repository ↗</a
+        >
+        · <a href="/">back to KevinK</a>
       </footer>
     </main>
   </body>

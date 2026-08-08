@@ -4,9 +4,17 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # The Project Wick journal is pulled from another repository at build time, so
+  # a deploy is how the site learns the agent has written anything. That repo is
+  # pushed roughly every two days; rebuilding daily keeps the lag under a day
+  # without needing to know exactly when the push lands.
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
-  contents: read
+  # `write` rather than `read` for one reason: the scheduled run commits the
+  # refreshed Project Wick snapshot back to master (see the sync steps below).
+  contents: write
   pages: write
   id-token: write
 
@@ -24,6 +32,44 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+
+      # Refresh public/project-wick/journal.json from the agent's repository.
+      # The script swallows its own network failures and leaves the committed
+      # snapshot in place, so a GitHub blip costs the journal its freshness
+      # rather than costing the site its deploy — it annotates the run instead.
+      - name: Sync the Project Wick journal
+        run: npm run sync:wick
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Keep the checked-in snapshot current, not just the artifact. The build
+      # below uses the working-tree file either way, so this commit is about the
+      # repository: it keeps the offline fallback fresh and gives the agent's
+      # output a history here, one commit per push it makes.
+      #
+      # Best-effort by construction. A push that loses a race with a human
+      # commit is retried once against the new tip and then given up on — the
+      # next scheduled run will carry the same content anyway, and a deploy must
+      # never fail over bookkeeping. Pushes made with GITHUB_TOKEN do not start
+      # another workflow run, so this cannot loop.
+      - name: Commit the refreshed snapshot
+        if: github.ref == 'refs/heads/master'
+        continue-on-error: true
+        run: |
+          set -u
+          if git diff --quiet -- public/project-wick/journal.json; then
+            echo "journal.json unchanged — the agent has not pushed since the last run"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/project-wick/journal.json
+          git commit -m "Sync the Project Wick journal from the agent's repo"
+          git push || {
+            echo "push rejected — rebasing onto the new tip and retrying once"
+            git fetch origin master && git rebase origin/master && git push
+          }
+
       - run: npm run build
       - uses: actions/configure-pages@v5
         with:
