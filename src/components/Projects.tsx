@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Flame, FlaskConical, Plane, PenLine, type LucideIcon } from 'lucide-react';
+import { FlaskConical, Plane, PenLine, type LucideIcon } from 'lucide-react';
 import { VIDEOS } from '../constants/videos';
 
 /*
@@ -20,12 +20,6 @@ const PROJECTS: Project[] = [
     blurb: 'Fly a low-poly South Korea at true geographic scale, Seoul to Hallasan.',
     icon: Plane,
     href: '/flyer-fable/',
-  },
-  {
-    title: 'Project Wick',
-    blurb: 'An agent that wakes hourly, does one small thing, and writes about it. The one-pager.',
-    icon: Flame,
-    href: '/project-wick/',
   },
   {
     title: 'Experiments',
@@ -72,10 +66,7 @@ export default function Projects() {
             Projects
           </motion.p>
 
-          {/* Four cards do not divide into three columns, so the desktop row
-              widens to four and tablets fall back to a 2×2 block rather than
-              leaving one card stranded on its own row. */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-3">
             {PROJECTS.map((project, index) => {
               const Icon = project.icon;
 
