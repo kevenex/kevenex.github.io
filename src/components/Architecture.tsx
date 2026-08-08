@@ -35,7 +35,7 @@ export default function Architecture() {
           </p>
 
           <h2 className="mb-10 text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
-            Read me, not the README.
+            My Thoughts
           </h2>
 
           <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/45 sm:text-[17px]">
