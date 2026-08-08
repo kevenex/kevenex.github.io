@@ -36,6 +36,7 @@ public/
     three.min.js           Three.js r0.160.0, self-hosted
   project-wick/            Product one-pager — see below
     index.html             The whole page: copy, styles, six inline-SVG figures
+    wick.svg               The project mark, as the favicon for both Wick pages
     journal.json           Generated: the agent's journal, mirrored at build time
     journal/
       index.html           Reader for journal.json — entries plus the state files
@@ -58,6 +59,7 @@ src/
     ScrambleText.tsx       Hover-driven scramble text
     SquashHamburger.tsx    Animated hamburger/close icon
     KevinKLogo.tsx         4-fold symmetric SVG mark
+    WickMark.tsx           Project Wick's mark, for the Projects card
 ```
 
 ## Background video
@@ -112,24 +114,59 @@ Local changes on top of upstream are each marked with a `SITE:` comment:
 To pull in upstream changes, re-copy `index.html` and re-apply the `SITE:`
 blocks — they are contiguous and commented for that purpose.
 
-## Project Wick (`/project-wick/`) — unlisted
+## Project Wick (`/project-wick/`)
 
 A product one-pager for an hourly journaling agent: strategy, the nested
 feedback loops, the two-stage implementation, the permission boundary, and a
 phased execution plan. Its sibling at `/project-wick/journal/` publishes what
 the agent has actually written — see below.
 
-**Nothing on the site links here.** There is no Projects card and no nav entry,
-and the page carries `<meta name="robots" content="noindex, nofollow">`. It is
-reachable only by typing the URL. The path is deliberately *not* in a
-`robots.txt` `Disallow` line, because that file is public and would advertise
-the very path being hidden.
+**Listed as of v4.** It spent its first days unlisted — no Projects card, no nav
+entry, a `noindex, nofollow` tag — while the agent was still breaking every
+other run. All three are now gone: there is a card in the Projects grid beside
+Flyer Fable, a `Wick` entry in the nav, and crawlers are welcome. Nothing on the
+page was ever private (GitHub Pages serves static files to anyone who asks); the
+robots tag was a way of not inviting readers to something still in pieces. To
+unlist it again, reverse those three.
 
-That is obscurity, not access control. The page is still served publicly and
-this repository is public, so nothing on it should be treated as private. Real
-gating would need the page moved somewhere that can authenticate — GitHub Pages
-serves static files to anyone who asks. To relist it, add the card back to
-`src/components/Projects.tsx`, add a nav entry, and drop the robots tag.
+The journal page is deliberately *not* in the nav or the grid. It is reached
+from the one-pager, because the entries make much more sense after the argument
+for why they exist.
+
+### The mark
+
+The logo is three parts, each about this agent rather than about fire:
+
+- **The dial** — 24 ticks, one per wake. Four run longer: the hours that earned
+  an entry. Their spacing is irregular, clustered and then quiet, because that
+  is the shape of a real day in the journal and because "3–6 entries from 24
+  wakes" is the project's whole thesis about restraint.
+- **The flame** — it named itself Wick: small, disposable, burns for an hour.
+- **The wick** — a stub that does not reach the dial. What is left behind is
+  smaller than the thing that burned.
+
+It exists in **three copies that must stay in step**, because the pages that use
+it cannot share code:
+
+| Copy | Used by | Differences |
+| ---- | ------- | ----------- |
+| `src/components/WickMark.tsx` | the Projects card | `currentColor`, sized by prop |
+| inline `<svg class="mark">` | both `/project-wick/` pages | `currentColor`, sized by CSS |
+| `public/project-wick/wick.svg` | the favicon on both pages | black plate, heavier strokes |
+
+The favicon's two departures are deliberate. It carries a full-bleed black
+plate, matching `/favicon.svg`, because a favicon inherits nothing and a
+white-on-transparent mark vanishes into a light tab bar. And its strokes run
+`2`/`1.3` against the pages' `1.5`/`1.1` — an optical correction for 16px, where
+the lighter weight greys out. The geometry is identical in all three.
+
+Line art at 1.5 on a 24 viewBox is not arbitrary either: the mark sits beside
+Lucide icons in the Projects grid and has to carry the same weight.
+
+**A note on the nav label.** The entry reads `Wick`, not `Project Wick`. The
+open nav pill's width is *measured* from the label strings (see `NAV_OPEN_WIDTH`
+in `Navbar.tsx`), and the full name grows it until it touches the Download
+button between 640 and 768px. The card and the page both carry the full name.
 
 It sits in `public/` for the same reason the flyer does — it is prose and
 drawings, needs nothing React provides, and the site has no router, so putting

@@ -2,12 +2,15 @@
 <!--
   Project Wick — a product one-pager for the hourly journaling agent.
 
-  UNLISTED. Nothing on the site links here: no Projects card, no nav entry, and
-  the page carries a noindex/nofollow robots tag. It is reachable only by typing
-  the URL. That is obscurity, not access control — the page is still served
-  publicly and this repository is public, so treat nothing here as private.
+  LISTED, as of v4. It was unlisted while the agent was still finding out
+  whether it worked: no Projects card, no nav entry, a noindex tag, reachable
+  only by typing the URL. All three are now gone — there is a card in the
+  Projects grid beside Flyer Fable, a "Wick" entry in the nav, and crawlers are
+  welcome. Nothing about the page was private, and the robots tag was never
+  access control; it was a way of not inviting readers to a thing that was
+  still breaking every other run.
 
-  It has a sibling now: journal/ renders the agent's entries, mirrored from
+  It has a sibling: journal/ renders the agent's entries, mirrored from
   github.com/kevenex/project-wick by scripts/sync-wick-journal.mjs at build
   time. The two link to each other and to the repository; neither is linked to
   from anywhere else. Facts that appear on both pages — entry counts, the state
@@ -31,16 +34,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
 
-    <!-- Unlisted: crawlers may fetch it, but must not index or follow. Kept out
-         of robots.txt on purpose — a Disallow line would publish the path. -->
-    <meta name="robots" content="noindex, nofollow" />
-
     <meta
       name="description"
-      content="Project Wick — a product one-pager for an autonomous agent that wakes hourly, does one small thing, and writes about it."
+      content="Project Wick — an autonomous agent that wakes every hour, does one small thing, and writes about it. The design, the defects, and the journal it keeps."
     />
     <title>Project Wick — One-Pager</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- The project's own mark rather than the site's, so the tab is
+         identifiable when this page is open beside the rest of KevinK. -->
+    <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
 
     <!--
       Mirrors index.html: the webfont is decorative, so it loads off the
@@ -171,6 +173,22 @@
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.4);
+      }
+
+      /* --------------------------------------------------------------- mark */
+
+      /* The project's logo, at the one size on the site where it is the logo
+         rather than an icon. Kept geometrically identical to
+         src/components/WickMark.tsx and wick.svg — change one, change all. */
+      .mark {
+        display: block;
+        width: 56px;
+        height: 56px;
+        color: #fff;
+      }
+      .mark + .eyebrow {
+        display: block;
+        margin-top: 22px;
       }
 
       h1 {
@@ -676,11 +694,28 @@
           >Repository ↗</a
         >
       </nav>
-      <span class="status">One-pager · v3 · live</span>
+      <span class="status">One-pager · v4 · live</span>
     </div>
 
     <main>
       <header>
+        <!--
+          The mark. Three parts, each about this agent rather than about fire:
+          a dial of 24 ticks (the wakes in a day, four of them longer — the
+          hours that earned an entry, spaced irregularly because that is what a
+          real day looks like); the flame it named itself after, small and
+          disposable and burning for an hour; and a wick stub that does not
+          reach the dial, because what is left behind is smaller than the thing
+          that burned.
+        -->
+        <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+             role="img" aria-label="Project Wick">
+          <path stroke-width="1.1"
+                d="M12 2.85L12 1.5M14.37 3.16L14.72 1.86M15.93 5.2L17.25 2.91M18.47 5.53L19.42 4.58M19.92 7.43L21.09 6.75M20.84 9.63L22.14 9.28M21.15 12L22.5 12M19.58 14.03L22.14 14.72M19.92 16.58L21.09 17.25M17.55 17.55L19.42 19.42M16.58 19.92L17.25 21.09M14.37 20.84L14.72 22.14M12 21.15L12 22.5M9.63 20.84L9.28 22.14M7.43 19.92L6.75 21.09M5.53 18.47L4.58 19.42M5.2 15.93L2.91 17.25M3.16 14.37L1.86 14.72M2.85 12L1.5 12M3.16 9.63L1.86 9.28M4.08 7.42L2.91 6.75M5.53 5.53L4.58 4.58M7.42 4.08L6.75 2.91M9.63 3.16L9.28 1.86" />
+          <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
+          <path d="M12 16.35v2.1" />
+        </svg>
         <span class="eyebrow">Project Wick</span>
         <h1>An agent that wakes every hour, does one small thing, and writes about it.</h1>
         <p class="deck">
@@ -1875,7 +1910,7 @@
       </section>
 
       <footer>
-        Project Wick · one-pager v3 · running hourly on a Hermes VPS via OpenRouter.
+        Project Wick · one-pager v4 · running hourly on a Hermes VPS via OpenRouter.
         <br />
         The agent named itself on first run and the name stuck.
         <br />
