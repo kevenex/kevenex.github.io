@@ -30,6 +30,9 @@ npm run dev
 ```
 public/
   videos/                  Five background loops (1080p H.264, ~8.8 MB total)
+  flyer-fable/             Standalone flight game — see below
+    index.html             The whole game: markup, styles, scene, flight loop
+    three.min.js           Three.js r0.160.0, self-hosted
   favicon.svg
 src/
   App.tsx                  Page composition + entrance timing
@@ -64,6 +67,42 @@ Re-encode anything large first:
 ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
        -pix_fmt yuv420p -movflags +faststart -an public/videos/hero.mp4
 ```
+
+## Flyer Fable (`/flyer-fable/`)
+
+A stylized first-person flight over a low-poly South Korea, reachable from the
+nav menu. It is vendored from [kevenex/korea-flyer](https://github.com/kevenex/korea-flyer)
+at commit `a53bfec`.
+
+It lives in `public/` rather than under `src/`, which means Vite copies it to
+`dist/` byte for byte and GitHub Pages serves it as an ordinary static page. The
+game is one self-contained file that builds its own scene and runs its own
+render loop outside React, so routing it through the SPA would add a bundle
+dependency and buy nothing — and an iframe would inherit the parent's viewport
+quirks on mobile for no gain.
+
+Local changes on top of upstream are each marked with a `SITE:` comment:
+
+- **Self-hosted Three.js.** Upstream loads r0.160.0 from unpkg. Here it is
+  served from the same origin, for the same reason the background videos are —
+  the page should not go blank because a third-party CDN moved or went down.
+- **Touch controls.** Upstream is keyboard-only, so it is unplayable on a phone.
+  The on-screen buttons write into the same `keys` map the keyboard writes to,
+  which is why the flight loop needed no changes to accept them. Pointer capture
+  on press is what keeps a held control from sticking on when a finger slides
+  off the button.
+- **Compact layout.** The desktop version parks a panel in each of the four
+  corners at fixed pixel sizes. A `compact` body class — set from JS, refreshed
+  on resize — collapses that into a stack: HUD and minimap shrink, the fly-to
+  buttons become one horizontally scrolling row above the controls, and the
+  keyboard panel gives way to a hint on the splash screen. It keys off touch
+  capability as well as width, because a landscape phone is ~750px wide and
+  would otherwise be treated as a desktop while still needing the clearance.
+- **Site chrome.** A link back to the homepage, page title, favicon and
+  description.
+
+To pull in upstream changes, re-copy `index.html` and re-apply the `SITE:`
+blocks — they are contiguous and commented for that purpose.
 
 ## Notes
 

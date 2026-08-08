@@ -6,9 +6,19 @@ import SynapseXLogo from './SynapseXLogo';
 
 const PILL_SPRING = { type: 'spring' as const, stiffness: 350, damping: 28 };
 
-const NAV_LINKS = [
+/*
+ * Two kinds of entry: `target` scrolls to a position on this page, `href`
+ * navigates away. The flyer is a standalone static page under public/, so it
+ * is a real navigation rather than a scroll.
+ */
+type NavLink =
+  | { label: string; target: () => number; href?: never }
+  | { label: string; href: string; target?: never };
+
+const NAV_LINKS: NavLink[] = [
   { label: 'About', target: () => window.innerHeight },
   { label: 'Metrics', target: () => window.innerHeight * 2 },
+  { label: 'Flyer Fable', href: '/flyer-fable/' },
 ];
 
 interface NavbarProps {
@@ -50,7 +60,9 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
 
           <motion.div
             className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
-            animate={{ width: isOpen ? 290 : 48 }}
+            /* Space Mono is monospace, so the open width is just the label
+               characters (5 + 7 + 11) plus gaps, padding and the button. */
+            animate={{ width: isOpen ? 368 : 48 }}
             transition={PILL_SPRING}
           >
             <button
@@ -73,18 +85,22 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
               transition={{ duration: 0.25, delay: isOpen ? 0.1 : 0 }}
               style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
             >
-              {NAV_LINKS.map((link) => (
-                <button
-                  key={link.label}
-                  type="button"
-                  onClick={() => scrollTo(link.target())}
-                  onMouseEnter={() => setHovered(link.label)}
-                  onMouseLeave={() => setHovered(null)}
-                  className="text-[16px] font-normal text-white/85 transition-colors hover:text-white"
-                >
-                  <ScrambleText text={link.label} isHovered={hovered === link.label} />
-                </button>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const shared = {
+                  key: link.label,
+                  onMouseEnter: () => setHovered(link.label),
+                  onMouseLeave: () => setHovered(null),
+                  className:
+                    'text-[16px] font-normal text-white/85 transition-colors hover:text-white',
+                  children: <ScrambleText text={link.label} isHovered={hovered === link.label} />,
+                };
+
+                return link.href ? (
+                  <a {...shared} href={link.href} />
+                ) : (
+                  <button {...shared} type="button" onClick={() => scrollTo(link.target())} />
+                );
+              })}
             </motion.div>
           </motion.div>
         </div>
@@ -153,27 +169,46 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
             transition={{ duration: 0.25, delay: isOpen ? 0.1 : 0 }}
             style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
           >
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.label}
-                type="button"
-                onClick={() => scrollTo(link.target())}
-                className="text-[13px] font-normal text-white/85"
-              >
-                {link.label}
-              </button>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="whitespace-nowrap text-[13px] font-normal text-white/85"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <button
+                  key={link.label}
+                  type="button"
+                  onClick={() => scrollTo(link.target())}
+                  className="text-[13px] font-normal text-white/85"
+                >
+                  {link.label}
+                </button>
+              )
+            )}
           </motion.div>
         </motion.div>
 
-        <motion.button
-          type="button"
-          className="ml-auto flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-black"
-          whileTap={{ scale: 0.97 }}
+        {/* Collapses while the menu is open, the same way the logo does — three
+            links plus the CTA do not fit across a phone, and the pill clips its
+            last label rather than shrinking. */}
+        <motion.div
+          className="ml-auto overflow-hidden"
+          animate={{ width: isOpen ? 0 : 'auto' }}
+          transition={PILL_SPRING}
         >
-          <i className="bi bi-apple text-[14px]" aria-hidden="true" />
-          <span className="text-[13px] font-medium">Download</span>
-        </motion.button>
+          <motion.button
+            type="button"
+            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-black"
+            whileTap={{ scale: 0.97 }}
+          >
+            <i className="bi bi-apple text-[14px]" aria-hidden="true" />
+            <span className="whitespace-nowrap text-[13px] font-medium">Download</span>
+          </motion.button>
+        </motion.div>
       </div>
     </motion.nav>
   );
