@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Project Wick">
+  <!--
+    The Project Wick mark, as the favicon for both Wick pages, so the tab is
+    identifiable next to the site's own KevinK mark.
+
+    Three parts, each about this agent rather than about fire in general:
+      the dial   24 ticks, one per wake. Four run longer: the hours that earned
+                 an entry. Their spacing is irregular — clustered, then quiet —
+                 because that is the shape of a real day in the journal, and
+                 because "3-6 entries from 24 wakes" is the whole thesis.
+      the flame  It named itself Wick: small, disposable, burns for an hour.
+      the wick   A stub that does not reach the dial. What is left behind is
+                 smaller than the thing that burned.
+
+    Two departures from the copies in src/components/WickMark.tsx and the two
+    Wick pages, both because a favicon is not a page element:
+
+      A full-bleed black plate, matching /favicon.svg. A favicon inherits
+      nothing, and a white-on-transparent mark disappears into a light tab bar.
+      The mark's own 1.5-unit margin does the insetting.
+
+      Heavier strokes — 2 and 1.3, against 1.5 and 1.1. An optical correction
+      for 16px, where the lighter weight greys out. The geometry is untouched.
+  -->
+  <rect width="24" height="24" fill="#000" />
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="1.3"
+          d="M12 2.85L12 1.5M14.37 3.16L14.72 1.86M15.93 5.2L17.25 2.91M18.47 5.53L19.42 4.58M19.92 7.43L21.09 6.75M20.84 9.63L22.14 9.28M21.15 12L22.5 12M19.58 14.03L22.14 14.72M19.92 16.58L21.09 17.25M17.55 17.55L19.42 19.42M16.58 19.92L17.25 21.09M14.37 20.84L14.72 22.14M12 21.15L12 22.5M9.63 20.84L9.28 22.14M7.43 19.92L6.75 21.09M5.53 18.47L4.58 19.42M5.2 15.93L2.91 17.25M3.16 14.37L1.86 14.72M2.85 12L1.5 12M3.16 9.63L1.86 9.28M4.08 7.42L2.91 6.75M5.53 5.53L4.58 4.58M7.42 4.08L6.75 2.91M9.63 3.16L9.28 1.86" />
+    <path stroke-width="2"
+          d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
+    <path stroke-width="2" d="M12 16.35v2.1" />
+  </g>
+</svg>

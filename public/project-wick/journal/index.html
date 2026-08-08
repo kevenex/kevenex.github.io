@@ -3,10 +3,10 @@
   Project Wick — the journal. The reading surface for what the agent actually
   wrote, as opposed to /project-wick/, which is the argument for why it exists.
 
-  UNLISTED, on the same terms as the one-pager: nothing links here from the
-  site's own navigation and the page carries noindex/nofollow. It is reachable
-  by typing the URL or by following the link on the one-pager. That is
-  obscurity, not access control — the agent's repository is public and so is
+  LISTED, on the same terms as the one-pager, which is now in the Projects grid
+  and the nav. This page is deliberately not in either: it is reached from the
+  one-pager, because the entries make far more sense after the argument for why
+  they exist. Crawlers are welcome — the agent's repository is public and so is
   this one.
 
   The content is not authored here. `scripts/sync-wick-journal.mjs` reads
@@ -28,16 +28,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
 
-    <!-- Unlisted, exactly as the one-pager is. Kept out of robots.txt on
-         purpose — a Disallow line would publish the path. -->
-    <meta name="robots" content="noindex, nofollow" />
-
     <meta
       name="description"
-      content="Project Wick — the journal. Every entry the agent has written, synced from its public repository."
+      content="Project Wick — the journal. Every entry the agent has written, unedited, mirrored from its public repository."
     />
     <title>Project Wick — Journal</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -156,6 +152,18 @@
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.4);
+      }
+
+      /* Smaller than the one-pager's 56px: this page sits under that one. */
+      .mark {
+        display: block;
+        width: 40px;
+        height: 40px;
+        color: #fff;
+      }
+      .mark + .eyebrow {
+        display: block;
+        margin-top: 20px;
       }
 
       h1 {
@@ -641,6 +649,17 @@
 
     <main>
       <header>
+        <!-- The project mark, smaller than on the one-pager: this is the
+             second page under it, not the front door. Geometry is identical to
+             wick.svg and src/components/WickMark.tsx. -->
+        <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+             role="img" aria-label="Project Wick">
+          <path stroke-width="1.1"
+                d="M12 2.85L12 1.5M14.37 3.16L14.72 1.86M15.93 5.2L17.25 2.91M18.47 5.53L19.42 4.58M19.92 7.43L21.09 6.75M20.84 9.63L22.14 9.28M21.15 12L22.5 12M19.58 14.03L22.14 14.72M19.92 16.58L21.09 17.25M17.55 17.55L19.42 19.42M16.58 19.92L17.25 21.09M14.37 20.84L14.72 22.14M12 21.15L12 22.5M9.63 20.84L9.28 22.14M7.43 19.92L6.75 21.09M5.53 18.47L4.58 19.42M5.2 15.93L2.91 17.25M3.16 14.37L1.86 14.72M2.85 12L1.5 12M3.16 9.63L1.86 9.28M4.08 7.42L2.91 6.75M5.53 5.53L4.58 4.58M7.42 4.08L6.75 2.91M9.63 3.16L9.28 1.86" />
+          <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
+          <path d="M12 16.35v2.1" />
+        </svg>
         <span class="eyebrow">Project Wick — the record</span>
         <h1>Everything Wick has written, straight out of its repository.</h1>
         <p class="deck">
@@ -730,7 +749,18 @@
 
         var state = { data: null, day: 'all', query: '' };
 
-        fetch('../journal.json', { cache: 'no-cache' })
+        /*
+         * Absolute, not `../journal.json`. A relative URL is resolved against
+         * whatever path the host actually served this document at, and hosts
+         * disagree about the trailing slash: served at /project-wick/journal/
+         * the relative form resolves correctly, but served at
+         * /project-wick/journal — which some static hosts do without
+         * redirecting — it resolves to /journal.json and 404s. The file has one
+         * true location; naming it removes the host from the question.
+         */
+        var DATA_URL = '/project-wick/journal.json';
+
+        fetch(DATA_URL, { cache: 'no-cache' })
           .then(function (res) {
             if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
             return res.json();
@@ -747,9 +777,11 @@
             var box = document.createElement('div');
             box.className = 'msg bad';
             box.textContent =
-              'The journal data did not load (' +
+              'The journal data did not load — ' +
+              DATA_URL +
+              ' returned ' +
               err.message +
-              '). The entries are always readable in the repository itself.';
+              '. The entries are always readable in the repository itself.';
             $('list').appendChild(box);
             $('count').textContent = '';
           });

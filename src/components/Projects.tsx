@@ -1,6 +1,19 @@
+import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
-import { FlaskConical, Plane, PenLine, type LucideIcon } from 'lucide-react';
+import { FlaskConical, Plane, PenLine } from 'lucide-react';
 import { VIDEOS } from '../constants/videos';
+import WickMark from './WickMark';
+
+/*
+ * Lucide icons and the hand-drawn Wick mark both satisfy this, which is the
+ * point: a project with its own mark should not need a different card.
+ */
+type ProjectIcon = ComponentType<{
+  className?: string;
+  width?: number;
+  height?: number;
+  strokeWidth?: number;
+}>;
 
 /*
  * A card with an `href` is a live link; one without renders as an inert
@@ -10,7 +23,7 @@ import { VIDEOS } from '../constants/videos';
 interface Project {
   title: string;
   blurb: string;
-  icon: LucideIcon;
+  icon: ProjectIcon;
   href?: string;
 }
 
@@ -20,6 +33,12 @@ const PROJECTS: Project[] = [
     blurb: 'Fly a low-poly South Korea at true geographic scale, Seoul to Hallasan.',
     icon: Plane,
     href: '/flyer-fable/',
+  },
+  {
+    title: 'Project Wick',
+    blurb: 'An agent that wakes every hour, does one small thing, and writes about it.',
+    icon: WickMark,
+    href: '/project-wick/',
   },
   {
     title: 'Experiments',
@@ -66,7 +85,9 @@ export default function Projects() {
             Projects
           </motion.p>
 
-          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-3">
+          {/* Four cards: two up at tablet, one row of four once there is room.
+              Three-across would strand the fourth on a row of its own. */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {PROJECTS.map((project, index) => {
               const Icon = project.icon;
 
