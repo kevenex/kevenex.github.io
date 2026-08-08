@@ -730,7 +730,18 @@
 
         var state = { data: null, day: 'all', query: '' };
 
-        fetch('../journal.json', { cache: 'no-cache' })
+        /*
+         * Absolute, not `../journal.json`. A relative URL is resolved against
+         * whatever path the host actually served this document at, and hosts
+         * disagree about the trailing slash: served at /project-wick/journal/
+         * the relative form resolves correctly, but served at
+         * /project-wick/journal — which some static hosts do without
+         * redirecting — it resolves to /journal.json and 404s. The file has one
+         * true location; naming it removes the host from the question.
+         */
+        var DATA_URL = '/project-wick/journal.json';
+
+        fetch(DATA_URL, { cache: 'no-cache' })
           .then(function (res) {
             if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
             return res.json();
@@ -747,9 +758,11 @@
             var box = document.createElement('div');
             box.className = 'msg bad';
             box.textContent =
-              'The journal data did not load (' +
+              'The journal data did not load — ' +
+              DATA_URL +
+              ' returned ' +
               err.message +
-              '). The entries are always readable in the repository itself.';
+              '. The entries are always readable in the repository itself.';
             $('list').appendChild(box);
             $('count').textContent = '';
           });
