@@ -125,26 +125,48 @@ gating would need the page moved somewhere that can authenticate — GitHub Page
 serves static files to anyone who asks. To relist it, add the card back to
 `src/components/Projects.tsx`, add a nav entry, and drop the robots tag.
 
+The homepage tile hints at the project without linking to it, and its
+"Request early access" button is **deliberately inert** — there is no
+destination yet. Wire an `onClick` in `src/components/Projects.tsx` when one
+exists.
+
 It sits in `public/` for the same reason the flyer does — it is prose and
 drawings, needs nothing React provides, and the site has no router, so putting
 it through the SPA would add a bundle dependency and buy nothing.
 
-The five figures are hand-authored inline SVG: no chart library, no runtime, no
-external images. Three conventions hold across all of them:
+The two figures are hand-authored inline SVG: no chart library, no runtime, no
+external images. Three conventions hold across both:
 
 - **`currentColor` for strokes and text**, so a figure inherits the page
   foreground instead of hardcoding white in a dozen places.
-- **Exactly two literal hues, each with one meaning.** `--gate` (amber) is the
-  human, or an action halted waiting on one. `--fault` (red) is an open defect —
-  something failing right now, as opposed to a risk. Neither is ever decorative,
-  and neither is the only signal: the status tiles and roadmap bars that use them
-  also spell the state out in words.
-- **Shared type classes on the wrapper** (`.t-node`, `.t-small`, …) so every
-  figure lands on the same scale without per-element font attributes.
+- **One literal hue with one meaning.** `--open` (amber) marks something
+  unresolved — an open axis, an untested claim — and nothing else. It is never
+  decorative and never the only signal: the tile and table cells that use it
+  also say so in words.
+- **Shared type classes on the wrapper** (`.t-node`, `.t-small`, …) so both
+  figures land on the same scale without per-element font attributes.
 
 Wide drawings scroll inside their own `overflow-x: auto` box rather than
 shrinking until the labels stop being readable; the page body never scrolls
 sideways.
+
+## Wick's mark
+
+`src/components/WickLogo.tsx`, drawn on lucide's 24-unit grid at lucide's
+stroke weight so it can sit in the homepage icon row beside `Plane`,
+`FlaskConical` and `PenLine` without reading as a different visual language.
+
+Two paths, and the inner one is load-bearing: a single pointed-top,
+round-bottomed outline is the universal **water-drop** glyph, and earlier drafts
+read as water at every size. Fire is what gets drawn with a hot core inside it,
+so the inner flame is what makes it a flame. The outer tip leans, which keeps it
+distinct from lucide's own `Flame`.
+
+The same two paths are inlined in three places that cannot import from each
+other — the component, `public/project-wick/index.html`, and
+`public/project-wick/icon.svg` (the page favicon, on a black plate with a
+heavier 1.9 stroke because 1.5 disappears at 16px). Change one, change all
+three.
 
 ## Notes
 

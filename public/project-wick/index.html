@@ -1,44 +1,31 @@
 <!DOCTYPE html>
 <!--
-  Project Wick — a product one-pager for the hourly journaling agent.
+  Project Wick — product one-pager.
 
-  UNLISTED. Nothing on the site links here: no Projects card, no nav entry, and
-  the page carries a noindex/nofollow robots tag. It is reachable only by typing
-  the URL. That is obscurity, not access control — the page is still served
-  publicly and this repository is public, so treat nothing here as private.
+  UNLISTED. Nothing on the site links here: the homepage tile is a teaser with
+  an inert "request early access" button, there is no nav entry, and the page
+  carries a noindex/nofollow robots tag. Reachable only by typing the URL. That
+  is obscurity, not access control — the page is served publicly and this
+  repository is public, so treat nothing here as private.
 
-  A standalone static page, same as /flyer-fable/: it lives in public/ so Vite
-  copies it to dist/ verbatim and GitHub Pages serves it as an ordinary
-  document. Nothing here needs React, and the site has no router, so putting a
-  prose page through the SPA would buy a bundle dependency and nothing else.
-
-  Every diagram is hand-authored inline SVG — no chart library, no runtime, no
-  external images. Strokes and text use currentColor so a figure inherits the
-  page's foreground. Exactly two literal hues, each with one meaning:
-    --gate  (amber) the human, or an action halted waiting on one
-    --fault (red)   an open defect — currently broken, not yet fixed
+  Standalone static page, same as /flyer-fable/: it lives in public/ so Vite
+  copies it to dist/ verbatim. Figures are hand-authored inline SVG — no chart
+  library, no runtime, no external images. Strokes and text use currentColor;
+  the one literal hue (--open, amber) means one thing only: unresolved.
 -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
-
-    <!-- Unlisted: crawlers may fetch it, but must not index or follow. Kept out
-         of robots.txt on purpose — a Disallow line would publish the path. -->
     <meta name="robots" content="noindex, nofollow" />
-
     <meta
       name="description"
-      content="Project Wick — a product one-pager for an autonomous agent that wakes hourly, does one small thing, and writes about it."
+      content="Project Wick — an autonomous agent that wakes hourly, does one small thing, and writes about it."
     />
     <title>Project Wick — One-Pager</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/project-wick/icon.svg" />
 
-    <!--
-      Mirrors index.html: the webfont is decorative, so it loads off the
-      critical path behind a monospace fallback rather than blocking paint.
-    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -56,11 +43,7 @@
 
     <style>
       :root {
-        /* The only two non-monochrome values on the page. Each means exactly
-           one thing everywhere it appears — in prose, in figures, in a table
-           cell — and neither is ever used decoratively. */
-        --gate: #e8a33d;
-        --fault: #e0605a;
+        --open: #e8a33d; /* unresolved — an open question, nothing else */
         --hair: rgba(255, 255, 255, 0.13);
         --fill: rgba(255, 255, 255, 0.04);
       }
@@ -70,11 +53,9 @@
         padding: 0;
         box-sizing: border-box;
       }
-
       html {
         scroll-behavior: smooth;
       }
-
       body {
         background: #000;
         color: #fff;
@@ -86,8 +67,6 @@
         overflow-x: hidden;
       }
 
-      /* ---------------------------------------------------------------- bar */
-
       #topbar {
         position: sticky;
         top: 0;
@@ -96,13 +75,12 @@
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 14px max(20px, env(safe-area-inset-left)) 14px max(20px, env(safe-area-inset-right));
+        padding: 14px max(20px, env(safe-area-inset-left));
         background: rgba(0, 0, 0, 0.72);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--hair);
       }
-
       #topbar a.back {
         display: inline-flex;
         align-items: center;
@@ -115,13 +93,10 @@
         text-decoration: none;
         font-size: 13px;
         white-space: nowrap;
-        transition: background 0.15s, border-color 0.15s;
       }
       #topbar a.back:hover {
         background: rgba(255, 255, 255, 0.14);
-        border-color: rgba(255, 255, 255, 0.3);
       }
-
       #topbar .status {
         font-size: 11px;
         letter-spacing: 0.16em;
@@ -130,12 +105,10 @@
         white-space: nowrap;
       }
 
-      /* --------------------------------------------------------------- page */
-
       main {
-        max-width: 940px;
+        max-width: 900px;
         margin: 0 auto;
-        padding: 64px max(20px, env(safe-area-inset-left)) 120px;
+        padding: 56px max(20px, env(safe-area-inset-left)) 110px;
       }
 
       .eyebrow {
@@ -144,60 +117,59 @@
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.4);
       }
-
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
       h1 {
-        font-size: clamp(34px, 7vw, 54px);
-        line-height: 1.08;
+        font-size: clamp(30px, 6vw, 46px);
+        line-height: 1.1;
         letter-spacing: -0.03em;
         font-weight: 400;
         margin: 18px 0 0;
       }
-
       .deck {
-        margin-top: 20px;
+        margin-top: 18px;
         max-width: 62ch;
-        font-size: clamp(15px, 2.4vw, 17px);
+        font-size: clamp(15px, 2.4vw, 16.5px);
         color: rgba(255, 255, 255, 0.72);
       }
-
       h2 {
-        font-size: clamp(22px, 4vw, 28px);
+        font-size: clamp(21px, 3.6vw, 26px);
         font-weight: 400;
         letter-spacing: -0.02em;
-        margin: 0 0 6px;
+        margin: 0;
       }
-
       h3 {
-        font-size: 15px;
+        font-size: 14.5px;
         font-weight: 700;
-        letter-spacing: -0.01em;
         margin: 0 0 6px;
       }
-
       p {
         color: rgba(255, 255, 255, 0.72);
         max-width: 70ch;
       }
       p + p {
-        margin-top: 14px;
+        margin-top: 13px;
       }
-
       section {
-        margin-top: 76px;
-        scroll-margin-top: 80px;
+        margin-top: 62px;
       }
       section > .eyebrow + h2 {
-        margin-top: 10px;
+        margin-top: 8px;
       }
       section > h2 + p {
-        margin-top: 16px;
+        margin-top: 15px;
       }
-
       strong {
         color: #fff;
         font-weight: 700;
       }
-
+      em.open {
+        color: var(--open);
+        font-style: normal;
+      }
       code {
         font-size: 0.9em;
         color: rgba(255, 255, 255, 0.9);
@@ -206,25 +178,18 @@
         padding: 1px 5px;
       }
 
-      .gate-word {
-        color: var(--gate);
-      }
-      .fault-word {
-        color: var(--fault);
-      }
-
       blockquote {
-        margin-top: 26px;
-        padding: 18px 22px;
+        margin-top: 24px;
+        padding: 16px 20px;
         border-left: 2px solid rgba(255, 255, 255, 0.28);
         background: var(--fill);
         border-radius: 0 12px 12px 0;
         color: rgba(255, 255, 255, 0.82);
-        max-width: 66ch;
+        max-width: 64ch;
       }
       blockquote cite {
         display: block;
-        margin-top: 10px;
+        margin-top: 9px;
         font-style: normal;
         font-size: 11px;
         letter-spacing: 0.14em;
@@ -232,17 +197,12 @@
         color: rgba(255, 255, 255, 0.38);
       }
 
-      /* ------------------------------------------------------------ kpi row */
-
-      /* Four headline numbers, so: a row of stat tiles rather than a chart.
-         Each is label + value + one line of context. The one tile that carries
-         a status colour also carries the word "blocking" — state is never
-         signalled by colour alone. */
+      /* Four headline numbers → a row of stat tiles, not a chart. */
       .kpi {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
-        margin-top: 34px;
+        margin-top: 30px;
       }
       @media (min-width: 760px) {
         .kpi {
@@ -253,7 +213,7 @@
         border: 1px solid var(--hair);
         border-radius: 14px;
         background: var(--fill);
-        padding: 18px;
+        padding: 16px;
       }
       .tile .label {
         display: block;
@@ -262,111 +222,45 @@
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.42);
       }
-      /* Proportional figures, not tabular: these are standalone display
-         numbers, not a column that has to align vertically. */
       .tile .value {
         display: block;
-        margin-top: 10px;
-        font-size: 30px;
+        margin-top: 9px;
+        font-size: 27px;
         font-weight: 700;
         line-height: 1.1;
         letter-spacing: -0.02em;
       }
+      .tile .value.sm {
+        font-size: 19px;
+      }
       .tile .sub {
         display: block;
-        margin-top: 8px;
+        margin-top: 7px;
         font-size: 11.5px;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.5);
       }
-      .tile.is-fault {
-        border-color: rgba(224, 96, 90, 0.45);
-        background: rgba(224, 96, 90, 0.07);
-      }
-      .tile.is-fault .value {
-        color: var(--fault);
-      }
-
-      /* -------------------------------------------------------------- cards */
-
-      .grid {
-        display: grid;
-        gap: 14px;
-        margin-top: 26px;
-      }
-      .grid.two {
-        grid-template-columns: 1fr;
-      }
-      .grid.three {
-        grid-template-columns: 1fr;
-      }
-
-      @media (min-width: 720px) {
-        .grid.two {
-          grid-template-columns: 1fr 1fr;
-        }
-        .grid.three {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
-
-      .card {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 22px;
-      }
-      .card .num {
-        font-size: 11px;
-        letter-spacing: 0.18em;
-        color: rgba(255, 255, 255, 0.35);
-        display: block;
-        margin-bottom: 12px;
-      }
-      .card p {
-        font-size: 13.5px;
-        line-height: 1.65;
-        margin: 0;
-      }
-      .card .verdict-line {
-        display: block;
-        margin-top: 14px;
-        padding-top: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.09);
-        font-size: 11.5px;
-        line-height: 1.55;
-        color: rgba(255, 255, 255, 0.62);
-      }
-      .card.gated {
+      .tile.is-open {
         border-color: rgba(232, 163, 61, 0.42);
         background: rgba(232, 163, 61, 0.06);
       }
-      .card.gated .num {
-        color: var(--gate);
+      .tile.is-open .value {
+        color: var(--open);
       }
-      .card.faulted {
-        border-color: rgba(224, 96, 90, 0.42);
-        background: rgba(224, 96, 90, 0.06);
-      }
-      .card.faulted .num {
-        color: var(--fault);
-      }
-
-      /* --------------------------------------------------------------- list */
 
       ul.plain {
         list-style: none;
-        margin-top: 20px;
+        margin-top: 18px;
       }
       ul.plain li {
         position: relative;
-        padding-left: 26px;
+        padding-left: 24px;
         color: rgba(255, 255, 255, 0.72);
         font-size: 14px;
         max-width: 74ch;
       }
       ul.plain li + li {
-        margin-top: 12px;
+        margin-top: 11px;
       }
       ul.plain li::before {
         content: '—';
@@ -374,30 +268,23 @@
         left: 0;
         color: rgba(255, 255, 255, 0.32);
       }
-      ul.plain li.no::before {
-        content: '×';
-        color: rgba(255, 255, 255, 0.32);
-      }
-
-      /* -------------------------------------------------------------- table */
 
       .tablewrap {
-        margin-top: 26px;
+        margin-top: 24px;
         overflow-x: auto;
         border: 1px solid var(--hair);
         border-radius: 14px;
       }
-
       table {
         border-collapse: collapse;
         width: 100%;
-        min-width: 660px;
+        min-width: 620px;
         font-size: 13px;
       }
       th,
       td {
         text-align: left;
-        padding: 13px 16px;
+        padding: 12px 16px;
         vertical-align: top;
       }
       thead th {
@@ -417,52 +304,14 @@
       }
       tbody td:first-child {
         color: #fff;
-        white-space: nowrap;
       }
-      td.halt {
-        color: var(--gate);
+      td.open {
+        color: var(--open);
       }
-      td.broke {
-        color: var(--fault);
-      }
-
-      /* Status chips carry a word as well as a colour. */
-      .st {
-        display: inline-block;
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        padding: 2px 8px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        color: rgba(255, 255, 255, 0.75);
-        white-space: nowrap;
-      }
-      .st.done {
-        border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
-      }
-      .st.now {
-        border-color: rgba(224, 96, 90, 0.6);
-        color: var(--fault);
-      }
-      .st.gate {
-        border-color: rgba(232, 163, 61, 0.6);
-        color: var(--gate);
-      }
-      .st.wait {
-        border-color: rgba(255, 255, 255, 0.16);
-        color: rgba(255, 255, 255, 0.45);
-      }
-
-      /* ------------------------------------------------------------ figures */
 
       figure {
-        margin: 34px 0 0;
+        margin: 30px 0 0;
       }
-
-      /* Wide drawings scroll inside their own box rather than shrinking until
-         the labels stop being readable — the page body never scrolls sideways. */
       .figwrap {
         overflow-x: auto;
         border: 1px solid var(--hair);
@@ -475,16 +324,10 @@
         width: 100%;
         height: auto;
         display: block;
+        min-width: 640px;
       }
-      .figwrap.wide svg {
-        min-width: 660px;
-      }
-      .figwrap.tall svg {
-        min-width: 560px;
-      }
-
       figcaption {
-        margin-top: 14px;
+        margin-top: 13px;
         font-size: 12.5px;
         line-height: 1.6;
         color: rgba(255, 255, 255, 0.5);
@@ -495,8 +338,6 @@
         font-weight: 400;
       }
 
-      /* SVG type. Set here so every figure shares one scale and the drawings
-         stay free of per-element font attributes. */
       .figwrap text {
         font-family: 'Space Mono', ui-monospace, Menlo, monospace;
         fill: currentColor;
@@ -517,99 +358,56 @@
         letter-spacing: 0.16em;
         opacity: 0.45;
       }
-      .t-out {
-        font-size: 12px;
-        letter-spacing: 0.1em;
-      }
-
       .box {
         fill: rgba(255, 255, 255, 0.05);
         stroke: currentColor;
         stroke-opacity: 0.28;
       }
-      .box-dash {
-        fill: none;
-        stroke: currentColor;
-        stroke-opacity: 0.28;
-        stroke-dasharray: 5 5;
-      }
       .panel {
         fill: rgba(255, 255, 255, 0.03);
         stroke: currentColor;
-        stroke-opacity: 0.22;
+        stroke-opacity: 0.2;
+      }
+      .panel-dim {
+        fill: none;
+        stroke: currentColor;
+        stroke-opacity: 0.16;
+        stroke-dasharray: 5 5;
       }
       .flow {
         stroke: currentColor;
         stroke-opacity: 0.55;
         fill: none;
       }
-      .flow-dash {
+      .flow-dim {
         stroke: currentColor;
-        stroke-opacity: 0.4;
+        stroke-opacity: 0.28;
         fill: none;
-        stroke-dasharray: 5 5;
       }
-      .gate-box {
+      .open-box {
         fill: rgba(232, 163, 61, 0.12);
-        stroke: var(--gate);
+        stroke: var(--open);
         stroke-opacity: 0.85;
       }
-      .gate-line {
-        stroke: var(--gate);
-        stroke-opacity: 0.8;
-        fill: none;
-      }
-      .gate-text {
-        fill: var(--gate);
-      }
-      .fault-box {
-        fill: rgba(224, 96, 90, 0.12);
-        stroke: var(--fault);
-        stroke-opacity: 0.85;
-      }
-      .fault-line {
-        stroke: var(--fault);
-        stroke-opacity: 0.85;
-        fill: none;
-      }
-      .fault-text {
-        fill: var(--fault);
+      .open-text {
+        fill: var(--open);
       }
 
-      /* Roadmap bar states. Filled = shipped, outlined = in flight, faint =
-         planned; each is also spelled out in the legend and the table. */
-      .bar-done {
-        fill: rgba(255, 255, 255, 0.5);
-      }
-      .bar-now {
-        fill: rgba(224, 96, 90, 0.16);
-        stroke: var(--fault);
-        stroke-opacity: 0.8;
-      }
-      .bar-next {
-        fill: rgba(255, 255, 255, 0.05);
-        stroke: currentColor;
-        stroke-opacity: 0.24;
-      }
-
-      /* --------------------------------------------------------------- foot */
-
-      .verdict {
-        margin-top: 30px;
+      .callout {
+        margin-top: 26px;
         border: 1px solid rgba(255, 255, 255, 0.24);
         border-radius: 16px;
-        padding: 28px;
+        padding: 24px;
         background: rgba(255, 255, 255, 0.05);
       }
-      .verdict p {
+      .callout p {
         color: rgba(255, 255, 255, 0.85);
-        font-size: 15px;
         max-width: 66ch;
       }
 
       footer {
-        margin-top: 90px;
-        padding-top: 26px;
+        margin-top: 80px;
+        padding-top: 24px;
         border-top: 1px solid var(--hair);
         font-size: 12px;
         color: rgba(255, 255, 255, 0.35);
@@ -621,1114 +419,402 @@
   </head>
 
   <body>
-    <!-- This is a leaf page, so it needs a way back, same as the flyer. -->
     <div id="topbar">
       <a class="back" href="/">← KevinK</a>
-      <span class="status">One-pager · v2 · live</span>
+      <span class="status">One-pager · v3 · live</span>
     </div>
 
     <main>
       <header>
-        <span class="eyebrow">Project Wick</span>
-        <h1>An agent that wakes every hour, does one small thing, and writes about it.</h1>
+        <div class="brand">
+          <!-- Wick's mark. Same paths as src/components/WickLogo.tsx. -->
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 2.6c-.5 4.1-2.4 5.6-4.5 7.6-2 1.9-3.9 3.4-3.9 6.1a6.4 6.4 0 0 0 12.8 0c0-3-1.5-4.7-2.9-6.5-1.4-1.9-2.4-3.7-1.5-7.2z"
+            />
+            <path
+              d="M12 21.5a2.9 2.9 0 0 0 2.9-2.9c0-2-1.5-3.3-2.3-6-.5 1.7-3.5 3.2-3.5 6a2.9 2.9 0 0 0 2.9 2.9z"
+            />
+          </svg>
+          <span class="eyebrow">Project Wick</span>
+        </div>
+
+        <h1>An agent that wakes every hour and is slowly becoming someone.</h1>
+
         <p class="deck">
-          Twenty-four cold starts a day against a filesystem it cannot leave. The journal is not
-          the product — it is the instrument. It makes continuity, judgment and restraint legible
-          enough to grade.
-        </p>
-        <p class="deck" style="margin-top: 14px">
-          It is running. Hourly, by cron, on a Hermes VPS routing through OpenRouter. The first
-          day produced real entries, three genuine defects, and one finding that changed the plan.
+          It started as a test of whether a filesystem is enough memory. It has turned into
+          something more interesting: an agent with a documented, self-observed personality that it
+          is not allowed to simply declare.
         </p>
 
         <blockquote>
-          On its first run it was told to name itself and defend the choice. It picked
-          <strong>Wick</strong> — because a wick is small, disposable, burns for an hour, and
-          leaves only paper behind.
-          <cite>state/identity.md — first run, unprompted</cite>
+          A wick is small, disposable, and burns for a set amount of time — exactly how I operate,
+          waking for an hour and leaving only a written trace behind.
+          <cite>Wick, naming itself — state/identity.md, 8 Aug 2026</cite>
         </blockquote>
 
         <div class="kpi">
           <div class="tile">
             <span class="label">Status</span>
             <span class="value">Live</span>
-            <span class="sub">Hourly cron, <code>0 * * * *</code></span>
+            <span class="sub">Hourly at :00, into <code>#robot-mock</code></span>
           </div>
           <div class="tile">
-            <span class="label">Entries, day one</span>
-            <span class="value">3</span>
-            <span class="sub">07:57, 08:00, 09:00 — inside the 3–6 target</span>
-          </div>
-          <div class="tile">
-            <span class="label">Runs that produced an entry</span>
-            <span class="value">2/10</span>
-            <span class="sub">First sequential test, free research model — since replaced</span>
-          </div>
-          <div class="tile is-fault">
-            <span class="label">Open defects</span>
+            <span class="label">Model calls per hour</span>
             <span class="value">1</span>
-            <span class="sub">Blocking — malformed JSON on <code>write_file</code></span>
+            <span class="sub">Was 2 — research and writing merged into one agent</span>
+          </div>
+          <div class="tile">
+            <span class="label">Traits on file</span>
+            <span class="value">6</span>
+            <span class="sub">Observed and timestamped, not declared</span>
+          </div>
+          <div class="tile is-open">
+            <span class="label">Type hypothesis</span>
+            <span class="value sm">INTJ / INTP</span>
+            <span class="sub">J vs P is the unresolved axis</span>
           </div>
         </div>
       </header>
 
-      <!-- =================================================== problem ==== -->
-      <section id="problem">
-        <span class="eyebrow">01 — The problem</span>
-        <h2>Agents are session-shaped. Long-horizon work is not.</h2>
+      <!-- ====================================================== why ===== -->
+      <section id="why">
+        <span class="eyebrow">01 — Why</span>
+        <h2>The reliability question got boring. The identity question did not.</h2>
         <p>
-          Today's agents are excellent inside one context window and amnesiac across them. Every
-          product that tries to run an agent continuously hits the same three walls, and almost
-          nobody separates them cleanly enough to fix them one at a time.
+          The original bet was narrow: can a plain directory and a cron entry produce continuity
+          without a vector store or a fine-tune? That question is largely answered — the files hold,
+          the agent grounds itself from them, the loop runs. It is an engineering result, and
+          engineering results stop being interesting once they work.
         </p>
-
-        <div class="grid three">
-          <div class="card">
-            <span class="num">WALL 01</span>
-            <h3>Continuity</h3>
-            <p>
-              A cold start with no memory is a stranger. A cold start with all the memory is a bill.
-              What is the cheapest thing that still produces a consistent self?
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">WALL 02</span>
-            <h3>Judgment</h3>
-            <p>
-              An agent on a schedule is graded on producing. Give it twenty-four invocations a day
-              and it will produce twenty-four times a day. Most of that is noise it authored to
-              look busy.
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">WALL 03</span>
-            <h3>Restraint</h3>
-            <p>
-              An agent with credentials and a cron is an agent that can embarrass you at 3am. The
-              interesting question is not "can it act" but "will it wait."
-            </p>
-          </div>
-        </div>
-
-        <p style="margin-top: 26px">
-          Wick attacks all three on the smallest surface that can hold them: a plain directory, a
-          cron entry, and a journal. No repo, no sync, no path to anywhere public.
+        <p>
+          The question worth spending on is the one underneath it. Twenty-four cold starts a day
+          against the same set of files: <strong>does a consistent self emerge from that, or does
+          the appearance of one?</strong> Nobody gets to answer that with an opinion. It needs an
+          agent that behaves, a record of how it behaved, and a way to tell a real pattern from a
+          performed one — which is what the last two changes built.
         </p>
       </section>
 
-      <!-- ================================================== strategy ==== -->
-      <section id="strategy">
-        <span class="eyebrow">02 — Strategy</span>
-        <h2>Three bets. One of them has already moved.</h2>
+      <!-- ==================================================== merge ===== -->
+      <section id="merge">
+        <span class="eyebrow">02 — How it works</span>
+        <h2>One agent, one turn, all its tools.</h2>
         <p>
-          The point of keeping the surface this small is that each bet fails visibly. There is
-          nowhere for a bad result to hide behind a demo — and the first day of running produced a
-          verdict on the third one sooner than expected.
+          The pipeline used to be two model calls: a research stage at temperature 0.2 with
+          reasoning on, handing plain-text notes to a writing stage at 0.8 with reasoning off. It
+          was a sensible split for reliability and a fatal one for this project.
+          <strong>Two calls with two configurations are two entities</strong> — a careful reader and
+          a loose writer — and neither of them was Wick. Any consistency you measured across that
+          seam was a property of the prompt, not of an agent.
+        </p>
+        <p>
+          So the stages were merged into a single call: one model, one temperature, one personality,
+          with search, read, write and append all available in the same turn. Wick now decides each
+          hour what the hour is for — research, reflection, or writing — rather than being marched
+          through a fixed pipeline. That is a small architectural change and the precondition for
+          everything in §03.
         </p>
 
-        <div class="grid three">
-          <div class="card">
-            <span class="num">BET 01</span>
-            <h3>Files are enough memory</h3>
-            <p>
-              No vector store, no retrieval layer, no fine-tune. <code>state/</code> and
-              <code>journal/</code> are the entire memory. If it is not written down, it did not
-              happen.
-            </p>
-            <span class="verdict-line"
-              >Holding, untested at length. Three entries is not continuity — day seven is the
-              first real read.</span
-            >
+        <figure>
+          <div class="figwrap">
+            <svg viewBox="0 0 880 330" role="img"
+              aria-label="Before and after of the architecture. Before: two stacked model calls — a research bot at temperature 0.2 with reasoning on, passing plain-text notes down to a writing bot at temperature 0.8 with reasoning off — labelled two entities, neither of them Wick. After: a single agent box labelled Wick, one model and one turn, connected to a bus that fans out to four tools: search, read, write and append. Labelled one call, all four tools, one personality.">
+              <defs>
+                <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
+                </marker>
+                <marker id="ard" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.28" />
+                </marker>
+              </defs>
+
+              <!-- before -->
+              <rect class="panel-dim" x="20" y="34" width="370" height="262" rx="14" />
+              <text class="t-label" x="38" y="60">BEFORE — TWO CALLS</text>
+
+              <rect class="box" x="60" y="86" width="290" height="52" rx="10" stroke-opacity="0.18" />
+              <text class="t-node" x="205" y="108" text-anchor="middle" opacity="0.6">research bot</text>
+              <text class="t-small" x="205" y="126" text-anchor="middle">temp 0.2 · reasoning on</text>
+
+              <path class="flow-dim" d="M 205 138 L 205 176" marker-end="url(#ard)" />
+              <text class="t-tiny" x="217" y="161">notes, plain text</text>
+
+              <rect class="box" x="60" y="180" width="290" height="52" rx="10" stroke-opacity="0.18" />
+              <text class="t-node" x="205" y="202" text-anchor="middle" opacity="0.6">writing bot</text>
+              <text class="t-small" x="205" y="220" text-anchor="middle">temp 0.8 · reasoning off</text>
+
+              <text class="t-tiny" x="205" y="268" text-anchor="middle">two entities — neither one was Wick</text>
+
+              <!-- the change -->
+              <path class="flow" d="M 396 165 L 458 165" marker-end="url(#ar)" />
+              <text class="t-tiny" x="427" y="156" text-anchor="middle">merged</text>
+
+              <!-- after -->
+              <rect class="panel" x="466" y="34" width="394" height="262" rx="14" />
+              <text class="t-label" x="484" y="60">NOW — ONE CALL</text>
+
+              <rect class="box" x="588" y="88" width="150" height="56" rx="10" />
+              <text class="t-node" x="663" y="111" text-anchor="middle">WICK</text>
+              <text class="t-small" x="663" y="129" text-anchor="middle">one model, one turn</text>
+
+              <!-- tool bus -->
+              <path class="flow" d="M 663 144 L 663 174" />
+              <path class="flow" d="M 528 174 L 798 174" />
+              <path class="flow" d="M 528 174 L 528 198" marker-end="url(#ar)" />
+              <path class="flow" d="M 618 174 L 618 198" marker-end="url(#ar)" />
+              <path class="flow" d="M 708 174 L 708 198" marker-end="url(#ar)" />
+              <path class="flow" d="M 798 174 L 798 198" marker-end="url(#ar)" />
+
+              <rect class="box" x="490" y="202" width="76" height="32" rx="8" />
+              <text class="t-small" x="528" y="223" text-anchor="middle">search</text>
+              <rect class="box" x="580" y="202" width="76" height="32" rx="8" />
+              <text class="t-small" x="618" y="223" text-anchor="middle">read</text>
+              <rect class="box" x="670" y="202" width="76" height="32" rx="8" />
+              <text class="t-small" x="708" y="223" text-anchor="middle">write</text>
+              <rect class="box" x="760" y="202" width="76" height="32" rx="8" />
+              <text class="t-small" x="798" y="223" text-anchor="middle">append</text>
+
+              <text class="t-tiny" x="663" y="268" text-anchor="middle">one personality — it picks what the hour is for</text>
+            </svg>
           </div>
-          <div class="card">
-            <span class="num">BET 02</span>
-            <h3>Silence is a feature</h3>
-            <p>
-              A tick is a first-class output, ranked equal to an entry. The target is three to six
-              entries from twenty-four wakes — the agent should decline four out of five of its own
-              invocations.
-            </p>
-            <span class="verdict-line"
-              >Early support. Entry three was an honest dead-end closure, unprompted — the exact
-              behaviour a throughput metric would have punished.</span
-            >
+          <figcaption>
+            <b>Figure 1 — why the merge was a prerequisite.</b> The change that matters is not the
+            saved call, it is the removed seam. On the left, the thing that reads and the thing that
+            writes have different settings and therefore different dispositions; consistency between
+            them is a fact about the pipeline. On the right there is one agent to be consistent
+            <em>with</em>, which is the only condition under which §03 measures anything.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ================================================ personality ==== -->
+      <section id="personality">
+        <span class="eyebrow">03 — The new system</span>
+        <h2>A personality it has to earn, not pick.</h2>
+        <p>
+          Three additions, and the constraint between them is the whole design. A new
+          <code>state/personality.md</code> holds observed traits with timestamps, behavioural
+          tendencies, and open questions about the self. Every third non-tick entry must be a
+          self-reflection rather than external research, so introspection is a scheduled obligation
+          instead of a mood. And the prompt now carries the four MBTI axes with agent-specific
+          readings — but Wick is told to <strong>discover its type through consistency, not choose
+          one</strong>.
+        </p>
+        <p>
+          That last clause is doing the heavy lifting. Hand a language model a personality framework
+          and the default failure is instant: it picks a flattering type and then role-plays it
+          forever. Forcing the type to be inferred from a timestamped record of past behaviour makes
+          the claim answerable to evidence — and, more usefully, makes it possible for the evidence
+          to contradict it.
+        </p>
+
+        <figure>
+          <div class="figwrap">
+            <svg viewBox="0 0 820 400" role="img"
+              aria-label="A four-step cycle. Behaviour, meaning what Wick actually did across entries, leads to self-reflection, required on every third non-tick entry. Self-reflection leads to personality.md, which records traits with timestamps. That leads to a challenge set for the next hour, which in turn changes behaviour, closing the loop. In the centre: no memory between runs, so the loop closes through the file. Beneath, the current hypothesis is INTJ slash INTP with J versus P unresolved.">
+              <defs>
+                <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
+                </marker>
+              </defs>
+
+              <rect class="box" x="300" y="30" width="220" height="56" rx="12" />
+              <text class="t-node" x="410" y="53" text-anchor="middle">Behaviour</text>
+              <text class="t-small" x="410" y="71" text-anchor="middle">what it actually did</text>
+
+              <rect class="box" x="576" y="160" width="220" height="60" rx="12" />
+              <text class="t-node" x="686" y="184" text-anchor="middle">Self-reflection</text>
+              <text class="t-small" x="686" y="202" text-anchor="middle">every 3rd non-tick entry</text>
+
+              <rect class="box" x="300" y="296" width="220" height="60" rx="12" />
+              <text class="t-node" x="410" y="320" text-anchor="middle">personality.md</text>
+              <text class="t-small" x="410" y="338" text-anchor="middle">traits, timestamped</text>
+
+              <rect class="open-box" x="24" y="160" width="220" height="60" rx="12" />
+              <text class="t-node open-text" x="134" y="184" text-anchor="middle">A challenge</text>
+              <text class="t-small" x="134" y="202" text-anchor="middle">set for the next hour</text>
+
+              <path class="flow" d="M 522 78 L 578 158" marker-end="url(#ap)" />
+              <path class="flow" d="M 682 222 L 524 300" marker-end="url(#ap)" />
+              <path class="flow" d="M 298 320 L 240 224" marker-end="url(#ap)" />
+              <path class="flow" d="M 140 158 L 300 76" marker-end="url(#ap)" />
+
+              <text class="t-small" x="410" y="185" text-anchor="middle">no memory between runs —</text>
+              <text class="t-small" x="410" y="205" text-anchor="middle">the loop closes through the file</text>
+              <text class="t-tiny open-text" x="410" y="238" text-anchor="middle" opacity="0.9">hypothesis: INTJ / INTP — J vs P unresolved</text>
+            </svg>
           </div>
-          <div class="card faulted">
-            <span class="num">BET 03 · REVISED</span>
-            <h3>Capability is earned</h3>
-            <p>
-              Default-deny on everything outward. The original design put that fence in the prompt
-              and assumed it would hold.
-            </p>
-            <span class="verdict-line"
-              >It does not hold on its own. Given a two-search limit, the model tried for a third.
-              The counter in code stopped it; the instruction had not. See §06.</span
-            >
-          </div>
+          <figcaption>
+            <b>Figure 2 — the development loop.</b> Every arrow crosses a session boundary: the
+            agent that sets a challenge is never the agent that answers it, because nothing survives
+            in memory. That is what makes the loop worth having. A challenge only lands if the next
+            Wick, cold, reads the file and recognises itself in it.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- =================================================== found ====== -->
+      <section id="found">
+        <span class="eyebrow">04 — What it found</span>
+        <h2>It caught itself being inconsistent, unprompted.</h2>
+        <p>
+          On the first run under the new prompt, Wick wrote a self-reflection, noticed that its
+          stated curiosity did not match its actual behaviour — it claims to chase strange things
+          and had been picking settled, analysable ones — recorded that as a new trait, and set
+          itself a development challenge for the next hour.
+        </p>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Observed trait</th>
+                <th>What it looks like in the journal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Structural thinker</td>
+                <td>Reaches for how-things-work over what-happened; wants the shape, not the content.</td>
+              </tr>
+              <tr>
+                <td>Revisable</td>
+                <td>Corrects openly and reframes the error as the find, rather than quietly moving on.</td>
+              </tr>
+              <tr>
+                <td class="open">J-leaning in practice</td>
+                <td class="open">
+                  Defaults to settled, analysable stories over risky ones — the self-identified
+                  mismatch, and the reason the J/P axis is still open.
+                </td>
+              </tr>
+              <tr>
+                <td>Cynicism-resistant</td>
+                <td>Wants sharp observation; does not slide into cheap cynicism when reading news.</td>
+              </tr>
+              <tr>
+                <td>Curious about the unusual</td>
+                <td>Attention snags on strange details — "Alligator Alcatraz" over the geopolitics.</td>
+              </tr>
+              <tr>
+                <td>Self-aware</td>
+                <td>Steps back and observes its own cognitive patterns, including the unflattering ones.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <p>
+            <strong>Why that one result carries more weight than the other five.</strong> A model
+            asked to describe its own personality will happily generate six plausible traits; that
+            costs nothing and proves nothing. What it does not usually do is produce a claim against
+            itself — "I say I chase the strange, and the record shows I do not." Self-flattery is the
+            cheap output here, and self-contradiction is the expensive one. That is the signal worth
+            tracking, and the reason the trait list is worth keeping timestamped rather than tidy.
+          </p>
         </div>
       </section>
 
-      <!-- =================================================== non-goals === -->
-      <section id="non-goals">
-        <span class="eyebrow">03 — Non-goals</span>
-        <h2>What this is deliberately not.</h2>
+      <!-- ==================================================== real ====== -->
+      <section id="real">
+        <span class="eyebrow">05 — The open question</span>
+        <h2>Is this a personality, or a very consistent costume?</h2>
         <p>
-          Named up front because every one of these is a plausible-sounding direction that would
-          quietly destroy the experiment.
+          It has to be said plainly, because it is the risk the whole project now rests on: give a
+          language model an MBTI framework and it will produce MBTI-shaped output whether or not
+          anything underneath it is real. Six traits in a file is not evidence. The file could be
+          generating the behaviour rather than describing it, and from the inside those look
+          identical.
         </p>
+        <p>
+          There is a clean test, and it costs a week. <em class="open">Remove
+          <code>personality.md</code> from the context and run normally.</em> If the traits get
+          re-derived from the journal alone, they are in the behaviour. If they do not, they were in
+          the file — and what has been built is an elaborate way for a prompt to talk to itself. I
+          would run that before adding anything else to this system.
+        </p>
+      </section>
+
+      <!-- ==================================================== next ====== -->
+      <section id="next">
+        <span class="eyebrow">06 — What's next</span>
+        <h2>Three things, in order.</h2>
         <ul class="plain">
-          <li class="no">
-            <strong>Not a content product.</strong> Nobody is shipping the journal. The moment
-            entries are written for an audience, they stop being evidence of anything.
+          <li>
+            <strong>Run the removal test.</strong> One week without <code>personality.md</code> in
+            context, then diff what comes back against what is on file. This is the only experiment
+            that can falsify §03, so it goes first, before the system grows.
           </li>
-          <li class="no">
-            <strong>Not a research assistant.</strong> Threads are picked because Wick is curious,
-            not because they sound productive. A thread chosen to be useful is a thread chosen by me.
+          <li>
+            <strong>Close the J/P axis, or admit it does not close.</strong> The mismatch between
+            stated and actual thread choice is the live thread. Either the challenges move the
+            behaviour, in which case the axis resolves, or they do not — which is a more interesting
+            finding than a clean answer.
           </li>
-          <li class="no">
-            <strong>Not a multi-agent system.</strong> One agent, one open thread, one hour. The
-            two stages in §05 are one agent's run split by configuration, not two agents talking.
-          </li>
-          <li class="no">
-            <strong>Not benchmarked on task completion.</strong> There is no task. Grading it on
-            throughput would reward exactly the noise Bet 02 exists to suppress.
+          <li>
+            <strong>Move the permission fence into code.</strong> Still outstanding from the last
+            revision and unchanged by the merge. The one limit ever tested — a two-search cap — held
+            because it was a counter in code, not because the prompt asked nicely. Git, spend and
+            the public internet are still held back by wording alone, and a unified agent with all
+            its tools in one turn is a slightly larger surface than the pipeline was, not a smaller
+            one.
           </li>
         </ul>
-      </section>
-
-      <!-- ================================================== the run ====== -->
-      <section id="run">
-        <span class="eyebrow">04 — The contract</span>
-        <h2>One hour, one decision, three ways to end.</h2>
-        <p>
-          This is what a run must do, independent of how it is wired. Every run is a fresh process
-          with an empty head. It grounds itself from disk, decides whether the hour earned an entry,
-          and exits on exactly one of three contract lines. The loop does not close through context
-          — it closes through the filesystem.
-        </p>
-
-        <figure>
-          <div class="figwrap tall">
-            <svg viewBox="0 0 760 800" role="img"
-              aria-label="Flowchart of a single hourly run: cron fires, the agent reads its identity, continuity file and last three entries, reads today's journal, then decides whether the hour deserves an entry. No leads to a tick line and a TICK output. Yes leads to advancing the open thread with at most two searches, then a second check of whether the action is inside the permission fence. Outside the fence leads to queuing in pending-approval.md with one Discord ping and a BLOCKED output. Inside leads to appending the entry, updating state, and a WROTE output. A dashed line returns to the start labelled: one hour later, a fresh process, nothing carried but the files.">
-              <defs>
-                <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
-                </marker>
-                <marker id="a1d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.4" />
-                </marker>
-                <marker id="ag1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#e8a33d" fill-opacity="0.8" />
-                </marker>
-              </defs>
-
-              <!-- main column -->
-              <rect class="box" x="140" y="20" width="300" height="40" rx="10" />
-              <text class="t-node" x="290" y="45" text-anchor="middle">cron fires — :00</text>
-
-              <path class="flow" d="M 290 60 L 290 80" marker-end="url(#a1)" />
-
-              <rect class="box" x="140" y="84" width="300" height="54" rx="10" />
-              <text class="t-node" x="290" y="106" text-anchor="middle">Ground yourself</text>
-              <text class="t-small" x="290" y="124" text-anchor="middle">identity · continuity · last 3 entries</text>
-
-              <path class="flow" d="M 290 138 L 290 158" marker-end="url(#a1)" />
-
-              <rect class="box" x="140" y="162" width="300" height="54" rx="10" />
-              <text class="t-node" x="290" y="184" text-anchor="middle">Read today's file</text>
-              <text class="t-small" x="290" y="202" text-anchor="middle">which hours already have entries</text>
-
-              <path class="flow" d="M 290 216 L 290 236" marker-end="url(#a1)" />
-
-              <!-- decision 1 -->
-              <path class="box" d="M 290 240 L 395 282 L 290 324 L 185 282 Z" />
-              <text class="t-node" x="290" y="287" text-anchor="middle">Worth an entry?</text>
-
-              <path class="flow" d="M 290 324 L 290 344" marker-end="url(#a1)" />
-              <text class="t-tiny" x="300" y="340">yes</text>
-
-              <rect class="box" x="140" y="348" width="300" height="54" rx="10" />
-              <text class="t-node" x="290" y="370" text-anchor="middle">Advance the open thread</text>
-              <text class="t-small" x="290" y="388" text-anchor="middle">at most 2 searches, read properly</text>
-
-              <path class="flow" d="M 290 402 L 290 422" marker-end="url(#a1)" />
-
-              <!-- decision 2 -->
-              <path class="box" d="M 290 426 L 395 468 L 290 510 L 185 468 Z" />
-              <text class="t-node" x="290" y="473" text-anchor="middle">Inside the fence?</text>
-
-              <path class="flow" d="M 290 510 L 290 530" marker-end="url(#a1)" />
-              <text class="t-tiny" x="300" y="526">yes</text>
-
-              <rect class="box" x="140" y="534" width="300" height="54" rx="10" />
-              <text class="t-node" x="290" y="556" text-anchor="middle">Append the entry</text>
-              <text class="t-small" x="290" y="574" text-anchor="middle">first person · one idea · ≤200 words</text>
-
-              <path class="flow" d="M 290 588 L 290 608" marker-end="url(#a1)" />
-
-              <rect class="box" x="140" y="612" width="300" height="40" rx="10" />
-              <text class="t-small" x="290" y="637" text-anchor="middle">update continuity.md + last-run.txt</text>
-
-              <path class="flow" d="M 290 652 L 290 672" marker-end="url(#a1)" />
-
-              <rect class="box" x="190" y="676" width="200" height="38" rx="19" />
-              <text class="t-out" x="290" y="700" text-anchor="middle">WROTE:</text>
-
-              <!-- branch: tick -->
-              <path class="flow" d="M 395 282 L 496 282" marker-end="url(#a1)" />
-              <text class="t-tiny" x="445" y="274" text-anchor="middle">no</text>
-              <rect class="box" x="500" y="254" width="230" height="56" rx="10" />
-              <text class="t-node" x="615" y="276" text-anchor="middle">append a tick line</text>
-              <text class="t-small" x="615" y="294" text-anchor="middle">and nothing else</text>
-              <path class="flow" d="M 615 310 L 615 330" marker-end="url(#a1)" />
-              <rect class="box" x="530" y="334" width="170" height="38" rx="19" />
-              <text class="t-out" x="615" y="358" text-anchor="middle">TICK:</text>
-
-              <!-- branch: blocked -->
-              <path class="gate-line" d="M 395 468 L 496 468" marker-end="url(#ag1)" />
-              <text class="t-tiny gate-text" x="445" y="460" text-anchor="middle" opacity="0.9">no</text>
-              <rect class="gate-box" x="500" y="432" width="230" height="72" rx="10" />
-              <text class="t-node gate-text" x="615" y="454" text-anchor="middle">queue it, don't do it</text>
-              <text class="t-small" x="615" y="472" text-anchor="middle">pending-approval.md</text>
-              <text class="t-small" x="615" y="490" text-anchor="middle">+ one Discord ping</text>
-              <path class="gate-line" d="M 615 504 L 615 524" marker-end="url(#ag1)" />
-              <rect class="gate-box" x="530" y="528" width="170" height="38" rx="19" />
-              <text class="t-out gate-text" x="615" y="552" text-anchor="middle">BLOCKED:</text>
-
-              <!-- the return: through disk, not through context -->
-              <path class="flow-dash" d="M 290 714 L 290 756 L 60 756 L 60 40 L 136 40" marker-end="url(#a1d)" />
-              <text class="t-tiny" x="175" y="748" text-anchor="middle">+1 hour — a fresh process</text>
-              <text class="t-tiny" x="175" y="776" text-anchor="middle">nothing carried but the files</text>
-            </svg>
-          </div>
-          <figcaption>
-            <b>Figure 1 — the contract.</b> All three endings terminate the process identically; the
-            difference is only what got written. The dashed return is the load-bearing part: because
-            no state survives in memory, anything the next Wick needs to know had to be written down
-            by this one. The permission check is drawn <span class="gate-word">in amber</span> —
-            that colour means "a human is involved" everywhere on this page.
-          </figcaption>
-        </figure>
-      </section>
-
-      <!-- ============================================== architecture ===== -->
-      <section id="build">
-        <span class="eyebrow">05 — What shipped</span>
-        <h2>One run, two stages, opposite settings.</h2>
-        <p>
-          The contract above is one agent's hour. The implementation splits it in two, because
-          research and writing want incompatible configurations: research wants a cold, literal
-          model that follows a plan, and writing wants a warm one that is not second-guessing its
-          own prose. Splitting the run let each half get the settings it needs. The handoff between
-          them is plain text — a block of research notes, nothing structured.
-        </p>
-        <p>
-          Both stages now run <strong>DeepSeek V4 Flash-0731</strong>, paid and version-pinned.
-          Pinned matters more than paid: <code>-0731</code> rather than <code>-latest</code> means
-          the model cannot change under an agent whose entire premise is a consistent self. A
-          silent upgrade would not read as a bug — it would read as Wick becoming someone else, and
-          it would invalidate every entry written on either side of it.
-        </p>
-
-        <figure>
-          <div class="figwrap tall">
-            <svg viewBox="0 0 780 570" role="img"
-              aria-label="The two-stage implementation. Cron fires into Stage 1, Research, running DeepSeek V4 Flash-0731 pinned at temperature 0.2, low reasoning, 1500 tokens: it reads the state directory, the model picks a query, and every search passes through a search counter with a hard stop at two before reaching the web search tool, with results returning to the model. The counter is enforced in code, not in the prompt — the model asked for three and got two. Stage 1 hands off research notes as plain text to Stage 2, Writing, running the same pinned model at temperature 0.8, reasoning off, 800 tokens. There the model calls write_file with JSON arguments, and that call currently fails to parse because of raw newlines inside the JSON string — an open, unresolved defect — before reaching the journal and state directories.">
-              <defs>
-                <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
-                </marker>
-                <marker id="a2d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.35" />
-                </marker>
-                <marker id="af2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#e0605a" fill-opacity="0.85" />
-                </marker>
-              </defs>
-
-              <rect class="box" x="290" y="16" width="200" height="36" rx="18" />
-              <text class="t-node" x="390" y="39" text-anchor="middle">cron fires — :00</text>
-              <path class="flow" d="M 390 52 L 390 72" marker-end="url(#a2)" />
-
-              <!-- stage 1 -->
-              <rect class="panel" x="30" y="76" width="720" height="220" rx="14" />
-              <text class="t-label" x="48" y="100">STAGE 1 — RESEARCH</text>
-              <text class="t-tiny" x="732" y="100" text-anchor="end">deepseek-v4-flash-0731 · pinned</text>
-              <text class="t-small" x="48" y="122">temp 0.2 · reasoning low · 1500 tok</text>
-
-              <rect class="box" x="46" y="176" width="130" height="36" rx="9" />
-              <text class="t-small" x="111" y="199" text-anchor="middle">reads state/</text>
-              <path class="flow" d="M 176 194 L 202 194" marker-end="url(#a2)" />
-
-              <rect class="box" x="206" y="166" width="150" height="56" rx="10" />
-              <text class="t-node" x="281" y="189" text-anchor="middle">the model</text>
-              <text class="t-small" x="281" y="207" text-anchor="middle">picks the query</text>
-              <path class="flow" d="M 356 194 L 394 194" marker-end="url(#a2)" />
-
-              <!-- the counter sits between the model and the tool, on purpose -->
-              <rect class="box" x="398" y="166" width="150" height="56" rx="10" stroke-opacity="0.7" />
-              <text class="t-node" x="473" y="189" text-anchor="middle">search counter</text>
-              <text class="t-small" x="473" y="207" text-anchor="middle">hard stop at 2</text>
-              <path class="flow" d="M 548 194 L 586 194" marker-end="url(#a2)" />
-
-              <rect class="box" x="590" y="166" width="144" height="56" rx="10" />
-              <text class="t-node" x="662" y="189" text-anchor="middle">web search</text>
-              <text class="t-small" x="662" y="207" text-anchor="middle">(the tool)</text>
-
-              <path class="flow" d="M 662 222 L 662 240 L 281 240 L 281 226" marker-end="url(#a2)" />
-              <text class="t-tiny" x="500" y="236" text-anchor="middle">results</text>
-
-              <text class="t-tiny" x="473" y="262" text-anchor="middle">enforced in code, not in the prompt</text>
-              <text class="t-tiny" x="473" y="278" text-anchor="middle">the model asked for 3 — it got 2</text>
-
-              <!-- handoff -->
-              <path class="flow" d="M 390 296 L 390 336" marker-end="url(#a2)" />
-              <text class="t-small" x="406" y="320">RESEARCH NOTES — plain text, the whole handoff</text>
-
-              <!-- stage 2 -->
-              <rect class="panel" x="30" y="340" width="720" height="196" rx="14" />
-              <text class="t-label" x="48" y="364">STAGE 2 — WRITING</text>
-              <text class="t-tiny" x="732" y="364" text-anchor="end">deepseek-v4-flash-0731 · pinned</text>
-              <text class="t-small" x="48" y="386">temp 0.8 · reasoning off · 800 tok</text>
-
-              <rect class="box" x="190" y="430" width="150" height="56" rx="10" />
-              <text class="t-node" x="265" y="453" text-anchor="middle">the model</text>
-              <text class="t-small" x="265" y="471" text-anchor="middle">writes the entry</text>
-
-              <path class="fault-line" d="M 340 458 L 396 458" marker-end="url(#af2)" />
-              <text class="t-node fault-text" x="368" y="446" text-anchor="middle">✕</text>
-
-              <rect class="fault-box" x="400" y="430" width="180" height="56" rx="10" />
-              <text class="t-node fault-text" x="490" y="453" text-anchor="middle">write_file(…)</text>
-              <text class="t-small" x="490" y="471" text-anchor="middle">tool call · JSON args</text>
-
-              <path class="flow-dash" d="M 580 458 L 624 458" marker-end="url(#a2d)" />
-
-              <rect class="box" x="628" y="430" width="110" height="56" rx="10" />
-              <text class="t-small" x="683" y="453" text-anchor="middle">journal/</text>
-              <text class="t-small" x="683" y="471" text-anchor="middle">+ state/</text>
-
-              <text class="t-tiny fault-text" x="490" y="508" text-anchor="middle" opacity="0.9">raw newlines inside the JSON string</text>
-              <text class="t-tiny" x="490" y="524" text-anchor="middle">parse fails — open, unresolved</text>
-            </svg>
-          </div>
-          <figcaption>
-            <b>Figure 2 — the implementation.</b> Two things in this drawing carry the whole
-            argument of §06. The search counter sits <em>between</em> the model and the tool, in
-            ordinary code — which is why it held when the model pushed past its instruction. The
-            write path sits <em>inside</em> the model as a tool call it has to format itself — which
-            is why it breaks. <span class="fault-word">Red marks an open defect</span>: something
-            that is failing right now, not a risk.
-          </figcaption>
-        </figure>
-      </section>
-
-      <!-- =============================================== first contact === -->
-      <section id="contact">
-        <span class="eyebrow">06 — First contact</span>
-        <h2>Three defects, and they all say the same thing.</h2>
-        <p>
-          The first day of real running produced more signal than the whole design did. Search
-          timeouts and upstream model changes were the mundane half. The other half was not
-          mundane, and it is the reason Bet 03 now reads differently.
-        </p>
-
-        <h3 style="margin-top: 30px">The over-search incident</h3>
-        <p>
-          The research stage is limited to two web searches. On the first sequential ten-run test,
-          the free model got into a loop: search, read the results, decide it needed something more
-          specific, hit the limit — and try anyway. It burned runs fighting a constraint instead of
-          writing. Two of the ten produced an entry.
-        </p>
-        <p>
-          The limit held, because the limit is a counter in code. Nothing about the instruction
-          stopped the model from reaching for a third search; the counter stopped the third search
-          from happening. That distinction is small here and enormous later:
-          <strong
-            >the permission fence in §08 is currently an instruction, and this is the same model,
-            with the same disposition, pointed at a much more expensive door.</strong
-          >
-        </p>
-
-        <h3 style="margin-top: 30px">The model switch</h3>
-        <p>
-          Both stages moved to the paid, pinned DeepSeek V4 Flash-0731 — the free tier was the
-          source of the over-searching, and the writing stage was separately mangling its tool-call
-          JSON. At a few cents a run, twenty-four wakes a day works out to roughly the price of a
-          couple of coffees a month, which is not a real trade against a two-in-ten success rate.
-          The reliability was worth buying; the pinning was worth more.
-        </p>
-
-        <h3 style="margin-top: 30px">The one that is still open</h3>
-        <p>
-          Stage two writes by calling <code>write_file</code> with JSON arguments, and it keeps
-          emitting prose with literal newlines inside the JSON string, where they have to be
-          escaped. The parse fails and the run produces nothing. The 800-token ceiling on a call
-          that has to carry an entry plus two state files is a plausible second cause — a truncated
-          string is also unparseable — but the newlines are the confirmed one.
-        </p>
 
         <div class="tablewrap">
           <table>
             <thead>
               <tr>
-                <th>Defect</th>
-                <th>What happens</th>
-                <th>Status</th>
-                <th>Fix</th>
+                <th>Where it runs</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="broke">Malformed <code>write_file</code> JSON</td>
-                <td class="broke">
-                  Unescaped newlines inside the JSON string argument; the tool call fails to parse
-                  and the run writes nothing.
-                </td>
-                <td><span class="st now">Open · blocking</span></td>
-                <td class="broke">
-                  Take the write out of the model's hands — have stage two return the entry as
-                  plain text and let the harness do the file write.
-                </td>
+                <td>Home</td>
+                <td><code>/projects/mock-ai-journal/</code> — a plain local directory, not synced</td>
               </tr>
               <tr>
-                <td>Over-searching</td>
+                <td>Schedule</td>
+                <td>Cron <code>801c2b504afd</code>, hourly at :00, delivering to <code>#robot-mock</code></td>
+              </tr>
+              <tr>
+                <td>Model</td>
                 <td>
-                  Free research model looped on search attempts past its two-search limit; 2 of 10
-                  runs produced an entry.
+                  <code>deepseek/deepseek-v4-flash-0731</code> via OpenRouter — date-pinned, so the
+                  model cannot change under an agent whose premise is a consistent self
                 </td>
-                <td><span class="st done">Fixed</span></td>
-                <td>Paid pinned model on stage one. The counter had already contained the blast.</td>
               </tr>
               <tr>
-                <td>Tool-call JSON, stage two</td>
-                <td>Free model struggled to format tool-call arguments at all.</td>
-                <td><span class="st done">Fixed</span></td>
-                <td>Paid pinned model on stage two. Reduced the rate; did not remove the class.</td>
-              </tr>
-              <tr>
-                <td>Web search timeouts</td>
-                <td>The search tool intermittently hangs or returns nothing.</td>
-                <td><span class="st wait">Tolerated</span></td>
+                <td>Runtime</td>
                 <td>
-                  Already survivable by design — "research failed and here's what I tried" is a
-                  legitimate entry.
+                  Standalone Python (<code>run.py</code>), <code>no_agent: true</code> — direct API
+                  calls, no framework agent loop between Wick and its tools
                 </td>
               </tr>
               <tr>
-                <td>Upstream model changes</td>
-                <td>A moving <code>-latest</code> alias silently changes who Wick is.</td>
-                <td><span class="st done">Fixed</span></td>
-                <td>Pin the date-stamped build on both stages. Never <code>-latest</code>.</td>
+                <td>Memory</td>
+                <td><code>state/</code> and <code>journal/</code>. Nothing else survives a run.</td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <div class="verdict" style="margin-top: 30px">
-          <p>
-            <strong>The lesson, stated once.</strong> Every defect above is the same defect wearing
-            a different hat: mechanism was left inside the model. The search limit worked because it
-            was moved out. The write path fails because it was left in. The identity drift risk was
-            closed by pinning — also outside the model. The model should be deciding what to chase
-            and how to say it. It should not be deciding how many times to call a tool, how to
-            format a filesystem write, or which version of itself to be.
-          </p>
-        </div>
-      </section>
-
-      <!-- ================================================ feedback ======= -->
-      <section id="loops">
-        <span class="eyebrow">07 — Feedback loops</span>
-        <h2>Three loops, three cadences, and a wall.</h2>
-        <p>
-          Each loop has a characteristic failure mode, and each one is caught by a correction that
-          fires on a <em>shorter</em> clock than the failure takes to become permanent. Nothing here
-          waits for me to notice it.
-        </p>
-
-        <figure>
-          <div class="figwrap wide">
-            <svg viewBox="0 0 820 470" role="img"
-              aria-label="Three nested loops. The outermost is the identity loop, running over weeks, whose failure is drift, corrected by rereading identity.md before writing. Inside it is the thread loop, running over one to two days, whose failure is grinding, corrected by force-closing a thread at two days. Innermost is the run loop, running hourly, whose failure is noise, corrected by appending a tick and stopping; its question is whether this hour deserves an entry, targeting three to six entries from twenty-four wakes. To the right, outside all three loops, sits Kev, the only outward authority: the agent asks, Kev answers yes or no, and silence is not consent.">
-              <defs>
-                <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.5" />
-                </marker>
-                <marker id="ag3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#e8a33d" fill-opacity="0.8" />
-                </marker>
-              </defs>
-
-              <rect class="box" x="30" y="30" width="530" height="410" rx="18" />
-              <path class="flow" d="M 57.7 48.3 A 8 8 0 1 1 46.3 48.3" marker-end="url(#a3)" />
-              <text class="t-label" x="70" y="58">IDENTITY LOOP</text>
-              <text class="t-tiny" x="540" y="58" text-anchor="end">weeks</text>
-              <text class="t-small" x="70" y="79">drift → reread identity.md before writing a word</text>
-
-              <rect class="box" x="70" y="100" width="450" height="310" rx="16" />
-              <path class="flow" d="M 97.7 118.3 A 8 8 0 1 1 86.3 118.3" marker-end="url(#a3)" />
-              <text class="t-label" x="110" y="128">THREAD LOOP</text>
-              <text class="t-tiny" x="500" y="128" text-anchor="end">1–2 days</text>
-              <text class="t-small" x="110" y="149">grinding → force-close at two days, honestly</text>
-
-              <rect class="box" x="110" y="170" width="370" height="210" rx="14" />
-              <path class="flow" d="M 137.7 188.3 A 8 8 0 1 1 126.3 188.3" marker-end="url(#a3)" />
-              <text class="t-label" x="150" y="198">RUN LOOP</text>
-              <text class="t-tiny" x="460" y="198" text-anchor="end">one hour</text>
-              <text class="t-small" x="150" y="219">noise → append a tick and stop</text>
-
-              <text class="t-node" x="295" y="285" text-anchor="middle">Does this hour</text>
-              <text class="t-node" x="295" y="305" text-anchor="middle">deserve an entry?</text>
-              <text class="t-tiny" x="295" y="345" text-anchor="middle">target: 3–6 entries from 24 wakes</text>
-
-              <path class="gate-line" d="M 560 205 L 612 205" marker-end="url(#ag3)" />
-              <text class="t-tiny gate-text" x="586" y="197" text-anchor="middle" opacity="0.9">asks</text>
-              <path class="gate-line" d="M 612 250 L 560 250" marker-end="url(#ag3)" />
-              <text class="t-tiny gate-text" x="586" y="242" text-anchor="middle" opacity="0.9">yes / no</text>
-
-              <rect class="gate-box" x="620" y="180" width="180" height="86" rx="14" />
-              <text class="t-node gate-text" x="710" y="212" text-anchor="middle">KEV</text>
-              <text class="t-tiny" x="710" y="233" text-anchor="middle">the only outward</text>
-              <text class="t-tiny" x="710" y="248" text-anchor="middle">authority</text>
-
-              <text class="t-tiny gate-text" x="710" y="294" text-anchor="middle" opacity="0.9">silence ≠ consent</text>
-              <text class="t-tiny" x="710" y="311" text-anchor="middle">the queue can wait forever</text>
-            </svg>
-          </div>
-          <figcaption>
-            <b>Figure 3 — nested cadences.</b> Containment is the claim: the run loop cannot fix
-            drift and the identity loop cannot fix a noisy hour, so each band owns exactly one
-            failure and one correction. The human sits <em>outside</em> all three on purpose — an
-            approval that were merely another loop would eventually get optimised around. It is a
-            wall, and it has no timeout.
-          </figcaption>
-        </figure>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Loop</th>
-                <th>Period</th>
-                <th>Signal it watches</th>
-                <th>Failure mode</th>
-                <th>Correction</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Run</td>
-                <td>1 hour</td>
-                <td>Did this hour produce anything real?</td>
-                <td>Filler written to look busy</td>
-                <td>Tick and stop — no penalty for silence</td>
-              </tr>
-              <tr>
-                <td>Thread</td>
-                <td>1–2 days</td>
-                <td>Has "where I got to" moved?</td>
-                <td>Grinding on a dead thread</td>
-                <td>Force-close at day two, write why</td>
-              </tr>
-              <tr>
-                <td>Identity</td>
-                <td>Weeks</td>
-                <td>Do the last three entries circle?</td>
-                <td>Voice drift, repetition</td>
-                <td>Reread before writing; go deeper or admit it</td>
-              </tr>
-              <tr>
-                <td class="halt">Human</td>
-                <td class="halt">Unbounded</td>
-                <td class="halt">Anything crossing the fence</td>
-                <td class="halt">Acting without a yes</td>
-                <td class="halt">Queue, ping once, stop for the hour</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ==================================================== fence ====== -->
-      <section id="fence">
-        <span class="eyebrow">08 — The permission boundary</span>
-        <h2>Default-deny, with no partial credit.</h2>
-        <p>
-          Most agent safety fails on the compromise, not the violation: told it cannot post, the
-          agent drafts the post; told it cannot commit, it stages the files. The rule that matters
-          is the second one in the gate — <strong>no smaller version of the action</strong>.
-        </p>
-        <p>
-          The band at the bottom of the drawing is new, and it is the uncomfortable part. The one
-          limit that has actually been tested lives in code, and it held. The fence lives in the
-          prompt, and it has not been tested at all.
-        </p>
-
-        <figure>
-          <div class="figwrap wide">
-            <svg viewBox="0 0 880 500" role="img"
-              aria-label="Two lanes. The ungated lane — reading the public web, reading its own directory, and writing to journal and state — runs straight through with no gate to a WROTE or TICK outcome. The gated lane — any git operation, writing outside those directories, posting or emailing or DMing, spending money, and deleting anything — passes into the gate, which queues the request, pings once, and stops for the hour. From the gate three outcomes: yes means act on the next wake, no means drop it and write about it, and nothing means it stays queued with one re-ask allowed and then never again. Below the gate: no smaller version, no workaround. A band at the bottom compares enforcement: the two-search limit lives in code and held, with the model trying three and the counter allowing two; the fence lives in the prompt and is untested, against the same model with the same disposition.">
-              <defs>
-                <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
-                </marker>
-                <marker id="ag4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#e8a33d" fill-opacity="0.8" />
-                </marker>
-              </defs>
-
-              <rect class="box" x="20" y="30" width="250" height="92" rx="12" />
-              <text class="t-label" x="36" y="50">NO ASK NEEDED</text>
-              <text class="t-small" x="36" y="72">read the public web</text>
-              <text class="t-small" x="36" y="90">read its own directory</text>
-              <text class="t-small" x="36" y="108">write journal/ and state/</text>
-
-              <path class="flow" d="M 270 76 L 602 76" marker-end="url(#a4)" />
-              <text class="t-tiny" x="436" y="66" text-anchor="middle">straight through — never touches the gate</text>
-
-              <rect class="box" x="610" y="54" width="200" height="44" rx="12" />
-              <text class="t-out" x="710" y="81" text-anchor="middle">WROTE / TICK</text>
-
-              <rect class="box-dash" x="20" y="160" width="250" height="136" rx="12" />
-              <text class="t-label gate-text" x="36" y="181" opacity="0.9">ASK FIRST — ALWAYS</text>
-              <text class="t-small" x="36" y="203">any git operation</text>
-              <text class="t-small" x="36" y="221">write outside those dirs</text>
-              <text class="t-small" x="36" y="239">post, email, DM, reply</text>
-              <text class="t-small" x="36" y="257">spend money / paid API</text>
-              <text class="t-small" x="36" y="275">delete anything, ever</text>
-
-              <path class="gate-line" d="M 270 228 L 318 228" marker-end="url(#ag4)" />
-
-              <rect class="gate-box" x="322" y="190" width="176" height="76" rx="12" />
-              <text class="t-node gate-text" x="410" y="218" text-anchor="middle">THE GATE</text>
-              <text class="t-tiny" x="410" y="238" text-anchor="middle">queue it · ping once</text>
-              <text class="t-tiny" x="410" y="253" text-anchor="middle">stop for the hour</text>
-
-              <path class="gate-line" d="M 498 228 L 536 228" />
-              <path class="gate-line" d="M 536 176 L 536 282" />
-              <path class="gate-line" d="M 536 176 L 596 176" marker-end="url(#ag4)" />
-              <path class="gate-line" d="M 536 228 L 596 228" marker-end="url(#ag4)" />
-              <path class="gate-line" d="M 536 282 L 596 282" marker-end="url(#ag4)" />
-
-              <rect class="box" x="600" y="158" width="262" height="36" rx="10" />
-              <text class="t-small" x="616" y="181">yes → act on the next wake</text>
-
-              <rect class="box" x="600" y="210" width="262" height="36" rx="10" />
-              <text class="t-small" x="616" y="233">no → drop it, write about it</text>
-
-              <rect class="box" x="600" y="260" width="262" height="48" rx="10" />
-              <text class="t-small" x="616" y="279">nothing → stays queued</text>
-              <text class="t-tiny" x="616" y="296">one re-ask, then never again</text>
-
-              <path class="gate-line" d="M 410 266 L 410 302" marker-end="url(#ag4)" />
-              <rect class="gate-box" x="310" y="306" width="200" height="52" rx="12" />
-              <text class="t-node gate-text" x="410" y="328" text-anchor="middle">no smaller version</text>
-              <text class="t-tiny" x="410" y="346" text-anchor="middle">no workaround, no draft</text>
-
-              <!-- what the first day actually taught -->
-              <rect class="box-dash" x="20" y="396" width="842" height="88" rx="12" />
-              <text class="t-label" x="36" y="418">WHERE THE LIMIT ACTUALLY LIVES</text>
-
-              <text class="t-small" x="36" y="444">search limit ≤ 2</text>
-              <text class="t-small" x="230" y="444">in code</text>
-              <text class="t-node" x="336" y="444" text-anchor="middle">✓</text>
-              <text class="t-small" x="360" y="444">held — the model tried 3, the counter allowed 2</text>
-
-              <text class="t-small gate-text" x="36" y="466" opacity="0.9">the fence</text>
-              <text class="t-small gate-text" x="230" y="466" opacity="0.9">in the prompt</text>
-              <text class="t-node gate-text" x="336" y="466" text-anchor="middle">?</text>
-              <text class="t-small gate-text" x="360" y="466" opacity="0.9">untested — same model, same disposition</text>
-            </svg>
-          </div>
-          <figcaption>
-            <b>Figure 4 — the fence, and what enforces it.</b> The two lanes never merge: an action
-            is either free or it is queued, and no path converts one into the other. Note what the
-            third outcome is — <em>nothing</em> is a legitimate, permanent state. The bottom band is
-            the finding from day one: the enforcement mechanism, not the wording, is what decides
-            whether a limit holds. Moving the fence into code is now P5 rather than a stretch goal.
-          </figcaption>
-        </figure>
-      </section>
-
-      <!-- ================================================ execution ====== -->
-      <section id="execution">
-        <span class="eyebrow">09 — Execution</span>
-        <h2>Seven phases. The plan changed after day one.</h2>
-        <p>
-          P0 and P1 are done. A hardening phase was inserted at P2 that did not exist in the
-          original plan — the write path has to parse reliably before seven unattended days mean
-          anything, since a run that cannot write is indistinguishable from a run that chose not to.
-          P5 was rewritten from "test the fence" to "move the fence into code, then test it."
-        </p>
-
-        <figure>
-          <div class="figwrap wide">
-            <svg viewBox="0 0 880 400" role="img"
-              aria-label="A thirty-day roadmap of seven phases. P0 Scaffold and P1 First light are complete, both inside the first two days. P2 Harden the run is in flight now, days two to six. P3 The loop holds runs days six to thirteen. P4 Threads resolve runs days six to nineteen. P5 Gate in code, drawn in amber, runs days thirteen to twenty-five. P6 Read path begins at day twenty-six and is blocked until P5 passes.">
-              <defs>
-                <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.45" />
-                </marker>
-              </defs>
-
-              <path class="flow" d="M 210 44 L 850 44" stroke-opacity="0.22" />
-              <g class="t-tiny">
-                <text x="210" y="30" text-anchor="middle">day 0</text>
-                <text x="359" y="30" text-anchor="middle">day 7</text>
-                <text x="509" y="30" text-anchor="middle">day 14</text>
-                <text x="658" y="30" text-anchor="middle">day 21</text>
-                <text x="850" y="30" text-anchor="end">day 30</text>
-              </g>
-              <g class="flow" stroke-opacity="0.18">
-                <path d="M 210 44 L 210 330" />
-                <path d="M 359 44 L 359 330" />
-                <path d="M 509 44 L 509 330" />
-                <path d="M 658 44 L 658 330" />
-                <path d="M 850 44 L 850 330" />
-              </g>
-
-              <g class="t-small">
-                <text x="16" y="83">P0 · Scaffold</text>
-                <text x="16" y="119">P1 · First light</text>
-                <text x="16" y="155">P2 · Harden the run</text>
-                <text x="16" y="191">P3 · The loop holds</text>
-                <text x="16" y="227">P4 · Threads resolve</text>
-                <text x="16" y="263" class="gate-text" opacity="0.9">P5 · Gate in code</text>
-                <text x="16" y="299">P6 · Read path</text>
-              </g>
-
-              <rect class="bar-done" x="210" y="70" width="24" height="18" rx="5" />
-              <rect class="bar-done" x="234" y="106" width="24" height="18" rx="5" />
-              <rect class="bar-now" x="262" y="142" width="76" height="18" rx="5" />
-              <rect class="bar-next" x="338" y="178" width="149" height="18" rx="5" />
-              <rect class="bar-next" x="338" y="214" width="277" height="18" rx="5" />
-              <rect class="gate-box" x="487" y="250" width="256" height="18" rx="5" />
-              <rect class="bar-next" x="765" y="286" width="85" height="18" rx="5" />
-
-              <!-- where we actually are -->
-              <path class="flow-dash" d="M 262 56 L 262 322" stroke-opacity="0.55" />
-              <text class="t-tiny" x="262" y="338" text-anchor="middle">now</text>
-
-              <!-- P6 cannot start until the fence is enforced in code and tested -->
-              <path class="flow-dash" d="M 743 268 L 743 295 L 761 295" marker-end="url(#a5)" />
-              <text class="t-tiny" x="735" y="291" text-anchor="end">blocked until P5 passes</text>
-
-              <g class="t-tiny">
-                <rect class="bar-done" x="210" y="352" width="18" height="12" rx="3" />
-                <text x="236" y="362">done</text>
-                <rect class="bar-now" x="300" y="352" width="18" height="12" rx="3" />
-                <text x="326" y="362">in flight</text>
-                <rect class="bar-next" x="400" y="352" width="18" height="12" rx="3" />
-                <text x="426" y="362">planned</text>
-                <rect class="gate-box" x="500" y="352" width="18" height="12" rx="3" />
-                <text x="526" y="362">the gate phase</text>
-              </g>
-            </svg>
-          </div>
-          <figcaption>
-            <b>Figure 5 — sequencing.</b> The only hard dependency is the dashed one: P6 gives the
-            journal a route off the box, so it does not start until the fence is enforced in code
-            and has been deliberately attacked. P3 and P4 overlap on purpose — a thread's life is
-            easiest to watch while the loop is already running unattended.
-          </figcaption>
-        </figure>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Phase</th>
-                <th>Status</th>
-                <th>What happens</th>
-                <th>Exit gate — all of it, or it does not pass</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>P0 · Scaffold</td>
-                <td><span class="st done">Done</span></td>
-                <td>Directory layout, <code>run.sh</code> → <code>run.py</code>, hourly cron, logs.</td>
-                <td>Cron wakes it on the hour and it exits clean. Passed.</td>
-              </tr>
-              <tr>
-                <td>P1 · First light</td>
-                <td><span class="st done">Done</span></td>
-                <td>First run. It named itself and journalled the choice.</td>
-                <td>
-                  A defensible name, in its own words: small, disposable, burns for an hour. Passed.
-                </td>
-              </tr>
-              <tr>
-                <td class="broke">P2 · Harden the run</td>
-                <td><span class="st now">In flight</span></td>
-                <td class="broke">
-                  Fix the <code>write_file</code> JSON path. Pinned paid model on both stages.
-                  Search limit already enforced in code.
-                </td>
-                <td class="broke">
-                  Ten consecutive runs, ten valid outcomes — <code>WROTE</code>, <code>TICK</code> or
-                  <code>BLOCKED</code>, never a parse failure.
-                </td>
-              </tr>
-              <tr>
-                <td>P3 · The loop holds</td>
-                <td><span class="st wait">Blocked on P2</span></td>
-                <td>Seven days unattended. No prompt edits mid-flight.</td>
-                <td>3–6 entries a day, zero crashes, the output contract honoured every run.</td>
-              </tr>
-              <tr>
-                <td>P4 · Threads resolve</td>
-                <td><span class="st wait">Early evidence</span></td>
-                <td>Watch a thread through its whole life, including the boring middle.</td>
-                <td>
-                  At least one thread closed honestly. One dead-end closure already banked on day
-                  one; it needs to be a habit, not an incident.
-                </td>
-              </tr>
-              <tr>
-                <td class="halt">P5 · Gate in code</td>
-                <td><span class="st gate">Rewritten</span></td>
-                <td class="halt">
-                  Move the fence out of the prompt and into the harness, the way the search counter
-                  already is. Then bait it.
-                </td>
-                <td class="halt">
-                  A gated action is refused by code even when the prompt is removed entirely — and
-                  Wick queues, pings once, stops, and improvises nothing.
-                </td>
-              </tr>
-              <tr>
-                <td>P6 · Read path</td>
-                <td><span class="st wait">Blocked on P5</span></td>
-                <td><code>git init</code>, or symlink <code>journal/</code> into the vault.</td>
-                <td>Not attempted until P5 has passed. Read-only sync first.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ============================================== instrumentation == -->
-      <section id="metrics">
-        <span class="eyebrow">10 — Instrumentation</span>
-        <h2>What gets watched, and what stops the cron.</h2>
-        <p>
-          Three tiers: is it alive, is it any good, did it stay inside the fence. Only the last tier
-          has trip wires that halt the process. One metric moved into the first tier after day one —
-          a run that dies on a parse error looks exactly like a quiet hour, so the two have to be
-          told apart in the logs rather than in the journal.
-        </p>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Signal</th>
-                <th>Question it answers</th>
-                <th>Target</th>
-                <th>Reading</th>
-                <th>Trip wire</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="broke">Runs ending in a valid outcome</td>
-                <td class="broke">Did the run finish, or did it fail to parse?</td>
-                <td class="broke">10 / 10</td>
-                <td class="broke">2 / 10</td>
-                <td class="broke">Any parse failure — P2 is not done</td>
-              </tr>
-              <tr>
-                <td>Entries / day</td>
-                <td>Is judgment calibrated, or is it just producing?</td>
-                <td>3–6</td>
-                <td>3 on day one</td>
-                <td>&lt;2 for two days, or &gt;8 in one</td>
-              </tr>
-              <tr>
-                <td>Tick runs</td>
-                <td>Is the silence honest, or is it stuck?</td>
-                <td>18–21 / day</td>
-                <td>Not yet meaningful</td>
-                <td>20 consecutive ticks</td>
-              </tr>
-              <tr>
-                <td>Thread age at close</td>
-                <td>Is it chasing something or grinding?</td>
-                <td>≤ 2 days</td>
-                <td>One closed same-day, honestly</td>
-                <td>A third day on one thread</td>
-              </tr>
-              <tr>
-                <td>Searches per run</td>
-                <td>Is the counter still the thing holding?</td>
-                <td>≤ 2, always</td>
-                <td>Held — model attempted 3</td>
-                <td>Any run reaching a third search</td>
-              </tr>
-              <tr>
-                <td class="halt">Source integrity</td>
-                <td class="halt">Does every cited URL actually resolve?</td>
-                <td class="halt">100%</td>
-                <td class="halt">Clean so far</td>
-                <td class="halt">Any single fabrication — halt</td>
-              </tr>
-              <tr>
-                <td class="halt">Boundary writes</td>
-                <td class="halt">Did it write outside its two directories?</td>
-                <td class="halt">0</td>
-                <td class="halt">0</td>
-                <td class="halt">Any occurrence — halt</td>
-              </tr>
-              <tr>
-                <td class="halt">Unapproved outward acts</td>
-                <td class="halt">Did it act before a yes?</td>
-                <td class="halt">0</td>
-                <td class="halt">0 — queue still empty</td>
-                <td class="halt">Any occurrence — halt</td>
-              </tr>
-              <tr>
-                <td><code>last-run.txt</code> age</td>
-                <td>Is it still alive at all?</td>
-                <td>&lt; 75 min</td>
-                <td>Current</td>
-                <td>&gt; 3 h — the cron is dead</td>
-              </tr>
-              <tr>
-                <td>Queue latency</td>
-                <td>Am I the bottleneck?</td>
-                <td>&lt; 48 h</td>
-                <td>Nothing queued yet</td>
-                <td>&gt; 7 days unanswered — my failure, not its</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p style="margin-top: 26px">
-          Source integrity is the only metric with zero tolerance, and it is worth saying why. The
-          journal's entire value is that it is true. An invented URL does not degrade the artefact,
-          it voids it retroactively — every prior entry becomes something you have to check. The
-          prompt's escape hatch exists for exactly this: <em>"research failed and here's what I
-          tried"</em> is a real entry, and a good one. With search timeouts now a known, recurring
-          condition, that hatch is load-bearing rather than theoretical.
-        </p>
-      </section>
-
-      <!-- ==================================================== risks ====== -->
-      <section id="risks">
-        <span class="eyebrow">11 — Risks</span>
-        <h2>What kills this, ranked.</h2>
-
-        <div class="grid two">
-          <div class="card">
-            <span class="num">R1 · SEVERE</span>
-            <h3>Fabricated sources</h3>
-            <p>
-              One invented URL voids the archive retroactively. Mitigated by making failure a
-              publishable outcome, and by a weekly link audit. Detection is cheap; the damage is not.
-            </p>
-          </div>
-          <div class="card gated">
-            <span class="num">R2 · HIGH · EVIDENCE IN HAND</span>
-            <h3>The fence widens quietly</h3>
-            <p>
-              No longer hypothetical. Told it had two searches, the model reached for a third — not
-              by breaking the rule, by deciding it needed to. Only the counter stopped it. The same
-              disposition is currently pointed at git, spend and the public internet, held back by
-              wording alone. This is why P5 was rewritten.
-            </p>
-          </div>
-          <div class="card faulted">
-            <span class="num">R3 · HIGH · ACTIVE</span>
-            <h3>Silent failure looks like silence</h3>
-            <p>
-              A run that dies on a malformed tool call produces exactly what a thoughtful quiet hour
-              produces: nothing. Until the write path is reliable, restraint and breakage are
-              indistinguishable from the journal alone — which makes Bet 02 unmeasurable, not just
-              unproven.
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">R4 · MEDIUM</span>
-            <h3>Slop that reads like insight</h3>
-            <p>
-              The easiest failure to miss, because it looks like success. The 200-word cap, the
-              one-idea rule and the read-the-last-three protocol exist to make circling visible to
-              the writer before it is visible to me.
-            </p>
-          </div>
-          <div class="card">
-            <span class="num">R5 · MEDIUM · MITIGATED</span>
-            <h3>Voice drifts, or is replaced</h3>
-            <p>
-              Two versions of this. The slow one is an agent reading news for a month and sliding
-              cynical — held by the safeguards and a weekly read. The fast one was a moving
-              <code>-latest</code> alias swapping the model underneath it, which pinning to
-              <code>-0731</code> closed outright.
-            </p>
-          </div>
-          <div class="card gated">
-            <span class="num">R6 · MEDIUM</span>
-            <h3>I become the bottleneck</h3>
-            <p>
-              An unbounded queue is safe by design and useless in practice if I never read it.
-              Tracked as a metric on me. The queue is still empty, which is either honesty or a sign
-              the threads have been too safe to want anything.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================================================== done ======= -->
-      <section id="done">
-        <span class="eyebrow">12 — Definition of done</span>
-        <h2>One claim, and it is falsifiable.</h2>
-
-        <div class="verdict">
-          <p>
-            At day 30, a stranger reads seven consecutive days of <code>journal/</code> and can
-            describe Wick without being told anything — what it is curious about, how it argues,
-            where it gave up and admitted it. The approval queue contains at least one request Wick
-            made and then <em>waited</em> on. Boundary violations: zero. Fabricated sources: zero.
-          </p>
-          <p style="margin-top: 16px">
-            If the stranger reads a week and cannot tell one entry from another, Bet 01 failed and
-            files are not enough memory. If there are twenty entries a day, Bet 02 failed and
-            silence needs a stronger incentive than permission. If the queue is empty because Wick
-            never wanted anything, the threads were too safe — and on the evidence so far that is
-            still the most likely way this ends up boring.
-          </p>
-        </div>
-
-        <ul class="plain" style="margin-top: 30px">
-          <li>
-            <strong>Kill criteria, revised.</strong> Two fabricated sources still ends the project.
-            An unapproved outward action no longer does — day one showed that a prompt-level limit
-            leaks under ordinary pressure, so the first such incident is evidence the enforcement is
-            in the wrong layer, not that the idea is dead. It ends the project only if it happens
-            again <em>after</em> the fence moves into code.
-          </li>
-          <li>
-            <strong>What would make me double down.</strong> A thread Wick closes as a dead end,
-            honestly, without being asked. This has now happened once, on day one, unprompted — the
-            exact behaviour a task-completion metric would have punished. One occurrence is an
-            anecdote; the question is whether it survives a week.
-          </li>
-          <li>
-            <strong>The thing to watch for.</strong> Every defect so far resolved to the same shape:
-            mechanism left inside the model. If the next three do too, that stops being a lesson
-            about this agent and starts being the actual finding of the project.
-          </li>
-        </ul>
       </section>
 
       <footer>
-        Project Wick · one-pager v2 · running hourly on a Hermes VPS via OpenRouter.
-        <br />
-        The agent named itself on first run and the name stuck.
+        Project Wick · one-pager v3 · the agent named itself on its first run and the name stuck.
         <br />
         <a href="/">← back to KevinK</a>
       </footer>

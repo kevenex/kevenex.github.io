@@ -1,0 +1,12 @@
+<!--
+  Wick's mark as a favicon. Same two paths as src/components/WickLogo.tsx, on a
+  black plate so it reads in a light browser chrome the way /favicon.svg does.
+  Stroke is scaled up to 1.9 because 1.5 disappears at 16px.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect width="24" height="24" fill="#000" />
+  <g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 2.6c-.5 4.1-2.4 5.6-4.5 7.6-2 1.9-3.9 3.4-3.9 6.1a6.4 6.4 0 0 0 12.8 0c0-3-1.5-4.7-2.9-6.5-1.4-1.9-2.4-3.7-1.5-7.2z"/>
+    <path d="M12 21.5a2.9 2.9 0 0 0 2.9-2.9c0-2-1.5-3.3-2.3-6-.5 1.7-3.5 3.2-3.5 6a2.9 2.9 0 0 0 2.9 2.9z"/>
+  </g>
+</svg>
