@@ -21,6 +21,26 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Flyer Fable', href: '/flyer-fable/' },
 ];
 
+/*
+ * The open width has to be a number for the spring to animate it, so it is
+ * measured rather than laid out. Space Mono is monospace at 0.6em, which makes
+ * a 16px label exactly 9.6px per character — everything else is the fixed
+ * chrome around the labels: the button's left margin and width, the leading
+ * padding, one gap between each pair of links, and a trailing inset.
+ *
+ * Derived rather than hardcoded so that editing NAV_LINKS cannot leave the
+ * pill clipping its last label. Adding an entry does push the open pill toward
+ * the viewport edge on a small laptop, so check it at 640px before doing so.
+ */
+const NAV_OPEN_WIDTH = Math.round(
+  6 +
+    36 +
+    16 +
+    NAV_LINKS.reduce((total, link) => total + link.label.length * 9.6, 0) +
+    (NAV_LINKS.length - 1) * 24 +
+    32
+);
+
 interface NavbarProps {
   entranceComplete: boolean;
 }
@@ -59,10 +79,8 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </motion.a>
 
           <motion.div
-            className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
-            /* Space Mono is monospace, so the open width is just the label
-               characters (5 + 8 + 11) plus gaps, padding and the button. */
-            animate={{ width: isOpen ? 368 : 48 }}
+            className="flex h-12 shrink-0 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
+            animate={{ width: isOpen ? NAV_OPEN_WIDTH : 48 }}
             transition={PILL_SPRING}
           >
             <button

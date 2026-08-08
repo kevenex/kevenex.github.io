@@ -34,6 +34,8 @@ public/
   flyer-fable/             Standalone flight game — see below
     index.html             The whole game: markup, styles, scene, flight loop
     three.min.js           Three.js r0.160.0, self-hosted
+  project-wick/            Product one-pager — see below
+    index.html             The whole page: copy, styles, four inline-SVG figures
   favicon.svg
 src/
   App.tsx                  Page composition + entrance timing
@@ -104,6 +106,45 @@ Local changes on top of upstream are each marked with a `SITE:` comment:
 
 To pull in upstream changes, re-copy `index.html` and re-apply the `SITE:`
 blocks — they are contiguous and commented for that purpose.
+
+## Project Wick (`/project-wick/`) — unlisted
+
+A product one-pager for an hourly journaling agent: strategy, the nested
+feedback loops, the two-stage implementation, the permission boundary, and a
+phased execution plan.
+
+**Nothing on the site links here.** There is no Projects card and no nav entry,
+and the page carries `<meta name="robots" content="noindex, nofollow">`. It is
+reachable only by typing the URL. The path is deliberately *not* in a
+`robots.txt` `Disallow` line, because that file is public and would advertise
+the very path being hidden.
+
+That is obscurity, not access control. The page is still served publicly and
+this repository is public, so nothing on it should be treated as private. Real
+gating would need the page moved somewhere that can authenticate — GitHub Pages
+serves static files to anyone who asks. To relist it, add the card back to
+`src/components/Projects.tsx`, add a nav entry, and drop the robots tag.
+
+It sits in `public/` for the same reason the flyer does — it is prose and
+drawings, needs nothing React provides, and the site has no router, so putting
+it through the SPA would add a bundle dependency and buy nothing.
+
+The five figures are hand-authored inline SVG: no chart library, no runtime, no
+external images. Three conventions hold across all of them:
+
+- **`currentColor` for strokes and text**, so a figure inherits the page
+  foreground instead of hardcoding white in a dozen places.
+- **Exactly two literal hues, each with one meaning.** `--gate` (amber) is the
+  human, or an action halted waiting on one. `--fault` (red) is an open defect —
+  something failing right now, as opposed to a risk. Neither is ever decorative,
+  and neither is the only signal: the status tiles and roadmap bars that use them
+  also spell the state out in words.
+- **Shared type classes on the wrapper** (`.t-node`, `.t-small`, …) so every
+  figure lands on the same scale without per-element font attributes.
+
+Wide drawings scroll inside their own `overflow-x: auto` box rather than
+shrinking until the labels stop being readable; the page body never scrolls
+sideways.
 
 ## Notes
 
