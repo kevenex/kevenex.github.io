@@ -65,25 +65,31 @@ function buildAt(dir) {
   return dist;
 }
 
-async function buildFromGitHub() {
+// Copies dist/ into place. Called from inside the temp-clone's try block
+// (not after it returns) — a temp dir removed by a `finally` is gone by the
+// time a `return`ed path from that same try block would otherwise be used.
+function embed(distDir) {
+  rmSync(OUT_DIR, { recursive: true, force: true });
+  cpSync(distDir, OUT_DIR, { recursive: true });
+  console.log(`chloe sync: embedded fresh build → ${OUT_DIR}`);
+}
+
+async function main() {
+  const local = process.env.CHLOE_LOCAL_REPO;
+  if (local) {
+    embed(buildAt(resolve(local)));
+    return;
+  }
+
   const branch = await defaultBranch();
   const tmp = mkdtempSync(join(tmpdir(), 'chloe-sync-'));
   try {
     console.log(`chloe sync: cloning ${OWNER}/${REPO}@${branch}`);
     run('git', ['clone', '--depth', '1', '--branch', branch, `https://github.com/${OWNER}/${REPO}.git`, tmp]);
-    return buildAt(tmp);
+    embed(buildAt(tmp));
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
-}
-
-async function main() {
-  const local = process.env.CHLOE_LOCAL_REPO;
-  const dist = local ? buildAt(resolve(local)) : await buildFromGitHub();
-
-  rmSync(OUT_DIR, { recursive: true, force: true });
-  cpSync(dist, OUT_DIR, { recursive: true });
-  console.log(`chloe sync: embedded fresh build → ${OUT_DIR}`);
 }
 
 /*
