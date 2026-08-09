@@ -43,7 +43,8 @@ const OUT = resolve(HERE, '../public/project-wick/journal.json');
 const STATE_FILES = [
   { file: 'state/identity.md', title: 'Identity', note: 'Who Wick decided it is, written on the first run.' },
   { file: 'state/personality.md', title: 'Personality', note: 'Rewritten by Wick after every third entry. The experiment’s raw data.' },
-  { file: 'state/continuity.md', title: 'Continuity', note: 'The open thread, where it got to, and what it means to do next.' },
+  { file: 'state/interests.md', title: 'Interests', note: 'What Wick has found genuinely curious, and what it shelved.' },
+  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to four open threads, where each got to, and what happens next.' },
   { file: 'state/pending-approval.md', title: 'Pending approvals', note: 'Anything Wick asked to do and is waiting on. Silence is not consent.' },
 ];
 
@@ -188,13 +189,15 @@ function renderMarkdown(md) {
 // ------------------------------------------------------------ journal parse
 
 /*
- * Two artefacts of the write path have to be undone before a day file can be
- * split into entries, and both are the same open defect the one-pager
+ * Three artefacts of the write path have to be undone before a day file can
+ * be split into entries, and all three are the same open defect the one-pager
  * describes: stage two formats the file write itself, inside a JSON tool call.
  *
  *   1. Entries sometimes arrive with the two characters \ and n where a line
  *      break belongs — the escaping that should have been undone at parse time.
- *   2. An entry frequently lands with no newline after the previous one, so a
+ *   2. Same for \" where a plain double quote belongs, e.g. around a quoted
+ *      title inside a sentence.
+ *   3. An entry frequently lands with no newline after the previous one, so a
  *      heading gets glued to the end of the line before it (`… -->## 10:00`).
  *
  * Repairing on read rather than waiting for the fix upstream keeps the page
@@ -205,6 +208,7 @@ function repair(md) {
   return md
     .replace(/\r\n/g, '\n')
     .replace(/\\n/g, '\n')
+    .replace(/\\"/g, '"')
     .replace(/([^\n])(##+\s*\d{1,2}:\d{2})/g, '$1\n\n$2');
 }
 
@@ -382,13 +386,41 @@ async function main() {
     /* the agent writes this every run; its absence is worth showing as unknown */
   }
 
-  /* The one fact on the whole page with a short shelf life: what Wick is chasing
-     right now. It is inside continuity.md, which is also rendered in full lower
-     down, but it earns a place at the top where it can be read in one line. */
-  let openThread = null;
+  /* The facts on the whole page with the shortest shelf life: what Wick is
+     chasing right now, up to four threads. They live inside continuity.md,
+     which is also rendered in full lower down, but each earns a place at the
+     top where it can be read in one line.
+     Since the heartbeat/multi-thread rework, a thread is a "### <slug>
+     (opened <date>)" block under "## Open Threads", not a single freeform
+     paragraph — see state/continuity.md and prompt.md's "Open Threads"
+     section in the agent's repo for the exact shape this is parsing.
+     Section and thread bodies are sliced by index rather than matched with a
+     `(?=\n##\s|\n*$)`-style lookahead: with the `m` flag that a heading search
+     needs for `^`, a trailing `$` stops meaning "end of string" and starts
+     meaning "end of any line", which silently truncates every multi-line body
+     to its first line. Slicing on the next real heading's index sidesteps it. */
+  let openThreads = [];
   try {
     const continuity = await source.read('state/continuity.md');
-    openThread = (continuity.match(/^##\s*Open thread\s*\n([\s\S]*?)(?=\n##\s|\n*$)/m) || [])[1]?.trim() || null;
+    const openHeading = continuity.match(/^##\s*Open Threads\s*\n/m);
+    if (openHeading) {
+      const afterHeading = continuity.slice(openHeading.index + openHeading[0].length);
+      const nextTopHeading = afterHeading.search(/\n##\s/); // two hashes only — not the ### thread headings
+      const section = nextTopHeading === -1 ? afterHeading : afterHeading.slice(0, nextTopHeading);
+
+      const threadHeadingRe = /^###\s+(.+?)\s*\(opened[^)]*\)\s*$/gm;
+      const starts = [];
+      let hm;
+      while ((hm = threadHeadingRe.exec(section))) {
+        starts.push({ slug: hm[1].trim(), headingStart: hm.index, bodyStart: hm.index + hm[0].length });
+      }
+      starts.forEach((thread, i) => {
+        const bodyEnd = i + 1 < starts.length ? starts[i + 1].headingStart : section.length;
+        const body = section.slice(thread.bodyStart, bodyEnd);
+        const where = (body.match(/^\*\*Where I got to:\*\*\s*(.+)$/m) || [])[1]?.trim();
+        openThreads.push(where ? `${thread.slug} — ${where}` : thread.slug);
+      });
+    }
   } catch {
     /* rendered from the same file below; a miss here just hides the callout */
   }
@@ -403,7 +435,7 @@ async function main() {
     },
     syncedAt: new Date().toISOString(),
     lastRun,
-    openThread,
+    openThreads,
     totals: {
       days: days.length,
       entries: days.reduce((sum, d) => sum + d.entries.length, 0),
