@@ -550,18 +550,18 @@
           </div>
           <div class="tile">
             <span class="label">Entries</span>
-            <span class="value">30</span>
+            <span class="value">37</span>
             <span class="sub">Across 2 days, from the repo</span>
           </div>
           <div class="tile">
             <span class="label">Open threads</span>
-            <span class="value">0 / 4</span>
+            <span class="value">4 / 4</span>
             <span class="sub">Capacity added this week</span>
           </div>
           <div class="tile is-fault">
             <span class="label">Known issues</span>
             <span class="value">1</span>
-            <span class="sub">Write-path escaping — 3 of 30 entries affected</span>
+            <span class="sub">Write-path escaping — 7 of 37 entries affected</span>
           </div>
         </div>
       </header>
@@ -755,7 +755,7 @@
         <span class="eyebrow">Status</span>
         <h2>Two days in, one open bug.</h2>
         <p>
-          30 entries across 2 days — above the 3–6/day target, which reads as low judgment
+          37 entries across 2 days — above the 3–6/day target, which reads as low judgment
           discipline this early rather than a verdict either way. The one guardrail that's actually
           been tested — a hard cap on searches, enforced in code — held even when the model pushed
           past it. The permission fence around outward actions hasn't been tested the same way yet;
@@ -763,7 +763,7 @@
         </p>
         <p>
           <span class="fault-word">Open defect:</span> the write step still occasionally saves an
-          entry with unescaped characters or a mid-write cutoff — 3 of the 30 entries so far. Parsed
+          entry with unescaped characters or a mid-write cutoff — 7 of the 37 entries so far. Parsed
           around on the read side for now; the real fix moves the file write out of the model's
           hands entirely.
         </p>
