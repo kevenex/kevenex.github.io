@@ -1,10 +1,22 @@
 import { motion } from 'framer-motion';
 
+type TagColor = 'blue' | 'green' | 'orange' | 'purple';
+
+/* iOS-style status chip colors — tinted background at low opacity with the
+ * matching solid tone for text, same trick Settings/Notes badges use. */
+const TAG_COLORS: Record<TagColor, string> = {
+  blue: 'bg-blue-500/15 text-blue-300',
+  green: 'bg-green-500/15 text-green-300',
+  orange: 'bg-orange-500/15 text-orange-300',
+  purple: 'bg-purple-500/15 text-purple-300',
+};
+
 interface TimelineEntry {
   year: string;
   role: string;
   company: string;
   status: 'now' | 'shipped';
+  tags?: { label: string; color: TagColor }[];
 }
 
 /* Most recent first — a roadmap reads top-down like a changelog, "Now" at the top. */
@@ -14,6 +26,10 @@ const TIMELINE: TimelineEntry[] = [
     role: 'Product Manager',
     company: 'Plusgrade',
     status: 'now',
+    tags: [
+      { label: 'Data Migration', color: 'blue' },
+      { label: 'M&A', color: 'orange' },
+    ],
   },
   {
     year: '2023 — 2024',
@@ -26,6 +42,7 @@ const TIMELINE: TimelineEntry[] = [
     role: 'Senior Product Manager',
     company: 'Brim Financial',
     status: 'shipped',
+    tags: [{ label: 'Series B', color: 'green' }],
   },
   {
     year: '2020 — 2021',
@@ -35,19 +52,29 @@ const TIMELINE: TimelineEntry[] = [
   },
   {
     year: '2019',
-    role: 'Product Manager (Intern)',
+    role: 'Product Manager',
     company: 'IBM',
     status: 'shipped',
+    tags: [{ label: 'Intern', color: 'purple' }],
   },
   {
     year: '2018 — 2019',
     role: 'Business Analyst',
     company: 'Intrepid Ventures',
     status: 'shipped',
+    tags: [{ label: 'Intern', color: 'purple' }],
   },
 ];
 
-const COMPANIES = ['Plusgrade', 'ATB Financial', 'Brim Financial', 'Canadian Tire', 'IBM', 'Intrepid Ventures'];
+/* Rough self-assessment — placeholders to adjust once real levels are pinned down. */
+const SKILLS: { name: string; level: number }[] = [
+  { name: 'Product Strategy', level: 95 },
+  { name: 'Roadmap Planning', level: 92 },
+  { name: 'Stakeholder Management', level: 90 },
+  { name: 'Data-Driven Decision Making', level: 85 },
+  { name: 'Agile Delivery', level: 84 },
+  { name: 'User Research', level: 78 },
+];
 
 export default function Technology() {
   return (
@@ -115,9 +142,19 @@ export default function Technology() {
                   </span>
 
                   <span className="flex flex-col gap-1">
-                    <span className="text-[15px] font-normal leading-snug text-white sm:text-[17px]">
-                      {entry.role}
-                      <span className="text-white/40"> — {entry.company}</span>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[15px] font-normal leading-snug text-white sm:text-[17px]">
+                        {entry.role}
+                        <span className="text-white/40"> — {entry.company}</span>
+                      </span>
+                      {entry.tags?.map((tag) => (
+                        <span
+                          key={tag.label}
+                          className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide sm:text-[10px] ${TAG_COLORS[tag.color]}`}
+                        >
+                          {tag.label}
+                        </span>
+                      ))}
                     </span>
                     <span className="text-[11px] uppercase tracking-[0.12em] text-white/30 sm:text-[12px]">
                       {entry.year}
@@ -140,20 +177,35 @@ export default function Technology() {
         </motion.div>
 
         <motion.div
-          className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 sm:mt-16 sm:pt-8"
+          className="mt-14 border-t border-white/10 pt-8 sm:mt-16 sm:pt-10"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.0, delay: 0.4 }}
         >
-          {COMPANIES.map((name) => (
-            <span
-              key={name}
-              className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/35 sm:text-[12px]"
-            >
-              {name}
-            </span>
-          ))}
+          <p className="mb-6 text-[12px] uppercase tracking-[0.2em] text-white/35 sm:mb-8 sm:text-[13px]">
+            Skills
+          </p>
+
+          <div className="flex flex-col gap-5 sm:gap-6">
+            {SKILLS.map((skill, index) => (
+              <div key={skill.name} className="flex flex-col gap-2">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[13px] text-white/80 sm:text-[14px]">{skill.name}</span>
+                  <span className="text-[11px] text-white/35 sm:text-[12px]">{skill.level}%</span>
+                </div>
+                <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
+                  <motion.div
+                    className="h-full rounded-full bg-white/70"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.level}%` }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 1.0, delay: 0.1 + index * 0.08, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
