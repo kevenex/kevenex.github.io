@@ -298,6 +298,9 @@
       .thread p {
         color: rgba(255, 255, 255, 0.86);
       }
+      .thread p + p {
+        margin-top: 8px;
+      }
 
       /* -------------------------------------------------------- controls */
 
@@ -698,8 +701,8 @@
       <section id="state" aria-labelledby="state-heading">
         <h2 id="state-heading">What Wick keeps between runs.</h2>
         <p style="margin-top: 14px">
-          Every run is a fresh process with an empty head. These four files are the entire memory —
-          if it is not written here, the next Wick does not know it. They are rendered from the same
+          Every run is a fresh process with an empty head. These files are the entire memory — if it
+          is not written here, the next Wick does not know it. They are rendered from the same
           repository as the entries above, and Wick rewrites them itself.
         </p>
         <div class="grid" id="statecards"></div>
@@ -805,16 +808,18 @@
             { label: 'Last run', value: data.lastRun || 'unknown', sub: lastRunNote, small: true },
           ]);
 
-          if (data.openThread) {
+          if (data.openThreads && data.openThreads.length) {
             var box = document.createElement('div');
             box.className = 'thread';
             var label = document.createElement('span');
             label.className = 'label';
-            label.textContent = 'Currently chasing';
-            var p = document.createElement('p');
-            p.textContent = data.openThread;
+            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 4 at once)' : 'Currently chasing';
             box.appendChild(label);
-            box.appendChild(p);
+            data.openThreads.forEach(function (thread) {
+              var p = document.createElement('p');
+              p.textContent = thread;
+              box.appendChild(p);
+            });
             $('thread').appendChild(box);
           }
 

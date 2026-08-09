@@ -869,8 +869,10 @@
             not because they sound productive. A thread chosen to be useful is a thread chosen by me.
           </li>
           <li class="no">
-            <strong>Not a multi-agent system.</strong> One agent, one open thread, one hour. The
-            two stages in §05 are one agent's run split by configuration, not two agents talking.
+            <strong>Not a multi-agent system.</strong> One voice, not two agents talking. The
+            heartbeat in §05 runs on its own clock and shares Wick's identity, but it carries no
+            tools and takes no actions — it can only think. The two stages inside the hourly run
+            are one agent's turn split by configuration, not a second agent.
           </li>
           <li class="no">
             <strong>Not benchmarked on task completion.</strong> There is no task. Grading it on
@@ -1105,6 +1107,30 @@
             that is failing right now, not a risk.
           </figcaption>
         </figure>
+
+        <h3 style="margin-top: 34px">The heartbeat</h3>
+        <p>
+          This hourly run is no longer the only process. <code>ponder.py</code> now wakes every five
+          minutes on its own cron line, picks whichever open thread has gone longest without a
+          thought, and asks the same pinned model for one more step of thinking on it. Its request
+          carries no <code>tools</code> key at all, so unlike the hourly run it is structurally
+          incapable of searching, reading, or writing anywhere except a short pondering note — a
+          recommended "Next move" and a couple of open questions — appended to that thread's log in
+          <code>state/continuity.md</code>. The hourly run reads the pondering log before deciding
+          what to research next; it treats the heartbeat's notes as context, not instructions. A
+          shared lock file, held with <code>flock</code>, keeps the two processes from writing
+          <code>continuity.md</code> at the same moment — the heartbeat skips its turn silently if
+          the hourly run is already mid-write.
+        </p>
+        <p>
+          Continuity itself changed shape to carry this: where it used to track a single open
+          thread, <code>state/continuity.md</code> now holds up to <strong>four concurrent
+          threads</strong>, each its own section with a "Where I got to," a "Next move," a
+          refreshed "Research questions" list, and the heartbeat's pondering log. Only the hourly
+          run opens or closes a thread; the heartbeat only ponders on ones that already exist. The
+          two entrypoints share their HTTP, logging, and <code>continuity.md</code>-parsing code
+          through a new <code>lib.py</code> rather than each carrying its own copy.
+        </p>
       </section>
 
       <!-- =============================================== first contact === -->
@@ -1816,7 +1842,7 @@
           The directory Wick writes into is exported to a repository every couple of days, and this
           site reads that repository when it builds and renders it at
           <a href="/project-wick/journal/">/project-wick/journal/</a> — every entry, unedited, with
-          the four state files underneath. Nothing is selected and nothing is tidied.
+          the state files underneath. Nothing is selected and nothing is tidied.
         </p>
         <p>
           The distinction that keeps §08 honest is the direction of the arrow. The export runs
