@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
-import { Cat, FlaskConical, Plane, PenLine } from 'lucide-react';
+import { Cat, FlaskConical, Plane } from 'lucide-react';
 import { VIDEOS } from '../constants/videos';
 import WickMark from './WickMark';
 
@@ -54,11 +54,6 @@ const PROJECTS: Project[] = [
     blurb: 'Smaller things worth keeping — built to answer a question, then left running.',
     icon: FlaskConical,
   },
-  {
-    title: 'Writing',
-    blurb: 'Notes on what broke, what worked, and what turned out to be the wrong problem.',
-    icon: PenLine,
-  },
 ];
 
 /*
@@ -94,9 +89,9 @@ export default function Projects() {
             Projects
           </motion.p>
 
-          {/* Five cards: two up at tablet, three across once there is room —
-              a 3+2 wrap reads better than stranding a lone card on its own row. */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+          {/* Four cards: two up at tablet, one row of four once there is room.
+              Three-across would strand the fourth on a row of its own. */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {PROJECTS.map((project, index) => {
               const Icon = project.icon;
 
