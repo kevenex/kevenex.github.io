@@ -11,21 +11,6 @@ projects live as their own pages under `public/`.
 - Tailwind CSS 3
 - Framer Motion 12
 
-## Getting started
-
-```bash
-npm install
-npm run dev
-```
-
-| Script              | Purpose                              |
-| ------------------- | ------------------------------------ |
-| `npm run dev`       | Start the Vite dev server            |
-| `npm run build`     | Type-check and build to `dist/`      |
-| `npm run preview`   | Serve the production build locally   |
-| `npm run lint`      | Lint with ESLint                     |
-| `npm run typecheck` | Type-check without emitting          |
-
 ## Structure
 
 ```
@@ -35,7 +20,7 @@ public/
     index.html             The whole game: markup, styles, scene, flight loop
     three.min.js           Three.js r0.160.0, self-hosted
   project-wick/            Product one-pager — see below
-    index.html             The whole page: copy, styles, six inline-SVG figures
+    index.html             The whole page: copy, styles, one interactive SVG diagram
     wick.svg               The project mark, as the favicon for both Wick pages
     journal.json           Generated: the agent's journal, mirrored at build time
     journal/
@@ -85,188 +70,21 @@ ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
 ## Flyer Fable (`/flyer-fable/`)
 
 A stylized first-person flight over a low-poly South Korea, reachable from the
-nav menu. It is vendored from [kevenex/korea-flyer](https://github.com/kevenex/korea-flyer)
-at commit `a53bfec`.
-
-It lives in `public/` rather than under `src/`, which means Vite copies it to
-`dist/` byte for byte and GitHub Pages serves it as an ordinary static page. The
-game is one self-contained file that builds its own scene and runs its own
-render loop outside React, so routing it through the SPA would add a bundle
-dependency and buy nothing — and an iframe would inherit the parent's viewport
-quirks on mobile for no gain.
-
-Local changes on top of upstream are each marked with a `SITE:` comment:
-
-- **Self-hosted Three.js.** Upstream loads r0.160.0 from unpkg. Here it is
-  served from the same origin, for the same reason the background videos are —
-  the page should not go blank because a third-party CDN moved or went down.
-- **Touch controls.** Upstream is keyboard-only, so it is unplayable on a phone.
-  The on-screen buttons write into the same `keys` map the keyboard writes to,
-  which is why the flight loop needed no changes to accept them. Pointer capture
-  on press is what keeps a held control from sticking on when a finger slides
-  off the button.
-- **Compact layout.** The desktop version parks a panel in each of the four
-  corners at fixed pixel sizes. A `compact` body class — set from JS, refreshed
-  on resize — collapses that into a stack: HUD and minimap shrink, the fly-to
-  buttons become one horizontally scrolling row above the controls, and the
-  keyboard panel gives way to a hint on the splash screen. It keys off touch
-  capability as well as width, because a landscape phone is ~750px wide and
-  would otherwise be treated as a desktop while still needing the clearance.
-- **Site chrome.** A link back to the homepage, page title, favicon and
-  description.
-
-To pull in upstream changes, re-copy `index.html` and re-apply the `SITE:`
-blocks — they are contiguous and commented for that purpose.
+nav menu. Vendored from [kevenex/korea-flyer](https://github.com/kevenex/korea-flyer)
+at commit `a53bfec`, with local additions — self-hosted Three.js, touch
+controls, a compact mobile layout — each marked with a `SITE:` comment so they
+survive a re-copy from upstream. Lives in `public/` as a self-contained static
+page, outside React and the SPA.
 
 ## Project Wick (`/project-wick/`)
 
-A product one-pager for an hourly journaling agent: strategy, the nested
-feedback loops, the two-stage implementation, the permission boundary, and a
-phased execution plan. Its sibling at `/project-wick/journal/` publishes what
-the agent has actually written — see below.
-
-**Listed as of v4.** It spent its first days unlisted — no Projects card, no nav
-entry, a `noindex, nofollow` tag — while the agent was still breaking every
-other run. All three are now gone: there is a card in the Projects grid beside
-Flyer Fable, a `Wick` entry in the nav, and crawlers are welcome. Nothing on the
-page was ever private (GitHub Pages serves static files to anyone who asks); the
-robots tag was a way of not inviting readers to something still in pieces. To
-unlist it again, reverse those three.
-
-The journal page is deliberately *not* in the nav or the grid. It is reached
-from the one-pager, because the entries make much more sense after the argument
-for why they exist.
-
-### The mark
-
-The logo is three parts, each about this agent rather than about fire:
-
-- **The dial** — 24 ticks, one per wake. Four run longer: the hours that earned
-  an entry. Their spacing is irregular, clustered and then quiet, because that
-  is the shape of a real day in the journal and because "3–6 entries from 24
-  wakes" is the project's whole thesis about restraint.
-- **The flame** — it named itself Wick: small, disposable, burns for an hour.
-- **The wick** — a stub that does not reach the dial. What is left behind is
-  smaller than the thing that burned.
-
-It exists in **three copies that must stay in step**, because the pages that use
-it cannot share code:
-
-| Copy | Used by | Differences |
-| ---- | ------- | ----------- |
-| `src/components/WickMark.tsx` | the Projects card | `currentColor`, sized by prop |
-| inline `<svg class="mark">` | both `/project-wick/` pages | `currentColor`, sized by CSS |
-| `public/project-wick/wick.svg` | the favicon on both pages | black plate, heavier strokes |
-
-The favicon's two departures are deliberate. It carries a full-bleed black
-plate, matching `/favicon.svg`, because a favicon inherits nothing and a
-white-on-transparent mark vanishes into a light tab bar. And its strokes run
-`2`/`1.3` against the pages' `1.5`/`1.1` — an optical correction for 16px, where
-the lighter weight greys out. The geometry is identical in all three.
-
-Line art at 1.5 on a 24 viewBox is not arbitrary either: the mark sits beside
-Lucide icons in the Projects grid and has to carry the same weight.
-
-**A note on the nav label.** The entry reads `Wick`, not `Project Wick`. The
-open nav pill's width is *measured* from the label strings (see `NAV_OPEN_WIDTH`
-in `Navbar.tsx`), and the full name grows it until it touches the Download
-button between 640 and 768px. The card and the page both carry the full name.
-
-It sits in `public/` for the same reason the flyer does — it is prose and
-drawings, needs nothing React provides, and the site has no router, so putting
-it through the SPA would add a bundle dependency and buy nothing.
-
-The six figures are hand-authored inline SVG: no chart library, no runtime, no
-external images. Three conventions hold across all of them:
-
-- **`currentColor` for strokes and text**, so a figure inherits the page
-  foreground instead of hardcoding white in a dozen places.
-- **Exactly two literal hues, each with one meaning.** `--gate` (amber) is the
-  human, or an action halted waiting on one. `--fault` (red) is an open defect —
-  something failing right now, as opposed to a risk. Neither is ever decorative,
-  and neither is the only signal: the status tiles and roadmap bars that use them
-  also spell the state out in words.
-- **Shared type classes on the wrapper** (`.t-node`, `.t-small`, …) so every
-  figure lands on the same scale without per-element font attributes.
-
-Wide drawings scroll inside their own `overflow-x: auto` box rather than
-shrinking until the labels stop being readable; the page body never scrolls
-sideways.
-
-### The journal (`/project-wick/journal/`)
-
-The one-pager is the argument; the journal page is the evidence. It renders
-every entry the agent has written, plus the four files it keeps between runs
-(`identity`, `personality`, `continuity`, `pending-approval`). Same visual
-system, same two hues, same unlisted terms — it is linked from the one-pager and
-the one-pager only.
-
-The content comes from a different repository,
-[`kevenex/project-wick`](https://github.com/kevenex/project-wick), which the
-agent's host pushes to roughly every two days.
-
-**How it gets here.** `scripts/sync-wick-journal.mjs` reads that repository —
-`journal/*.md` and `state/*` — and writes one flat
-`public/project-wick/journal.json`. The deploy workflow runs it before
-`npm run build`, so the JSON in the artifact is as fresh as the deploy. The page
-then does a single same-origin `fetch` of that file and renders it.
-
-Doing it at build time rather than from the browser is the whole design:
-
-- A browser-side integration would need the GitHub contents API on every visit
-  just to learn which day files exist. That is rate-limited per visitor IP, and
-  when it fails the page is blank rather than stale.
-- The generated JSON **is committed**, and is the fallback. The script swallows
-  its own network errors and leaves the committed copy in place, so a GitHub
-  outage or a rate limit costs the journal its freshness, never the deploy. It
-  is not a silent fallback: on Actions it raises a `::warning::` annotation
-  naming the error and the snapshot's age, so a sync that has been broken for a
-  week is visible in the workflow list.
-- `deploy.yml` therefore also runs on a daily `schedule`, because a deploy is
-  now the only way the site learns the agent has written anything. (GitHub
-  disables scheduled workflows after 60 days without repository activity.)
-- After syncing, the workflow **commits the refreshed snapshot back to
-  `master`** — which is why `permissions.contents` is `write`. That keeps the
-  offline fallback current and gives the agent's output a history in this repo.
-  The push is best-effort (`continue-on-error`, one rebase retry): a deploy must
-  never fail over bookkeeping, and the next run carries the same content anyway.
-  Pushes made with `GITHUB_TOKEN` do not start another workflow run, so it
-  cannot loop.
-
-That commit-back is also what makes the journal survive a builder other than
-`deploy.yml`. The repo has a Cloudflare Workers project (`kevink-im`) wired to
-it, and any external builder runs its own `npm run build` without the sync step
-— so it ships whatever `journal.json` is committed. Because the workflow keeps
-that file current, such a build is still at most a day behind, and the push
-itself fires the webhook that starts it. The sync is deliberately *not* part of
-`npm run build`: a build should not reach the network or rewrite a tracked file
-behind whoever ran it.
-
-Two details keep that commit honest. The script **only writes the file when the
-content changes** — a run where the agent has not pushed leaves it byte-identical
-rather than churning a timestamp, so the history is one commit per agent push
-instead of one per day. And it reads every file **pinned to the commit SHA it
-resolved up front**, never at the branch name, so a CDN-cached raw file cannot
-land in a snapshot labelled with a newer commit. The consequence is that
-`syncedAt` means "when this mirror last changed", which is why the page displays
-the source commit's date instead.
-
-Refresh the snapshot by hand with `npm run sync:wick`. On a machine that cannot
-reach the GitHub API, point it at a checkout instead:
-`WICK_LOCAL_REPO=../project-wick npm run sync:wick`.
-
-**The parser repairs as it reads, on purpose.** The agent's write path is a
-known-broken JSON tool call — the defect the one-pager describes in §06 — and it
-produces day files with literal `\n` where line breaks belong, headings glued to
-the end of the previous line, and a final entry that is sometimes cut off
-mid-sentence. The script undoes the first two so the entries are readable and
-*marks* the third rather than hiding it: a truncated entry renders with a red
-border and says it was cut off. A mirror that quietly tidied the breakage would
-be a worse record than the one the agent keeps.
-
-Facts that appear on both pages — entry counts, the state of the open defect —
-come from the repository. When the one-pager's prose and the journal's data
-disagree, the one-pager is the one that is out of date.
+A product one-pager for an hourly journaling agent, paired with a journal page
+at `/project-wick/journal/` that renders what the agent has actually written,
+mirrored at build time from [`kevenex/project-wick`](https://github.com/kevenex/project-wick)
+by `scripts/sync-wick-journal.mjs` into `public/project-wick/journal.json` (run
+by hand with `npm run sync:wick`). Both pages are static HTML in `public/`, no
+React, sharing a hand-drawn mark and a two-color system: amber for the human,
+red for an open defect.
 
 ## Notes
 
