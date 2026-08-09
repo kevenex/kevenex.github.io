@@ -8,8 +8,11 @@ const PILL_SPRING = { type: 'spring' as const, stiffness: 350, damping: 28 };
 
 /*
  * Two kinds of entry: `target` scrolls to a position on this page, `href`
- * navigates away. The flyer and Wick are standalone static pages under
- * public/, so those are real navigations rather than scrolls.
+ * navigates away. The flyer is a standalone static page under public/, so
+ * that's a real navigation rather than a scroll. Wick is deliberately left
+ * out of nav — its page still exists under public/ and is reachable by
+ * direct URL, but it's locked out of home-page discovery, same as its card
+ * in the Projects grid.
  */
 type NavLink =
   | { label: string; target: () => number; href?: never }
@@ -19,11 +22,6 @@ const NAV_LINKS: NavLink[] = [
   { label: 'About', target: () => window.innerHeight },
   { label: 'Projects', target: () => window.innerHeight * 2 },
   { label: 'Flyer Fable', href: '/flyer-fable/' },
-  // "Wick", not "Project Wick". The open pill is measured from these labels,
-  // and the full name grows it until it touches the Download button between
-  // 640 and 768px — the failure the note above warns about. The card in the
-  // Projects grid and the page itself both carry the full name.
-  { label: 'Wick', href: '/project-wick/' },
 ];
 
 /*

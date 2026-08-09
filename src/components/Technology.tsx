@@ -1,10 +1,22 @@
 import { motion } from 'framer-motion';
 
+type TagColor = 'blue' | 'green' | 'orange' | 'purple';
+
+/* iOS-style status chip colors — tinted background at low opacity with the
+ * matching solid tone for text, same trick Settings/Notes badges use. */
+const TAG_COLORS: Record<TagColor, string> = {
+  blue: 'bg-blue-500/15 text-blue-300',
+  green: 'bg-green-500/15 text-green-300',
+  orange: 'bg-orange-500/15 text-orange-300',
+  purple: 'bg-purple-500/15 text-purple-300',
+};
+
 interface TimelineEntry {
   year: string;
   role: string;
   company: string;
   status: 'now' | 'shipped';
+  tags?: { label: string; color: TagColor }[];
 }
 
 /* Most recent first — a roadmap reads top-down like a changelog, "Now" at the top. */
@@ -14,6 +26,10 @@ const TIMELINE: TimelineEntry[] = [
     role: 'Product Manager',
     company: 'Plusgrade',
     status: 'now',
+    tags: [
+      { label: 'Data Migration', color: 'blue' },
+      { label: 'M&A', color: 'orange' },
+    ],
   },
   {
     year: '2023 — 2024',
@@ -26,6 +42,7 @@ const TIMELINE: TimelineEntry[] = [
     role: 'Senior Product Manager',
     company: 'Brim Financial',
     status: 'shipped',
+    tags: [{ label: 'Series B', color: 'green' }],
   },
   {
     year: '2020 — 2021',
@@ -35,19 +52,41 @@ const TIMELINE: TimelineEntry[] = [
   },
   {
     year: '2019',
-    role: 'Product Manager (Intern)',
+    role: 'Product Manager',
     company: 'IBM',
     status: 'shipped',
+    tags: [{ label: 'Internship', color: 'purple' }],
   },
   {
     year: '2018 — 2019',
     role: 'Business Analyst',
     company: 'Intrepid Ventures',
     status: 'shipped',
+    tags: [{ label: 'Internship', color: 'purple' }],
   },
 ];
 
-const COMPANIES = ['Plusgrade', 'ATB Financial', 'Brim Financial', 'Canadian Tire', 'IBM', 'Intrepid Ventures'];
+type SkillGroup = 'Product' | 'Technical' | 'Strategy';
+
+/* One dot color and bar fill per group, same low-opacity-tint trick as the
+ * status chips above so the two color systems read as related, not clashing. */
+const SKILL_GROUP_COLORS: Record<SkillGroup, { dot: string; bar: string }> = {
+  Product: { dot: 'bg-sky-400', bar: 'bg-sky-400/80' },
+  Technical: { dot: 'bg-violet-400', bar: 'bg-violet-400/80' },
+  Strategy: { dot: 'bg-amber-400', bar: 'bg-amber-400/80' },
+};
+
+const SKILL_GROUPS: SkillGroup[] = ['Product', 'Technical', 'Strategy'];
+
+/* Rough self-assessment — placeholders to adjust once real levels are pinned down. */
+const SKILLS: { name: string; level: number; group: SkillGroup }[] = [
+  { name: 'Product Strategy', level: 95, group: 'Product' },
+  { name: 'Roadmap Planning', level: 92, group: 'Product' },
+  { name: 'User Research', level: 78, group: 'Product' },
+  { name: 'Data-Driven Decision Making', level: 85, group: 'Technical' },
+  { name: 'Agile Delivery', level: 84, group: 'Technical' },
+  { name: 'Stakeholder Management', level: 90, group: 'Strategy' },
+];
 
 export default function Technology() {
   return (
@@ -115,9 +154,19 @@ export default function Technology() {
                   </span>
 
                   <span className="flex flex-col gap-1">
-                    <span className="text-[15px] font-normal leading-snug text-white sm:text-[17px]">
-                      {entry.role}
-                      <span className="text-white/40"> — {entry.company}</span>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[15px] font-normal leading-snug text-white sm:text-[17px]">
+                        {entry.role}
+                        <span className="text-white/40"> — {entry.company}</span>
+                      </span>
+                      {entry.tags?.map((tag) => (
+                        <span
+                          key={tag.label}
+                          className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide sm:text-[10px] ${TAG_COLORS[tag.color]}`}
+                        >
+                          {tag.label}
+                        </span>
+                      ))}
                     </span>
                     <span className="text-[11px] uppercase tracking-[0.12em] text-white/30 sm:text-[12px]">
                       {entry.year}
@@ -140,20 +189,51 @@ export default function Technology() {
         </motion.div>
 
         <motion.div
-          className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 sm:mt-16 sm:pt-8"
+          className="mt-14 border-t border-white/10 pt-8 sm:mt-16 sm:pt-10"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.0, delay: 0.4 }}
         >
-          {COMPANIES.map((name) => (
-            <span
-              key={name}
-              className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/35 sm:text-[12px]"
-            >
-              {name}
-            </span>
-          ))}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-[12px] uppercase tracking-[0.2em] text-white/35 sm:text-[13px]">
+              Skills
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {SKILL_GROUPS.map((group) => (
+                <span key={group} className="flex items-center gap-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${SKILL_GROUP_COLORS[group].dot}`} />
+                  <span className="text-[11px] text-white/40 sm:text-[12px]">{group}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-5 sm:mt-8 sm:gap-6">
+            {SKILLS.map((skill, index) => (
+              <div key={skill.name} className="flex flex-col gap-2">
+                <div className="flex items-baseline justify-between">
+                  <span className="flex items-center gap-2 text-[13px] text-white/80 sm:text-[14px]">
+                    <span
+                      className={`h-1.5 w-1.5 shrink-0 rounded-full ${SKILL_GROUP_COLORS[skill.group].dot}`}
+                    />
+                    {skill.name}
+                  </span>
+                  <span className="text-[11px] text-white/35 sm:text-[12px]">{skill.level}%</span>
+                </div>
+                <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
+                  <motion.div
+                    className={`h-full rounded-full ${SKILL_GROUP_COLORS[skill.group].bar}`}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.level}%` }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 1.0, delay: 0.1 + index * 0.08, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
