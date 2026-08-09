@@ -6,16 +6,16 @@ on:
   workflow_dispatch:
   # Two sibling repos are pulled in at build time rather than vendored here, so
   # a deploy is how this site learns either one changed: the Project Wick
-  # journal (pulled roughly every two days) and the Chloe game (public/chloe/,
-  # rebuilt fresh from kevenex/chloe-web-app — see scripts/sync-chloe.mjs).
-  # Rebuilding daily keeps the lag on both under a day without needing to know
-  # exactly when either push lands.
+  # journal and the Chloe game (public/chloe/, rebuilt fresh from
+  # kevenex/chloe-web-app — see scripts/sync-chloe.mjs). Rebuilding daily
+  # keeps the lag on both under a day without needing to know exactly when
+  # either push lands.
   schedule:
     - cron: '17 6 * * *'
 
 permissions:
   # `write` rather than `read` for one reason: the scheduled run commits the
-  # refreshed Project Wick snapshot back to master (see the sync steps below).
+  # refreshed snapshots back to master (see the sync steps below).
   contents: write
   pages: write
   id-token: write
@@ -46,40 +46,43 @@ jobs:
 
       # Clone kevenex/chloe-web-app, build it, and drop the output in
       # public/chloe/ so /chloe/ always serves whatever is on that repo's
-      # default branch as of this deploy. Nothing here is committed — unlike
-      # the journal above, a JS/CSS bundle gets new hashed filenames on every
-      # build even when the source didn't change, so committing it would just
-      # be daily git noise. Same best-effort rule as the wick sync: a failure
-      # here (a network blip, a broken build on Chloe's side) must not fail
-      # this site's deploy — the script swallows it and annotates the run.
+      # default branch as of this deploy. Committed, same as the journal
+      # below — this repo is also deployed by a Cloudflare Worker build
+      # whose sandbox cannot be assumed to have git/network access to run
+      # this sync itself, so a committed snapshot is the fallback it gets.
+      # Same best-effort rule as the wick sync either way: a failure here (a
+      # network blip, a broken build on Chloe's side) must not fail this
+      # site's deploy — the script swallows it and annotates the run.
       - name: Build and embed the Chloe game
         run: npm run sync:chloe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Keep the checked-in snapshot current, not just the artifact. The build
-      # below uses the working-tree file either way, so this commit is about the
-      # repository: it keeps the offline fallback fresh and gives the agent's
-      # output a history here, one commit per push it makes.
+      # Keep the checked-in snapshots current, not just the artifact. The build
+      # below uses the working tree either way, so this commit is about the
+      # repository: it keeps both fallbacks fresh (including for the
+      # Cloudflare Worker build, which reads whatever is committed here rather
+      # than running these syncs itself) and gives each sibling's output a
+      # history here, one commit per run that changed something.
       #
       # Best-effort by construction. A push that loses a race with a human
       # commit is retried once against the new tip and then given up on — the
       # next scheduled run will carry the same content anyway, and a deploy must
       # never fail over bookkeeping. Pushes made with GITHUB_TOKEN do not start
       # another workflow run, so this cannot loop.
-      - name: Commit the refreshed snapshot
+      - name: Commit the refreshed snapshots
         if: github.ref == 'refs/heads/master'
         continue-on-error: true
         run: |
           set -u
-          if git diff --quiet -- public/project-wick/journal.json; then
-            echo "journal.json unchanged — the agent has not pushed since the last run"
+          git add public/project-wick/journal.json public/chloe
+          if git diff --cached --quiet; then
+            echo "nothing changed — neither sibling repo has moved since the last run"
             exit 0
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/project-wick/journal.json
-          git commit -m "Sync the Project Wick journal from the agent's repo"
+          git commit -m "Sync the Project Wick journal and the Chloe game from their repos"
           git push || {
             echo "push rejected — rebasing onto the new tip and retrying once"
             git fetch origin master && git rebase origin/master && git push

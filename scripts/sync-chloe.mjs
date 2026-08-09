@@ -6,17 +6,18 @@
  * rest of this repo's deploys (push to master, workflow_dispatch, and the
  * daily cron already in deploy.yml).
  *
- * Unlike the Project Wick journal, the output here is never committed. A
- * built JS/CSS bundle gets new hashed filenames on every build even when
- * nothing changed, so committing it would just be daily git noise; the
- * `npm run build` step immediately after this one already reads the fresh
- * copy straight off disk, so nothing depends on it being in git.
+ * Same pattern as the Project Wick journal: the output IS committed, so
+ * there is always a working snapshot in git even if this script can't run
+ * at all in a given build environment (no git, no network egress to
+ * GitHub — this repo is also deployed by a Cloudflare Worker build, whose
+ * sandbox is not guaranteed to have either). A build that only runs
+ * `npm run build` still serves whatever was last committed here.
  *
  * Best-effort by construction, same as the wick sync: a failure here (a
- * network blip, a broken build on Chloe's side) must not fail this site's
- * deploy over a sibling project. It logs a warning and leaves public/chloe/
- * exactly as it was on disk — including empty, on a run before the first
- * success.
+ * network blip, a broken build on Chloe's side, a sandboxed build
+ * environment) must not fail this site's deploy over a sibling project. It
+ * logs a warning and leaves public/chloe/ exactly as it was on disk — the
+ * last committed snapshot, unless a local run has already refreshed it.
  *
  *   node scripts/sync-chloe.mjs                        # refresh public/chloe/
  *   CHLOE_LOCAL_REPO=/path/to/chloe-web-app node scripts/sync-chloe.mjs
@@ -94,10 +95,9 @@ async function main() {
 
 /*
  * A failed sync must not fail this site's build — same rule as the wick sync.
- * Unlike that script there is no committed snapshot to fall back to (nothing
- * here is ever committed), so the fallback is simply: leave public/chloe/ as
- * it already was on disk, which is either an untouched checkout of the last
- * successful state or, on the very first run ever, nothing at all.
+ * The fallback is simply: leave public/chloe/ as it already was on disk,
+ * which is the last committed snapshot unless this same run already
+ * refreshed it before something later failed.
  */
 main().catch((err) => {
   console.error(`chloe sync failed: ${err.message}`);
