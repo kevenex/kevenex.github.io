@@ -55,25 +55,37 @@ const TIMELINE: TimelineEntry[] = [
     role: 'Product Manager',
     company: 'IBM',
     status: 'shipped',
-    tags: [{ label: 'Intern', color: 'purple' }],
+    tags: [{ label: 'Internship', color: 'purple' }],
   },
   {
     year: '2018 — 2019',
     role: 'Business Analyst',
     company: 'Intrepid Ventures',
     status: 'shipped',
-    tags: [{ label: 'Intern', color: 'purple' }],
+    tags: [{ label: 'Internship', color: 'purple' }],
   },
 ];
 
+type SkillGroup = 'Product' | 'Technical' | 'Strategy';
+
+/* One dot color and bar fill per group, same low-opacity-tint trick as the
+ * status chips above so the two color systems read as related, not clashing. */
+const SKILL_GROUP_COLORS: Record<SkillGroup, { dot: string; bar: string }> = {
+  Product: { dot: 'bg-sky-400', bar: 'bg-sky-400/80' },
+  Technical: { dot: 'bg-violet-400', bar: 'bg-violet-400/80' },
+  Strategy: { dot: 'bg-amber-400', bar: 'bg-amber-400/80' },
+};
+
+const SKILL_GROUPS: SkillGroup[] = ['Product', 'Technical', 'Strategy'];
+
 /* Rough self-assessment — placeholders to adjust once real levels are pinned down. */
-const SKILLS: { name: string; level: number }[] = [
-  { name: 'Product Strategy', level: 95 },
-  { name: 'Roadmap Planning', level: 92 },
-  { name: 'Stakeholder Management', level: 90 },
-  { name: 'Data-Driven Decision Making', level: 85 },
-  { name: 'Agile Delivery', level: 84 },
-  { name: 'User Research', level: 78 },
+const SKILLS: { name: string; level: number; group: SkillGroup }[] = [
+  { name: 'Product Strategy', level: 95, group: 'Product' },
+  { name: 'Roadmap Planning', level: 92, group: 'Product' },
+  { name: 'User Research', level: 78, group: 'Product' },
+  { name: 'Data-Driven Decision Making', level: 85, group: 'Technical' },
+  { name: 'Agile Delivery', level: 84, group: 'Technical' },
+  { name: 'Stakeholder Management', level: 90, group: 'Strategy' },
 ];
 
 export default function Technology() {
@@ -183,20 +195,36 @@ export default function Technology() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.0, delay: 0.4 }}
         >
-          <p className="mb-6 text-[12px] uppercase tracking-[0.2em] text-white/35 sm:mb-8 sm:text-[13px]">
-            Skills
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-[12px] uppercase tracking-[0.2em] text-white/35 sm:text-[13px]">
+              Skills
+            </p>
 
-          <div className="flex flex-col gap-5 sm:gap-6">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {SKILL_GROUPS.map((group) => (
+                <span key={group} className="flex items-center gap-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${SKILL_GROUP_COLORS[group].dot}`} />
+                  <span className="text-[11px] text-white/40 sm:text-[12px]">{group}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-5 sm:mt-8 sm:gap-6">
             {SKILLS.map((skill, index) => (
               <div key={skill.name} className="flex flex-col gap-2">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-[13px] text-white/80 sm:text-[14px]">{skill.name}</span>
+                  <span className="flex items-center gap-2 text-[13px] text-white/80 sm:text-[14px]">
+                    <span
+                      className={`h-1.5 w-1.5 shrink-0 rounded-full ${SKILL_GROUP_COLORS[skill.group].dot}`}
+                    />
+                    {skill.name}
+                  </span>
                   <span className="text-[11px] text-white/35 sm:text-[12px]">{skill.level}%</span>
                 </div>
                 <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
                   <motion.div
-                    className="h-full rounded-full bg-white/70"
+                    className={`h-full rounded-full ${SKILL_GROUP_COLORS[skill.group].bar}`}
                     initial={{ width: 0 }}
                     whileInView={{ width: `${skill.level}%` }}
                     viewport={{ once: true, amount: 0.3 }}

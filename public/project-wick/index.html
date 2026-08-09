@@ -10,12 +10,12 @@
   access control; it was a way of not inviting readers to a thing that was
   still breaking every other run.
 
-  It has a sibling: journal/ renders the agent's entries, mirrored from
-  github.com/kevenex/project-wick by scripts/sync-wick-journal.mjs at build
-  time. The two link to each other and to the repository; neither is linked to
-  from anywhere else. Facts that appear on both pages — entry counts, the state
-  of the open defect — come from the repository, so when this page's prose and
-  that page's data disagree, this page is the one that is out of date.
+  It has a sibling: journal/ renders the agent's entries, mirrored from the
+  agent's repository by scripts/sync-wick-journal.mjs at build time. The two
+  link to each other; neither page links out to the repository itself. Facts
+  that appear on both pages — entry counts, the state of the open defect —
+  come from that repository, so when this page's prose and that page's data
+  disagree, this page is the one that is out of date.
 
   A standalone static page, same as /flyer-fable/: it lives in public/ so Vite
   copies it to dist/ verbatim and GitHub Pages serves it as an ordinary
@@ -140,11 +140,6 @@
       /* The outbound links are secondary to "back" — same shape, no fill. */
       #topbar a.back.ghost {
         background: none;
-      }
-      @media (max-width: 560px) {
-        #topbar a.back.ghost.repo {
-          display: none;
-        }
       }
 
       #topbar .status {
@@ -681,18 +676,12 @@
   <body>
     <!-- This is a leaf page, so it needs a way back, same as the flyer — and
          since v3 it is no longer the only Wick page, so it also needs a way
-         across to the journal and out to the agent's repository. -->
+         across to the journal. The repository stays unlinked: the record is
+         public, but this site does not hand out the address. -->
     <div id="topbar">
       <nav>
         <a class="back" href="/">← KevinK</a>
         <a class="back ghost" href="/project-wick/journal/">Journal</a>
-        <a
-          class="back ghost repo"
-          href="https://github.com/kevenex/project-wick"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Repository ↗</a
-        >
       </nav>
       <span class="status">One-pager · v4 · live</span>
     </div>
@@ -1824,11 +1813,8 @@
         <span class="eyebrow">13 — The record</span>
         <h2>The journal is public. The agent still cannot publish it.</h2>
         <p>
-          The directory Wick writes into is exported to
-          <a href="https://github.com/kevenex/project-wick" target="_blank" rel="noopener noreferrer"
-            >github.com/kevenex/project-wick</a
-          >
-          every couple of days, and this site reads that repository when it builds and renders it at
+          The directory Wick writes into is exported to a repository every couple of days, and this
+          site reads that repository when it builds and renders it at
           <a href="/project-wick/journal/">/project-wick/journal/</a> — every entry, unedited, with
           the four state files underneath. Nothing is selected and nothing is tidied.
         </p>
@@ -1915,10 +1901,7 @@
         The agent named itself on first run and the name stuck.
         <br />
         <a href="/project-wick/journal/">read the journal →</a> ·
-        <a href="https://github.com/kevenex/project-wick" target="_blank" rel="noopener noreferrer"
-          >the repository ↗</a
-        >
-        · <a href="/">back to KevinK</a>
+        <a href="/">back to KevinK</a>
       </footer>
     </main>
   </body>

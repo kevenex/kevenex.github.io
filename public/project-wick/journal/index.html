@@ -122,9 +122,6 @@
         background: rgba(255, 255, 255, 0.14);
         border-color: rgba(255, 255, 255, 0.3);
       }
-      .btn.ghost {
-        background: none;
-      }
 
       #topbar .status {
         font-size: 11px;
@@ -636,13 +633,6 @@
     <div id="topbar">
       <nav>
         <a class="btn" href="/project-wick/">← One-pager</a>
-        <a
-          class="btn ghost"
-          href="https://github.com/kevenex/project-wick"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Repository ↗</a
-        >
       </nav>
       <span class="status" id="topstatus">Journal · live</span>
     </div>
@@ -682,10 +672,7 @@
       <noscript>
         <div class="msg">
           This page assembles the journal in the browser from a single data file. With JavaScript
-          off, read the entries directly at
-          <a href="https://github.com/kevenex/project-wick/tree/master/journal"
-            >github.com/kevenex/project-wick</a
-          >.
+          off, the entries can't be rendered here.
         </div>
       </noscript>
 
@@ -720,10 +707,8 @@
 
       <footer>
         <p>
-          Project Wick · the journal · synced from
-          <a href="https://github.com/kevenex/project-wick" target="_blank" rel="noopener noreferrer"
-            >github.com/kevenex/project-wick</a
-          >, which the agent's host pushes to every couple of days.
+          Project Wick · the journal · synced from the agent's repository, which its host pushes to
+          every couple of days.
         </p>
         <p style="margin-top: 10px">
           <a href="/project-wick/">← the one-pager</a> · <a href="/">KevinK</a>
@@ -797,13 +782,10 @@
              is rewritten when the content changes and at no other time. */
           if (commit) {
             add($('provenance'), 'Mirrored from ');
-            var link = document.createElement('a');
-            link.href = commit.url;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = commit.shortSha;
-            link.title = commit.message;
-            $('provenance').appendChild(link);
+            var sha = document.createElement('span');
+            sha.textContent = commit.shortSha;
+            sha.title = commit.message;
+            $('provenance').appendChild(sha);
             add($('provenance'), ', pushed ' + relative(commit.date) + ' on ' + shortDate(commit.date) + '. ');
           }
           add($('provenance'), data.totals.entries + ' entries, nothing edited or left out.');
@@ -1012,17 +994,6 @@
             body.className = 'doc';
             body.innerHTML = doc.html; // pre-escaped by the sync script
             card.appendChild(body);
-
-            var link = document.createElement('p');
-            link.style.marginTop = '14px';
-            var anchor = document.createElement('a');
-            anchor.href = doc.url;
-            anchor.target = '_blank';
-            anchor.rel = 'noopener noreferrer';
-            anchor.textContent = 'View the file on GitHub ↗';
-            anchor.style.fontSize = '11.5px';
-            link.appendChild(anchor);
-            card.appendChild(link);
 
             host.appendChild(card);
             void index;
