@@ -3,6 +3,10 @@ dist
 dist-ssr
 *.local
 
+# Rebuilt from github.com/kevenex/chloe-web-app on every deploy (see
+# scripts/sync-chloe.mjs) — never committed, same reasoning as dist/.
+public/chloe
+
 logs
 *.log
 npm-debug.log*

@@ -4,10 +4,12 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
-  # The Project Wick journal is pulled from another repository at build time, so
-  # a deploy is how the site learns the agent has written anything. That repo is
-  # pushed roughly every two days; rebuilding daily keeps the lag under a day
-  # without needing to know exactly when the push lands.
+  # Two sibling repos are pulled in at build time rather than vendored here, so
+  # a deploy is how this site learns either one changed: the Project Wick
+  # journal (pulled roughly every two days) and the Chloe game (public/chloe/,
+  # rebuilt fresh from kevenex/chloe-web-app — see scripts/sync-chloe.mjs).
+  # Rebuilding daily keeps the lag on both under a day without needing to know
+  # exactly when either push lands.
   schedule:
     - cron: '17 6 * * *'
 
@@ -39,6 +41,19 @@ jobs:
       # rather than costing the site its deploy — it annotates the run instead.
       - name: Sync the Project Wick journal
         run: npm run sync:wick
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Clone kevenex/chloe-web-app, build it, and drop the output in
+      # public/chloe/ so /chloe/ always serves whatever is on that repo's
+      # default branch as of this deploy. Nothing here is committed — unlike
+      # the journal above, a JS/CSS bundle gets new hashed filenames on every
+      # build even when the source didn't change, so committing it would just
+      # be daily git noise. Same best-effort rule as the wick sync: a failure
+      # here (a network blip, a broken build on Chloe's side) must not fail
+      # this site's deploy — the script swallows it and annotates the run.
+      - name: Build and embed the Chloe game
+        run: npm run sync:chloe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
