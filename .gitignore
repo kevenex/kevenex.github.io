@@ -3,6 +3,9 @@ dist
 dist-ssr
 *.local
 
+# Wrangler's local state for `wrangler dev` / `wrangler deploy` runs.
+.wrangler
+
 # Rebuilt from github.com/kevenex/chloe-web-app on every deploy (see
 # scripts/sync-chloe.mjs) — never committed, same reasoning as dist/.
 public/chloe
