@@ -17,14 +17,18 @@ type ProjectIcon = ComponentType<{
 
 /*
  * A card with an `href` is a live link; one without renders as an inert
- * "Coming soon" placeholder rather than a dead link. Adding a page later is a
- * one-line change — give the entry its href.
+ * placeholder rather than a dead link. Adding a page later is a one-line
+ * change — give the entry its href. `locked` marks a card whose page exists
+ * and is still reachable by direct URL, but that we don't want surfaced (and
+ * therefore linked) from the home page — it renders inert like a
+ * "Coming soon" card, just labeled "Locked" instead.
  */
 interface Project {
   title: string;
   blurb: string;
   icon: ProjectIcon;
   href?: string;
+  locked?: boolean;
 }
 
 const PROJECTS: Project[] = [
@@ -38,7 +42,7 @@ const PROJECTS: Project[] = [
     title: 'Project Wick',
     blurb: 'An agent that wakes every hour, does one small thing, and writes about it.',
     icon: WickMark,
-    href: '/project-wick/',
+    locked: true,
   },
   {
     title: 'Experiments',
@@ -122,7 +126,7 @@ export default function Projects() {
                       project.href ? 'text-white/70' : 'text-white/30'
                     }`}
                   >
-                    {project.href ? 'Open →' : 'Coming soon'}
+                    {project.href ? 'Open →' : project.locked ? 'Locked' : 'Coming soon'}
                   </span>
                 </>
               );
