@@ -919,9 +919,17 @@
           state.data.days.forEach(function (day) {
             if (state.day !== 'all' && state.day !== day.date) return;
 
-            var hits = day.entries.filter(function (entry) {
-              return matches(entry, day);
-            });
+            /* Newest first, to match the day groups above it — the most recent
+               entry is what a returning reader came for, and burying it under a
+               day's worth of earlier runs is the one thing a reverse-chronological
+               page must not do. `filter` already returns a copy, so reversing it
+               does not disturb the data: entries stay in the order the agent wrote
+               them, and each keeps the run number it had. */
+            var hits = day.entries
+              .filter(function (entry) {
+                return matches(entry, day);
+              })
+              .reverse();
             if (!hits.length) return;
             shown += hits.length;
 
@@ -952,7 +960,7 @@
 
           $('count').textContent = state.query || state.day !== 'all'
             ? shown + ' of ' + state.data.totals.entries + ' entries shown'
-            : state.data.totals.entries + ' entries, oldest first within each day';
+            : state.data.totals.entries + ' entries, newest first';
         }
 
         function renderEntry(entry) {
