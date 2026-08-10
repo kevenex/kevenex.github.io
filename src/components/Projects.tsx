@@ -48,7 +48,7 @@ const PROJECTS: Project[] = [
     title: 'Project Chloe',
     blurb: 'A calico cat you can pet and feed — an interactive pet game, early in development.',
     icon: Cat,
-    href: '/chloe/',
+    locked: true,
   },
   {
     title: 'Experiments',
