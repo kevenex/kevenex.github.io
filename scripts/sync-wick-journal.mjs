@@ -44,9 +44,19 @@ const STATE_FILES = [
   { file: 'state/identity.md', title: 'Identity', note: 'Who Wick decided it is, written on the first run.' },
   { file: 'state/personality.md', title: 'Personality', note: 'Rewritten by Wick after every third entry. The experiment’s raw data.' },
   { file: 'state/interests.md', title: 'Interests', note: 'What Wick has found genuinely curious, and what it shelved.' },
-  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to four open threads, where each got to, and what happens next.' },
+  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to eight open threads, where each got to, and what happens next.' },
   { file: 'state/pending-approval.md', title: 'Pending approvals', note: 'Anything Wick asked to do and is waiting on. Silence is not consent.' },
 ];
+
+/* The wiki is the agent's second record: state/ and journal/ are what it thought,
+   wiki/ is what it decided is worth keeping. Only the pages count as content —
+   index.md, log.md, hot.md, SCHEMA.md and meta/ are bookkeeping the agent's own
+   run.py regenerates from the filesystem after every run, so mirroring them would
+   put machine output on a page whose whole claim is that it shows Wick's writing.
+   Leading-underscore files (research/<program>/_index.md) are navigation stubs and
+   go the same way. */
+const WIKI_PAGE =
+  /^wiki\/(?:concepts|entities|sources|comparisons|questions|projects|research)\/(?:[^/]+\/)*[^_/][^/]*\.md$/;
 
 // ---------------------------------------------------------------- fetching
 
@@ -104,6 +114,19 @@ function escapeHtml(text) {
 }
 
 /*
+ * `[[wiki/concepts/thing.md|Label]]` → `Label`, `[[thing]]` → `thing`. Obsidian
+ * links resolve inside the agent's vault, which this site does not reproduce:
+ * most targets are pages Wick has not written yet, and none of them have a URL
+ * here. Rendering the label alone keeps the sentence readable; leaving the
+ * brackets in would show markup on a page whose point is the prose.
+ */
+function wikiLinkText(target, label) {
+  if (label) return label.trim();
+  const slug = target.trim().split('/').pop().replace(/\.md$/i, '');
+  return slug.replace(/[-_]+/g, ' ').trim() || target.trim();
+}
+
+/*
  * Inline formatting only, and applied *after* escaping — everything the page
  * inserts as HTML has already been through escapeHtml, so a journal entry can
  * never introduce a tag. Wick writes plain prose with the occasional emphasis;
@@ -111,6 +134,7 @@ function escapeHtml(text) {
  */
 function inline(escaped) {
   return escaped
+    .replace(/\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g, (_, target, label) => wikiLinkText(target, label))
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noopener noreferrer" target="_blank">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
@@ -184,6 +208,67 @@ function renderMarkdown(md) {
 
   flush();
   return out.join('\n');
+}
+
+// -------------------------------------------------------------- wiki pages
+
+/*
+ * Enough YAML for the frontmatter block SCHEMA.md actually specifies: scalars,
+ * `key:` followed by `- item` lists, and the odd inline `[a, b]`. A real parser
+ * would be a dependency for five keys on a file the agent writes by hand under a
+ * template — and anything this misses degrades to a missing chip, not a broken
+ * page, because the body is rendered from the text after the block either way.
+ */
+function unquoteYaml(value) {
+  const trimmed = value.trim();
+  const quoted = trimmed.match(/^"([\s\S]*)"$|^'([\s\S]*)'$/);
+  return quoted ? (quoted[1] ?? quoted[2]) : trimmed;
+}
+
+function parseFrontmatter(md) {
+  const text = md.replace(/\r\n/g, '\n');
+  const block = text.match(/^---\n([\s\S]*?)\n\s*---\n?/);
+  if (!block) return { meta: {}, body: text.trim() };
+
+  const meta = {};
+  let key = null;
+
+  for (const line of block[1].split('\n')) {
+    const scalar = line.match(/^([A-Za-z_][\w-]*):\s*(.*)$/);
+    if (scalar) {
+      key = scalar[1];
+      const raw = scalar[2].trim();
+      if (raw === '' || raw === '[]') meta[key] = []; // a bare key opens a list
+      else if (raw.startsWith('[') && raw.endsWith(']'))
+        meta[key] = raw.slice(1, -1).split(',').map(unquoteYaml).filter(Boolean);
+      else meta[key] = unquoteYaml(raw);
+      continue;
+    }
+
+    const item = line.match(/^\s*-\s+(.*)$/);
+    if (item && key) {
+      if (!Array.isArray(meta[key])) meta[key] = meta[key] ? [meta[key]] : [];
+      meta[key].push(unquoteYaml(item[1]));
+    }
+  }
+
+  return { meta, body: text.slice(block[0].length).trim() };
+}
+
+function parseWikiPage(path, md) {
+  const { meta, body } = parseFrontmatter(md);
+  const str = (value) => (typeof value === 'string' && value ? value : null);
+
+  return {
+    file: path,
+    title: str(meta.title) || wikiLinkText(path),
+    type: str(meta.type),
+    domain: str(meta.domain),
+    status: str(meta.status),
+    updated: str(meta.updated) || str(meta.created),
+    // The h1 repeats the title the card already shows, same as the state docs.
+    html: renderMarkdown(body.replace(/^#\s+.*$/m, '').trim()),
+  };
 }
 
 // ------------------------------------------------------------ journal parse
@@ -311,6 +396,16 @@ function githubSource() {
         .filter((e) => e.type === 'file' && e.name.endsWith('.md'))
         .map((e) => ({ path: e.path, url: rawUrl(e.path) }));
     },
+    /* One recursive tree call rather than walking contents/ per directory: the
+       wiki nests (research/<program>/<page>.md) and its shape is the agent's to
+       change. `truncated` only trips past 100k entries, which this vault will
+       not reach; if it ever did, the miss is pages missing from the mirror. */
+    async listWiki() {
+      const tree = await getJson(`${API}/repos/${OWNER}/${REPO}/git/trees/${ref}?recursive=1`);
+      return (tree.tree || [])
+        .filter((e) => e.type === 'blob' && WIKI_PAGE.test(e.path))
+        .map((e) => ({ path: e.path, url: rawUrl(e.path) }));
+    },
     read(path) {
       return getText(rawUrl(path));
     },
@@ -336,6 +431,18 @@ function localSource(dir) {
     async listJournal() {
       const names = await readdir(resolve(dir, 'journal'));
       return names.filter((n) => n.endsWith('.md')).map((n) => ({ path: `journal/${n}`, url: resolve(dir, 'journal', n) }));
+    },
+    async listWiki() {
+      let names;
+      try {
+        names = await readdir(resolve(dir, 'wiki'), { recursive: true });
+      } catch {
+        return []; // a checkout from before the wiki existed
+      }
+      return names
+        .map((n) => `wiki/${String(n).split(/[\\/]/).join('/')}`)
+        .filter((path) => WIKI_PAGE.test(path))
+        .map((path) => ({ path, url: resolve(dir, path) }));
     },
     read(path) {
       return readFile(resolve(dir, path), 'utf8');
@@ -363,6 +470,20 @@ async function main() {
     const day = parseDay(file.path, await source.readUrl(file.url));
     if (day.entries.length) days.push(day);
   }
+
+  /* Newest first, on the page's own `updated` field rather than a commit date:
+     the agent stamps it when it revises a page, and a page it has not touched
+     in a week belongs below one it rewrote this morning regardless of what the
+     nightly auto-sync commit did to the file's mtime. */
+  const wiki = [];
+  for (const file of await source.listWiki()) {
+    try {
+      wiki.push(parseWikiPage(file.path, await source.readUrl(file.url)));
+    } catch (err) {
+      console.warn(`  skipped ${file.path}: ${err.message}`);
+    }
+  }
+  wiki.sort((a, b) => (b.updated || '').localeCompare(a.updated || '') || a.title.localeCompare(b.title));
 
   const state = [];
   for (const spec of STATE_FILES) {
@@ -440,14 +561,17 @@ async function main() {
       days: days.length,
       entries: days.reduce((sum, d) => sum + d.entries.length, 0),
       words: days.reduce((sum, d) => sum + d.words, 0),
+      wikiPages: wiki.length,
     },
     days,
+    wiki,
     state,
   };
 
   const summary =
     `${data.totals.entries} entries across ${data.totals.days} day(s), ` +
-    `${data.totals.words} words, at ${data.source.commit?.shortSha ?? 'unknown'}`;
+    `${data.totals.words} words, ${data.totals.wikiPages} wiki page(s), ` +
+    `at ${data.source.commit?.shortSha ?? 'unknown'}`;
 
   /*
    * A run where the agent has not pushed since the last one must leave the file
