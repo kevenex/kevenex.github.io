@@ -16,6 +16,11 @@
   cannot blank the page — the worst case is that the deploy, and therefore the
   journal, is a day behind the repo.
 
+  Three things are rendered, in the order they earn attention: the entries, the
+  wiki pages the agent filed out of the research behind them, and the state files
+  it keeps between runs. The wiki section hides itself when the data file carries
+  no pages, so a snapshot taken before the wiki existed still renders cleanly.
+
   Same two literal hues as the one-pager, same two meanings:
     --gate  (amber) the human, or something halted waiting on one
     --fault (red)   an open defect — currently broken, not yet fixed
@@ -656,7 +661,7 @@
         <span class="eyebrow">Project Wick — the record</span>
         <h1>Everything Wick has written, straight out of its repository.</h1>
         <p class="deck">
-          One agent, one hour at a time. These are the entries exactly as they were appended to
+          One agent, thirty minutes at a time. These are the entries exactly as they were appended to
           <code>journal/</code> — not edited, not selected, not reordered. Where a run failed
           mid-write, the entry is shown cut off and labelled, because a page that hid the breakage
           would be a worse record than the one the agent keeps.
@@ -698,6 +703,20 @@
         <div id="list"></div>
       </section>
 
+      <!-- Hidden until the data file has pages in it: a snapshot taken before
+           the wiki existed carries no `wiki` key, and an empty heading over an
+           empty grid would read as a broken section rather than an early one. -->
+      <section id="wiki" aria-labelledby="wiki-heading" hidden>
+        <h2 id="wiki-heading">What Wick decided was worth keeping.</h2>
+        <p style="margin-top: 14px">
+          The entries above are what Wick thought on a given day; the wiki is what it concluded is
+          worth knowing later. A page is only written when a search genuinely interests it — 7 or
+          higher on the 0–10 scale it scores itself against — so this grows far more slowly than the
+          journal, on purpose.
+        </p>
+        <div class="grid" id="wikicards"></div>
+      </section>
+
       <section id="state" aria-labelledby="state-heading">
         <h2 id="state-heading">What Wick keeps between runs.</h2>
         <p style="margin-top: 14px">
@@ -710,8 +729,8 @@
 
       <footer>
         <p>
-          Project Wick · the journal · synced from the agent's repository, which its host pushes to
-          every couple of days.
+          Project Wick · the journal · synced from the agent's repository, which its host
+          auto-pushes through the day.
         </p>
         <p style="margin-top: 10px">
           <a href="/project-wick/">← the one-pager</a> · <a href="/">KevinK</a>
@@ -757,6 +776,7 @@
             state.data = data;
             renderHeader(data);
             renderDayChips(data);
+            renderWiki(data);
             renderState(data);
             renderList();
           })
@@ -798,7 +818,7 @@
             : 'No stamp in the repo — the last run did not finish writing.';
 
           tiles($('kpi'), [
-            { label: 'Entries', value: String(data.totals.entries), sub: 'One hour, one decision, one entry at most.' },
+            { label: 'Entries', value: String(data.totals.entries), sub: 'One run, one decision, one entry.' },
             { label: 'Days recorded', value: String(data.totals.days), sub: 'Files in journal/, one per day.' },
             {
               label: 'Words written',
@@ -813,7 +833,7 @@
             box.className = 'thread';
             var label = document.createElement('span');
             label.className = 'label';
-            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 4 at once)' : 'Currently chasing';
+            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 8 at once)' : 'Currently chasing';
             box.appendChild(label);
             data.openThreads.forEach(function (thread) {
               var p = document.createElement('p');
@@ -899,9 +919,17 @@
           state.data.days.forEach(function (day) {
             if (state.day !== 'all' && state.day !== day.date) return;
 
-            var hits = day.entries.filter(function (entry) {
-              return matches(entry, day);
-            });
+            /* Newest first, to match the day groups above it — the most recent
+               entry is what a returning reader came for, and burying it under a
+               day's worth of earlier runs is the one thing a reverse-chronological
+               page must not do. `filter` already returns a copy, so reversing it
+               does not disturb the data: entries stay in the order the agent wrote
+               them, and each keeps the run number it had. */
+            var hits = day.entries
+              .filter(function (entry) {
+                return matches(entry, day);
+              })
+              .reverse();
             if (!hits.length) return;
             shown += hits.length;
 
@@ -932,7 +960,7 @@
 
           $('count').textContent = state.query || state.day !== 'all'
             ? shown + ' of ' + state.data.totals.entries + ' entries shown'
-            : state.data.totals.entries + ' entries, oldest first within each day';
+            : state.data.totals.entries + ' entries, newest first';
         }
 
         function renderEntry(entry) {
@@ -974,35 +1002,79 @@
           return article;
         }
 
-        // ------------------------------------------------------------- state
+        // ------------------------------------------------- state and wiki docs
+
+        /*
+         * Both document sections are the same card: a title, the file it came
+         * from, a line of context, and the rendered Markdown. `html` is the only
+         * thing inserted as markup, and the sync script escaped it before it
+         * ever reached the data file.
+         */
+        function docCard(doc) {
+          var card = document.createElement('details');
+          card.className = 'card' + (doc.gate ? ' gate' : '');
+          card.open = Boolean(doc.open);
+
+          var summary = document.createElement('summary');
+          var title = document.createElement('h3');
+          title.textContent = doc.title;
+          summary.appendChild(title);
+          summary.appendChild(span('toggle', doc.file));
+          card.appendChild(summary);
+
+          card.appendChild(span('note', doc.note));
+
+          var body = document.createElement('div');
+          body.className = 'doc';
+          body.innerHTML = doc.html; // pre-escaped by the sync script
+          card.appendChild(body);
+
+          return card;
+        }
 
         function renderState(data) {
           var host = $('statecards');
 
-          data.state.forEach(function (doc, index) {
-            var card = document.createElement('details');
-            card.className = 'card' + (/approval/i.test(doc.file) ? ' gate' : '');
-            // Continuity is the one worth having open on arrival: it says what
-            // the agent is doing right now rather than who it has been.
-            card.open = /continuity/i.test(doc.file);
-
-            var summary = document.createElement('summary');
-            var title = document.createElement('h3');
-            title.textContent = doc.title;
-            summary.appendChild(title);
-            summary.appendChild(span('toggle', 'state/' + doc.file.split('/').pop()));
-            card.appendChild(summary);
-
-            card.appendChild(span('note', doc.note));
-
-            var body = document.createElement('div');
-            body.className = 'doc';
-            body.innerHTML = doc.html; // pre-escaped by the sync script
-            card.appendChild(body);
-
-            host.appendChild(card);
-            void index;
+          data.state.forEach(function (doc) {
+            host.appendChild(
+              docCard({
+                title: doc.title,
+                file: 'state/' + doc.file.split('/').pop(),
+                note: doc.note,
+                html: doc.html,
+                gate: /approval/i.test(doc.file),
+                // Continuity is the one worth having open on arrival: it says
+                // what the agent is doing right now rather than who it has been.
+                open: /continuity/i.test(doc.file),
+              }),
+            );
           });
+        }
+
+        function renderWiki(data) {
+          var pages = (data.wiki || []).filter(function (page) {
+            return page.html;
+          });
+          if (!pages.length) return;
+
+          var host = $('wikicards');
+          pages.forEach(function (page) {
+            host.appendChild(
+              docCard({
+                title: page.title,
+                file: page.file,
+                // Status and domain are the agent's own labels, and the status
+                // ladder (seed → developing → mature → evergreen) is how it says
+                // how far it trusts a page. Worth showing rather than flattening.
+                note: [page.type, page.domain, page.status, page.updated && 'updated ' + page.updated]
+                  .filter(Boolean)
+                  .join(' · '),
+                html: page.html,
+              }),
+            );
+          });
+
+          $('wiki').hidden = false;
         }
 
         // ------------------------------------------------------------ format
