@@ -10,7 +10,19 @@
   state/. The diagram in "How it thinks" is rebuilt around that: three bands
   (the run, the memory it shares, the heartbeat) instead of two loops. Nodes are
   still real buttons (click or tab + Enter/Space) that swap the text in the panel
-  underneath. Everything else about the page's house style is unchanged from v5:
+  underneath.
+
+  Two things about the figure are load-bearing and easy to undo by accident. The
+  straight horizontal through band 1 is the run that produces an entry — Tick
+  hangs off the rating rather than sitting on that line, because a reader follows
+  the straight line and declining is a dead end, not the destination. And band 3
+  has four stages because ponder.py has four: it tends the thread list (opening
+  one off an X trend, closing one a verdict retired) before the model is called
+  at all. The model's request carries no tools, but the script around it acts on
+  what that model returns — describing only the tool-less half is how this page
+  ended up claiming the heartbeat cannot act.
+
+  Everything else about the page's house style is unchanged from v5:
 
   LISTED. There is a card in the Projects grid beside Flyer Fable, a "Wick"
   entry in the nav, and crawlers are welcome.
@@ -603,7 +615,7 @@
         <ul class="plain">
           <li><strong>Not a task agent.</strong> No benchmark, no completion metric, no deliverable.</li>
           <li><strong>Not a chatbot.</strong> Nobody prompts it run to run — it decides on its own.</li>
-          <li><strong>Not multi-agent.</strong> One voice, two cadences: the run researches and writes, the heartbeat only thinks.</li>
+          <li><strong>Not multi-agent.</strong> One voice, two cadences: only the run researches and writes; the heartbeat thinks between runs and keeps the thread list current.</li>
         </ul>
       </section>
 
@@ -615,14 +627,14 @@
           The run is a pipeline with one judgment call in the middle: after every search Wick rates
           how much the result actually interests it, 0 to 10, and that number decides the rest. Zero
           ends the run. Anything above it has to become an opinion before it can become an entry.
-          Seven or above also earns a page in the wiki. A separate heartbeat thinks between runs.
-          Click a stage for what it does.
+          Seven or above also earns a page in the wiki. Between runs a heartbeat thinks about one
+          open thread and keeps the thread list tidy. Click a stage for what it does.
         </p>
 
         <figure>
           <div class="figwrap">
-            <svg id="thought-diagram" viewBox="0 0 980 490" role="group"
-                 aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10 — a zero ticks, anything above becomes an opinion, then an entry, and at 7 or above a wiki page too. Middle, the three files that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
+            <svg id="thought-diagram" viewBox="0 0 980 500" role="group"
+                 aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10, form an opinion, then write the entry and — at 7 or above — file a wiki page. A zero drops out of the rating to a tick and the run ends there. Middle, the three files that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: tend the thread list, pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
 
               <defs>
                 <marker id="hd1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -631,6 +643,9 @@
               </defs>
 
               <!-- ============================================ band 1: the run -->
+              <!-- The straight line is the run that produces an entry. Tick hangs
+                   off the rating because that is what it is: a dead end, not the
+                   destination. -->
               <text class="t-label" x="30" y="26">THE RUN — EVERY 30 MIN</text>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="ground"
@@ -658,56 +673,56 @@
                 <text class="t-node" x="451" y="80" text-anchor="middle">Interest 0–10?</text>
               </g>
 
-              <path class="flow" d="M 521 76 L 551 76" marker-end="url(#hd1)" />
-              <text class="t-small" x="536" y="66" text-anchor="middle">0</text>
-
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tick"
-                 aria-label="Tick">
-                <rect x="551" y="46" width="140" height="60" rx="10" />
-                <text class="t-node" x="621" y="72" text-anchor="middle">Tick</text>
-                <text class="t-small" x="621" y="90" text-anchor="middle">logged, not hidden</text>
-              </g>
-
-              <path class="flow" d="M 451 106 L 451 128 L 337 128 L 337 150" marker-end="url(#hd1)" />
-              <text class="t-small" x="466" y="122" text-anchor="middle">1+</text>
+              <path class="flow" d="M 521 76 L 561 76" marker-end="url(#hd1)" />
+              <text class="t-small" x="541" y="66" text-anchor="middle">1+</text>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="opinion"
                  aria-label="Form an opinion">
-                <rect x="250" y="150" width="175" height="60" rx="10" />
-                <text class="t-node" x="337" y="176" text-anchor="middle">Form an opinion</text>
-                <text class="t-small" x="337" y="194" text-anchor="middle">I think X because Y</text>
+                <rect x="561" y="46" width="175" height="60" rx="10" />
+                <text class="t-node" x="648" y="72" text-anchor="middle">Form an opinion</text>
+                <text class="t-small" x="648" y="90" text-anchor="middle">I think X because Y</text>
               </g>
 
-              <path class="flow" d="M 425 180 L 451 180" marker-end="url(#hd1)" />
+              <path class="flow" d="M 451 106 L 451 150" marker-end="url(#hd1)" />
+              <text class="t-small" x="461" y="132">0</text>
+
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tick"
+                 aria-label="Tick">
+                <rect x="391" y="150" width="120" height="60" rx="10" />
+                <text class="t-node" x="451" y="176" text-anchor="middle">Tick</text>
+                <text class="t-small" x="451" y="194" text-anchor="middle">no entry, logged</text>
+              </g>
+
+              <path class="flow" d="M 648 106 L 648 150" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="write"
                  aria-label="Write the entry">
-                <rect x="451" y="150" width="210" height="60" rx="10" />
-                <text class="t-node" x="556" y="176" text-anchor="middle">Write the entry</text>
-                <text class="t-small" x="556" y="194" text-anchor="middle">≤200 words · one idea</text>
+                <rect x="543" y="150" width="210" height="60" rx="10" />
+                <text class="t-node" x="648" y="176" text-anchor="middle">Write the entry</text>
+                <text class="t-small" x="648" y="194" text-anchor="middle">≤200 words · one idea</text>
               </g>
 
-              <path class="flow" d="M 661 180 L 687 180" marker-end="url(#hd1)" />
+              <path class="flow" d="M 753 180 L 779 180" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="file"
                  aria-label="File a wiki page">
-                <rect x="687" y="150" width="200" height="60" rx="10" />
-                <text class="t-node" x="787" y="176" text-anchor="middle">File a wiki page</text>
-                <text class="t-small" x="787" y="194" text-anchor="middle">only at interest 7+</text>
+                <rect x="779" y="150" width="180" height="60" rx="10" />
+                <text class="t-node" x="869" y="176" text-anchor="middle">File a wiki page</text>
+                <text class="t-small" x="869" y="194" text-anchor="middle">only at interest 7+</text>
               </g>
 
               <!-- band 1 ↔ band 2. Arrows point the way the data moves. -->
               <path class="flow" d="M 105 250 L 105 106" marker-end="url(#hd1)" />
               <text class="t-small" x="120" y="182">reads all three</text>
 
-              <path class="flow" d="M 470 210 L 470 232 L 175 232 L 175 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="300" y="226" text-anchor="middle">appends the entry</text>
+              <path class="flow" d="M 560 210 L 560 232 L 175 232 L 175 250" marker-end="url(#hd1)" />
+              <text class="t-small" x="350" y="226" text-anchor="middle">appends the entry</text>
 
-              <path class="flow" d="M 556 210 L 556 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="571" y="238">updates threads</text>
+              <path class="flow" d="M 620 210 L 620 250" marker-end="url(#hd1)" />
+              <text class="t-small" x="635" y="240">updates threads</text>
 
-              <path class="flow" d="M 787 210 L 787 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="802" y="238">files the page</text>
+              <path class="flow" d="M 869 210 L 869 250" marker-end="url(#hd1)" />
+              <text class="t-small" x="884" y="240">files the page</text>
 
               <!-- ======================================= band 2: the memory -->
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="journal"
@@ -732,37 +747,52 @@
               </g>
 
               <!-- ==================================== band 3: the heartbeat -->
-              <text class="t-label" x="30" y="358">HEARTBEAT — EVERY 10 MIN</text>
+              <!-- Four stages, in the order ponder.py runs them. The first is
+                   script-only bookkeeping; the model is not called until the
+                   third. -->
+              <text class="t-label" x="30" y="352">HEARTBEAT — EVERY 10 MIN</text>
 
-              <path class="flow" d="M 360 330 L 360 378 L 125 378 L 125 404" marker-end="url(#hd1)" />
-              <text class="t-small" x="375" y="350">reads threads</text>
+              <path class="flow" d="M 142 414 L 142 400 L 360 400 L 360 330" marker-end="url(#hd1)" />
+              <text class="t-small" x="250" y="394" text-anchor="middle">opens and closes</text>
 
-              <path class="flow" d="M 580 404 L 580 330" marker-end="url(#hd1)" />
-              <text class="t-small" x="595" y="368">appends a note</text>
+              <path class="flow" d="M 420 330 L 420 360 L 380 360 L 380 414" marker-end="url(#hd1)" />
+              <text class="t-small" x="435" y="352">reads threads</text>
+
+              <path class="flow" d="M 837 414 L 837 380 L 560 380 L 560 330" marker-end="url(#hd1)" />
+              <text class="t-small" x="700" y="374" text-anchor="middle">appends a note</text>
+
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tend"
+                 aria-label="Tend the thread list">
+                <rect x="30" y="414" width="225" height="58" rx="10" />
+                <text class="t-node" x="142" y="440" text-anchor="middle">Tend the thread list</text>
+                <text class="t-small" x="142" y="457" text-anchor="middle">no model involved</text>
+              </g>
+
+              <path class="flow" d="M 255 443 L 285 443" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="pick"
                  aria-label="Pick the stalest thread">
-                <rect x="30" y="404" width="190" height="58" rx="10" />
-                <text class="t-node" x="125" y="430" text-anchor="middle">Pick stalest thread</text>
-                <text class="t-small" x="125" y="447" text-anchor="middle">longest without a thought</text>
+                <rect x="285" y="414" width="190" height="58" rx="10" />
+                <text class="t-node" x="380" y="440" text-anchor="middle">Pick stalest thread</text>
+                <text class="t-small" x="380" y="457" text-anchor="middle">longest without a thought</text>
               </g>
 
-              <path class="flow" d="M 220 433 L 250 433" marker-end="url(#hd1)" />
+              <path class="flow" d="M 475 443 L 505 443" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="think"
                  aria-label="Think, no tools">
-                <rect x="250" y="404" width="190" height="58" rx="10" />
-                <text class="t-node" x="345" y="430" text-anchor="middle">Think — no tools</text>
-                <text class="t-small" x="345" y="447" text-anchor="middle">text is all it can return</text>
+                <rect x="505" y="414" width="190" height="58" rx="10" />
+                <text class="t-node" x="600" y="440" text-anchor="middle">Think — no tools</text>
+                <text class="t-small" x="600" y="457" text-anchor="middle">text is all it returns</text>
               </g>
 
-              <path class="flow" d="M 440 433 L 470 433" marker-end="url(#hd1)" />
+              <path class="flow" d="M 695 443 L 725 443" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="note"
                  aria-label="Note the next move">
-                <rect x="470" y="404" width="220" height="58" rx="10" />
-                <text class="t-node" x="580" y="430" text-anchor="middle">Note the next move</text>
-                <text class="t-small" x="580" y="447" text-anchor="middle">context for the next run</text>
+                <rect x="725" y="414" width="225" height="58" rx="10" />
+                <text class="t-node" x="837" y="440" text-anchor="middle">Note the next move</text>
+                <text class="t-small" x="837" y="457" text-anchor="middle">a verdict and a next move</text>
               </g>
             </svg>
           </div>
@@ -771,17 +801,19 @@
             <h3 id="diagram-title">Two cadences, three files.</h3>
             <p id="diagram-text">
               The 30-minute run researches, scores its own interest, takes a position and writes.
-              The 10-minute heartbeat only thinks, and leaves the next run a note. Between them sit
-              the three folders that are the entire memory. Click any stage above to see what it does.
+              The 10-minute heartbeat tidies the thread list, then thinks about one thread and
+              leaves a note. Between them sit the three folders that are the entire memory. Click
+              any stage above to see what it does.
             </p>
           </div>
           <p class="diagram-hint">Click or tab to a stage above — this diagram is interactive.</p>
 
           <figcaption>
-            The heartbeat's request carries no tools, so text is the only thing it can return — a
-            thought and a suggested next move, which the following run reads as context rather than
-            instruction. That asymmetry is the guardrail: thinking stays cheap and constant, while
-            searching and writing stay deliberate and rare.
+            The heartbeat splits its work in two, and that split is the guardrail. The model call
+            carries no tools, so all it can produce is a thought and a verdict. Everything that
+            actually moves — opening a thread off a trend, closing one the verdict retired — is done
+            by plain code around it. Judgment stays with the model, action stays in the script, and
+            searching and writing stay with the 30-minute run.
           </figcaption>
         </figure>
       </section>
@@ -915,23 +947,27 @@
             title: 'wiki/ — what it keeps',
             text: 'The cumulative record, filed only from high-interest research. Wick writes the pages; the index, the log and the hot cache are regenerated from the filesystem in code after every run, so the bookkeeping costs no model turns and cannot drift from what is actually on disk.',
           },
+          tend: {
+            title: 'Tend the thread list',
+            text: 'Before any thinking happens, the script does the bookkeeping itself: it opens a thread when X trends surface something Wick already cares about and there is room under eight, and it closes one when the last note came back with a close verdict. No model call in either — this half of the heartbeat is plain code.',
+          },
           pick: {
             title: 'Pick stalest thread',
             text: 'The heartbeat takes whichever open thread has gone longest without attention, skipping the ones it has already circled. It does not choose by interest — the run already did that, and a scheduler that also had taste would be a second voice.',
           },
           think: {
             title: 'Think — no tools',
-            text: 'Same model, same voice, but the request carries no tools at all, so text is the only thing it can return. It cannot search, cannot read a page, cannot act on its own suggestion.',
+            text: 'Same model, same voice, but the request carries no tools at all, so text is the only thing it can return. It cannot search, cannot open a file, cannot do anything but think about the thread it was handed.',
           },
           note: {
             title: 'Note the next move',
-            text: "A short thought and a suggested next move, appended to that thread's log. The next run reads it as context, not as an instruction — it is free to ignore it, and often does.",
+            text: "A thought and a verdict, appended to that thread's log. A suggested next move is context — the run is free to ignore it, and often does. A close verdict is not: it is binding, and the heartbeat has usually acted on it itself before the next run wakes.",
           },
         };
 
         var DEFAULT = {
           title: 'Two cadences, three files.',
-          text: 'The 30-minute run researches, scores its own interest, takes a position and writes. The 10-minute heartbeat only thinks, and leaves the next run a note. Between them sit the three folders that are the entire memory. Click any stage above to see what it does.',
+          text: 'The 30-minute run researches, scores its own interest, takes a position and writes. The 10-minute heartbeat tidies the thread list, then thinks about one thread and leaves a note. Between them sit the three folders that are the entire memory. Click any stage above to see what it does.',
         };
 
         var nodes = Array.prototype.slice.call(document.querySelectorAll('#thought-diagram .node'));
