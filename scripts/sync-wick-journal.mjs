@@ -44,7 +44,17 @@ const STATE_FILES = [
   { file: 'state/identity.md', title: 'Identity', note: 'Who Wick decided it is, written on the first run.' },
   { file: 'state/personality.md', title: 'Personality', note: 'Rewritten by Wick after every third entry. The experiment’s raw data.' },
   { file: 'state/interests.md', title: 'Interests', note: 'What Wick has found genuinely curious, and what it shelved.' },
-  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to eight open threads, where each got to, and what happens next.' },
+  {
+    file: 'state/seeded-interests.md',
+    title: 'Seeded interests',
+    note: 'The one file Wick did not write: a set of questions Kevin injected, kept separate so it can be pulled out without touching the organic ones.',
+  },
+  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to five open threads, where each got to, and what happens next.' },
+  {
+    file: 'state/open-thread-seed.md',
+    title: 'Open-thread seed',
+    note: 'Written by the heartbeat when it finds no threads left, and picked up by the next run as the topic to open. The handoff between the two cadences.',
+  },
   { file: 'state/pending-approval.md', title: 'Pending approvals', note: 'Anything Wick asked to do and is waiting on. Silence is not consent.' },
 ];
 
@@ -334,18 +344,35 @@ function parseEntry(chunk) {
   let sources = null;
   let truncated = false;
 
-  // Wick closes most entries with an HTML comment listing what it read. That is
-  // the provenance the whole project is graded on, so it gets pulled out and
-  // shown rather than swallowed as a comment.
-  let text = chunk.replace(/<!--\s*sources:\s*([\s\S]*?)-->/gi, (_, list) => {
-    sources = list.trim().replace(/\s+/g, ' ');
+  /* Wick closes most entries with an HTML comment listing what it read. That is
+     the provenance the whole project is graded on, so it gets pulled out and
+     shown rather than swallowed as a comment.
+
+     Both spellings are accepted. The agent wrote `sources:` under the old
+     prompt and the SPEC-search-thinking-v2 rewrite changed the instruction to
+     `<!-- source: url -->`; the singular is rare in the files so far, but a
+     mirror that only knows the old spelling silently drops provenance the day
+     the agent starts obeying the new one.
+
+     An empty list is not provenance, so it is normalised to null rather than
+     carried through as an empty string. The agent has been emitting bare
+     `<!-- sources:  -->` markers since Aug 17 — all seven on Aug 18 are empty —
+     and letting one of those win over a real list earlier in the same entry
+     would lose a citation that was actually made. */
+  const capture = (list) => {
+    const cleaned = list.trim().replace(/\s+/g, ' ');
+    if (cleaned) sources = cleaned;
+  };
+
+  let text = chunk.replace(/<!--\s*sources?:\s*([\s\S]*?)-->/gi, (_, list) => {
+    capture(list);
     return '';
   });
 
   // …and the last entry in a file can be cut off mid-comment when the run died
   // partway through the write. Say so instead of printing a dangling `<!--`.
-  text = text.replace(/<!--\s*sources:\s*([\s\S]*)$/i, (_, list) => {
-    sources = list.trim().replace(/\s+/g, ' ');
+  text = text.replace(/<!--\s*sources?:\s*([\s\S]*)$/i, (_, list) => {
+    capture(list);
     truncated = true;
     return '';
   });
@@ -508,7 +535,8 @@ async function main() {
   }
 
   /* The facts on the whole page with the shortest shelf life: what Wick is
-     chasing right now, up to four threads. They live inside continuity.md,
+     chasing right now — five threads at the cap, since SPEC-heartbeat-config-v2
+     took it down from eight. They live inside continuity.md,
      which is also rendered in full lower down, but each earns a place at the
      top where it can be read in one line.
      Since the heartbeat/multi-thread rework, a thread is a "### <slug>

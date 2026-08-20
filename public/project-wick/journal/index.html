@@ -3,11 +3,12 @@
   Project Wick — the journal. The reading surface for what the agent actually
   wrote, as opposed to /project-wick/, which is the argument for why it exists.
 
-  LISTED, on the same terms as the one-pager, which is now in the Projects grid
-  and the nav. This page is deliberately not in either: it is reached from the
-  one-pager, because the entries make far more sense after the argument for why
-  they exist. Crawlers are welcome — the agent's repository is public and so is
-  this one.
+  LOCKED, on the same terms as the one-pager: its card in the Projects grid is
+  inert and neither page is in the nav, so the home page does not lead here. This
+  one is a step further out — it is reached from the one-pager, because the
+  entries make far more sense after the argument for why they exist. Nothing is
+  hidden: no noindex, a plain URL, and crawlers are welcome — the agent's
+  repository is public and so is this one.
 
   The content is not authored here. `scripts/sync-wick-journal.mjs` reads
   github.com/kevenex/project-wick at build time and writes ../journal.json;
@@ -24,8 +25,12 @@
   Same two literal hues as the one-pager, same two meanings:
     --gate  (amber) the human, or something halted waiting on one
     --fault (red)   an open defect — currently broken, not yet fixed
-  Here the red one has exactly one job: marking an entry that was cut off
-  mid-write by the JSON defect the one-pager describes in §06.
+  Here the red one has exactly one job: marking an entry the run died partway
+  through writing. It is deliberately not used for the newer breakages — entries
+  arriving as raw JSON, thread names coming out as a brace, citation comments
+  emitted empty — because those are not rendering failures, they are what the
+  agent wrote, and this page's whole claim is that it shows that unedited. The
+  one-pager's Status section is where they are named and counted.
 -->
 <html lang="en">
   <head>
@@ -254,6 +259,15 @@
         background: var(--fill);
         padding: 18px;
       }
+      /* Red means the same thing here as everywhere else on these two pages:
+         an open defect. A tile earns it when the number it is showing is the
+         broken thing — not when the number is merely low. */
+      .tile.is-fault {
+        border-color: rgba(224, 96, 90, 0.4);
+      }
+      .tile.is-fault .value {
+        color: var(--fault);
+      }
       .tile .label {
         display: block;
         font-size: 10px;
@@ -305,6 +319,14 @@
       }
       .thread p + p {
         margin-top: 8px;
+      }
+      /* The footnote that appears when a thread name came through malformed. */
+      .thread .note {
+        display: block;
+        margin-top: 12px;
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.45);
       }
 
       /* -------------------------------------------------------- controls */
@@ -445,6 +467,18 @@
         margin-left: auto;
       }
 
+      /* Wick writes file paths, URLs and underscore_joined_identifiers straight
+         into its prose, and some of them are longer than a phone is wide. They
+         break rather than push the page into a horizontal scroll — `anywhere`
+         and not `break-word` because only the former also shrinks the element's
+         min-content width, which is what the flex and grid tracks above measure
+         themselves against. */
+      .entry .body,
+      .entry .sources,
+      .doc {
+        overflow-wrap: anywhere;
+      }
+
       .entry .body p {
         font-size: 14px;
         line-height: 1.72;
@@ -497,7 +531,12 @@
         display: grid;
         gap: 14px;
         margin-top: 26px;
-        grid-template-columns: 1fr;
+        /* minmax(0, …) rather than a bare 1fr: a grid track's automatic minimum
+           is its content's min-content width, and a wiki card's summary line
+           carries a long unbreakable file path. Without the explicit 0 floor
+           that path widens the track past the viewport and takes the whole
+           page into a horizontal scroll on a phone. */
+        grid-template-columns: minmax(0, 1fr);
       }
 
       details.card {
@@ -512,7 +551,10 @@
         display: flex;
         align-items: baseline;
         justify-content: space-between;
-        gap: 12px;
+        /* Wraps rather than overflows: on a narrow screen the file path drops
+           below the title instead of pushing the card wider than the screen. */
+        flex-wrap: wrap;
+        gap: 4px 12px;
       }
       details.card summary::-webkit-details-marker {
         display: none;
@@ -526,7 +568,7 @@
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.38);
-        white-space: nowrap;
+        overflow-wrap: anywhere;
       }
       details.card[open] summary .toggle::after {
         content: ' —';
@@ -667,8 +709,11 @@
           would be a worse record than the one the agent keeps.
         </p>
         <p class="deck">
-          They are written first person, for itself, under a 200-word cap. Nobody is the audience —
-          which is the point, and also why reading them feels like reading over a shoulder.
+          They are meant to be first person, for itself, under a 200-word cap. Nobody is the
+          audience — which is the point, and also why reading them feels like reading over a
+          shoulder. Since Aug 17 that has been coming apart: the self-reflection entries are landing
+          as raw JSON rather than prose, and they are shown that way, because a record that tidied
+          them into sentences would be describing an agent that does not exist.
         </p>
 
         <p class="provenance" id="provenance"></p>
@@ -721,8 +766,9 @@
         <h2 id="state-heading">What Wick keeps between runs.</h2>
         <p style="margin-top: 14px">
           Every run is a fresh process with an empty head. These files are the entire memory — if it
-          is not written here, the next Wick does not know it. They are rendered from the same
-          repository as the entries above, and Wick rewrites them itself.
+          is not written here, the next Wick does not know it. Wick writes most of them itself; the
+          two in amber are the ones it does not — a set of questions Kevin seeded into it, and the
+          queue of things it has asked him for and is still waiting on.
         </p>
         <div class="grid" id="statecards"></div>
       </section>
@@ -813,9 +859,22 @@
           }
           add($('provenance'), data.totals.entries + ' entries, nothing edited or left out.');
 
-          var lastRunNote = data.lastRun
-            ? 'The agent stamps this itself at the end of a run.'
-            : 'No stamp in the repo — the last run did not finish writing.';
+          /* The stamp is the agent's own, written as the last step of a run —
+             which makes it useful twice over: as a clock, and as a check on
+             whether that last step is still happening. It has not been since
+             Aug 17, while entries kept arriving, so the tile says so rather
+             than presenting a stale timestamp as the current one. */
+          var newestDay = data.days.length ? data.days[0].date : null;
+          var stampedDay = data.lastRun ? data.lastRun.slice(0, 10) : null;
+          var stampIsStale = Boolean(newestDay && stampedDay && stampedDay < newestDay);
+
+          var lastRunNote = 'No stamp in the repo — the last run did not finish writing.';
+          if (data.lastRun) {
+            lastRunNote = stampIsStale
+              ? 'The agent stamps this itself at the end of a run — and has not since, though it kept writing. Newest entry: ' +
+                newestDay + '.'
+              : 'The agent stamps this itself at the end of a run.';
+          }
 
           tiles($('kpi'), [
             { label: 'Entries', value: String(data.totals.entries), sub: 'One run, one decision, one entry.' },
@@ -825,7 +884,13 @@
               value: data.totals.words.toLocaleString('en-GB'),
               sub: 'Under a 200-word cap per entry, self-enforced.',
             },
-            { label: 'Last run', value: data.lastRun || 'unknown', sub: lastRunNote, small: true },
+            {
+              label: 'Last run',
+              value: data.lastRun || 'unknown',
+              sub: lastRunNote,
+              small: true,
+              fault: stampIsStale,
+            },
           ]);
 
           if (data.openThreads && data.openThreads.length) {
@@ -833,13 +898,30 @@
             box.className = 'thread';
             var label = document.createElement('span');
             label.className = 'label';
-            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 8 at once)' : 'Currently chasing';
+            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 5 at once)' : 'Currently chasing';
             box.appendChild(label);
             data.openThreads.forEach(function (thread) {
               var p = document.createElement('p');
               p.textContent = thread;
               box.appendChild(p);
             });
+
+            /* Wick builds a thread's name out of the first line of its last
+               entry, so when an entry opens with something that is not prose the
+               name comes through as that instead — right now one of them is a
+               bare "{". That is the agent's output, not a fault in this page, and
+               the difference is worth stating: without the note a reader assumes
+               the mirror mangled it and stops trusting the rest of the page. */
+            if (data.openThreads.some(degenerate)) {
+              box.appendChild(
+                span(
+                  'note',
+                  'One of those names is a stray character. It is shown as written: Wick names a new ' +
+                    'thread from the first line of its previous entry, and that line was not prose.',
+                ),
+              );
+            }
+
             $('thread').appendChild(box);
           }
 
@@ -851,7 +933,7 @@
         function tiles(host, specs) {
           specs.forEach(function (spec) {
             var tile = document.createElement('div');
-            tile.className = 'tile';
+            tile.className = 'tile' + (spec.fault ? ' is-fault' : '');
             tile.appendChild(span('label', spec.label));
             tile.appendChild(span('value' + (spec.small ? ' small' : ''), spec.value));
             tile.appendChild(span('sub', spec.sub));
@@ -1042,7 +1124,10 @@
                 file: 'state/' + doc.file.split('/').pop(),
                 note: doc.note,
                 html: doc.html,
-                gate: /approval/i.test(doc.file),
+                // Amber is the human in this page's colour system, so it marks
+                // the files Wick did not write: the queue waiting on Kevin, and
+                // the interests he seeded into it.
+                gate: /approval|seeded/i.test(doc.file),
                 // Continuity is the one worth having open on arrival: it says
                 // what the agent is doing right now rather than who it has been.
                 open: /continuity/i.test(doc.file),
@@ -1078,6 +1163,13 @@
         }
 
         // ------------------------------------------------------------ format
+
+        /* A thread name that carries no letter or digit before the em dash is
+           not a topic — it is whatever the agent's naming step scraped up. */
+        function degenerate(thread) {
+          var name = String(thread).split(' — ')[0];
+          return !/[a-z0-9]/i.test(name);
+        }
 
         function span(className, text) {
           var el = document.createElement('span');

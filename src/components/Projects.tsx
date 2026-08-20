@@ -40,7 +40,7 @@ const PROJECTS: Project[] = [
   },
   {
     title: 'Project Wick',
-    blurb: 'An agent that wakes every hour, does one small thing, and writes about it.',
+    blurb: 'An agent that wakes every half hour, does one small thing, and writes about it.',
     icon: WickMark,
     locked: true,
   },

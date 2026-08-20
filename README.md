@@ -78,13 +78,23 @@ page, outside React and the SPA.
 
 ## Project Wick (`/project-wick/`)
 
-A product one-pager for an hourly journaling agent, paired with a journal page
-at `/project-wick/journal/` that renders what the agent has actually written,
-mirrored at build time from [`kevenex/project-wick`](https://github.com/kevenex/project-wick)
-by `scripts/sync-wick-journal.mjs` into `public/project-wick/journal.json` (run
-by hand with `npm run sync:wick`). Both pages are static HTML in `public/`, no
+A product one-pager for a journaling agent that runs every 30 minutes, paired
+with a journal page at `/project-wick/journal/` that renders what the agent has
+actually written, mirrored at build time from
+[`kevenex/project-wick`](https://github.com/kevenex/project-wick) by
+`scripts/sync-wick-journal.mjs` into `public/project-wick/journal.json` (run by
+hand with `npm run sync:wick`). Both pages are static HTML in `public/`, no
 React, sharing a hand-drawn mark and a two-color system: amber for the human,
 red for an open defect.
+
+The one-pager is versioned in a comment at the top of its own file, and the
+version tracks the agent rather than the page — v7 covers the agent's
+`SPEC-search-thinking-v2` and `SPEC-heartbeat-config-v2` rewrites (a `web_read`
+article-extraction tool beside `web_search`, the X tools dropped, a SENSE /
+SYNTHESIZE split, the thread cap down to five, and a heartbeat that now closes
+and scores threads itself). When the agent changes, re-run the sync and reread
+the one-pager's Status section against `journal.json` — the counts and the list
+of open defects there are the two things that go stale first.
 
 ## Notes
 

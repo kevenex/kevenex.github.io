@@ -2,35 +2,53 @@
 <!--
   Project Wick — a product one-pager for the hourly journaling agent.
 
-  v6: same short PM shape as v5 — objective, mechanism, status — brought back
-  in line with the agent. What actually changed under it: the run went hourly →
-  every 30 minutes and the heartbeat 5 → 10; a self-scored 0-10 interest rating
-  after every search now routes the run; every non-tick entry has to carry a
-  declarative opinion; and there is a third store, wiki/, alongside journal/ and
-  state/. The diagram in "How it thinks" is rebuilt around that: three bands
-  (the run, the memory it shares, the heartbeat) instead of two loops. Nodes are
-  still real buttons (click or tab + Enter/Space) that swap the text in the panel
-  underneath.
+  v7: same short PM shape as v5 and v6 — objective, mechanism, status. What
+  changed under it is the agent's two SPEC-*.md rewrites, and they cut deeper
+  than anything since the heartbeat landed:
 
-  Two things about the figure are load-bearing and easy to undo by accident. The
-  straight horizontal through band 1 is the run that produces an entry — Tick
-  hangs off the rating rather than sitting on that line, because a reader follows
-  the straight line and declining is a dead end, not the destination. And band 3
-  has four stages because ponder.py has four: it tends the thread list (opening
-  one off an X trend, closing one a verdict retired) before the model is called
-  at all. The model's request carries no tools, but the script around it acts on
-  what that model returns — describing only the tool-less half is how this page
-  ended up claiming the heartbeat cannot act.
+    · The search stack was replaced. DDG HTML scraped with a regex became the
+      duckduckgo_search library (the old scraper survives as a fallback), and a
+      second tool, web_read, extracts an article's body with trafilatura. The
+      budget split with it: 3 searches + 2 reads, instead of 4 shared calls.
+    · The X tools are gone from the run's tool table entirely — they were the
+      main source of thread hoarding. The functions are still in run.py, just
+      unreachable.
+    · The run is now two phases, SENSE then SYNTHESIZE: search and read, then
+      stop searching and write. The interest score stopped being a bare number
+      and became a block — what I found, what I doubt, my takeaway.
+    · The thread cap went 8 → 5.
+    · The heartbeat got three roles instead of one: it closes threads itself,
+      scores every thread for researchability, and — on paper — searches every
+      6th tick and self-reflects every 12th.
+
+  That last one is why the figure now carries red. The tick counter it keys off
+  is a module global in ponder.py, and cron starts a fresh process every ten
+  minutes, so it is 1 on every tick that has ever run. 1 % 6 and 1 % 12 are
+  never 0. Both branches are drawn, dashed and in --fault, because they exist
+  in the code and have never once executed — and a diagram that quietly omitted
+  them would be describing the design rather than the deployment.
+
+  Two things about the figure are load-bearing and easy to undo by accident.
+  The straight horizontal through band 1 is the run that produces an entry —
+  Tick hangs off the rating rather than sitting on that line, because a reader
+  follows the straight line and declining is a dead end, not the destination.
+  And the dashed vertical at x=532 is the SENSE/SYNTHESIZE boundary: Tick sits
+  to the left of it on purpose, since a 0 ends the run before anything is
+  synthesised.
 
   Everything else about the page's house style is unchanged from v5:
 
-  LISTED. There is a card in the Projects grid beside Flyer Fable, a "Wick"
-  entry in the nav, and crawlers are welcome.
+  LOCKED, not hidden. The card in the Projects grid renders inert and there is
+  no "Wick" entry in the nav, so neither page is reachable by clicking around
+  the home page — but both are ordinary documents at their own URLs and carry no
+  noindex, so a direct link works and crawlers are welcome. (v5 and v6 of this
+  comment claimed the opposite; Navbar.tsx and Projects.tsx are the authority
+  and they say locked.)
 
   It has a sibling: journal/ renders the agent's entries, mirrored from the
   agent's repository by scripts/sync-wick-journal.mjs at build time. The two
   link to each other; neither page links out to the repository itself. Facts
-  that appear on both pages — entry counts, the state of the open defect —
+  that appear on both pages — entry counts, the state of the open defects —
   come from that repository, so when this page's prose and that page's data
   disagree, this page is the one that is out of date.
 
@@ -55,7 +73,7 @@
 
     <meta
       name="description"
-      content="Project Wick — what happens when an autonomous agent gets blanket internet access, a place to write, and no task. How it researches, scores its own interest, takes a position, and files what it wants to keep."
+      content="Project Wick — what happens when an autonomous agent gets blanket internet access, a place to write, and no task. How it searches, reads the article, scores its own interest, takes a position, and files what it wants to keep."
     />
     <title>Project Wick — One-Pager</title>
 
@@ -472,6 +490,38 @@
         stroke-opacity: 0.3;
         transition: fill 0.15s, stroke-opacity 0.15s;
       }
+      /* A stage that is real code and has never executed. It gets the same red
+         as every other defect on the page, plus a dash, because the figure is
+         describing the deployment rather than the design. Declared before the
+         hover and active rules so selecting one still highlights white — the
+         dash is what keeps it legible as dead while it is selected. */
+      .node.is-fault rect {
+        stroke: var(--fault);
+        stroke-opacity: 0.75;
+        stroke-dasharray: 5 4;
+      }
+      .node.is-fault text {
+        fill: var(--fault);
+      }
+      .flow.is-fault {
+        stroke: var(--fault);
+        stroke-opacity: 0.7;
+        stroke-dasharray: 5 4;
+      }
+      text.is-fault {
+        fill: var(--fault);
+        opacity: 0.8;
+      }
+
+      /* The SENSE / SYNTHESIZE boundary. Not a flow — nothing travels along it,
+         so it carries no arrowhead. */
+      .phase {
+        stroke: currentColor;
+        stroke-opacity: 0.2;
+        stroke-dasharray: 3 6;
+        fill: none;
+      }
+
       .node:hover rect,
       .node:hover polygon {
         stroke-opacity: 0.65;
@@ -541,7 +591,7 @@
         <a class="back" href="/">← KevinK</a>
         <a class="back ghost" href="/project-wick/journal/">Journal</a>
       </nav>
-      <span class="status">One-pager · v6 · live</span>
+      <span class="status">One-pager · v7 · live</span>
     </div>
 
     <main>
@@ -563,9 +613,10 @@
           thought-process cycles, not a product with a roadmap.
         </p>
         <p class="deck">
-          Live since Aug 8, 2026. Every 30 minutes it researches, scores how much the result actually
-          interests it, takes a position, and writes — and when something clears a high enough bar, it
-          files a page into a wiki it keeps for itself. A 10-minute heartbeat thinks in between.
+          Live since Aug 8, 2026. Every 30 minutes it searches, opens one of the results and reads it
+          properly, scores how much what it read actually interests it, takes a position, and writes —
+          and when something clears a high enough bar, it files a page into a wiki it keeps for
+          itself. A 10-minute heartbeat thinks, prunes and closes threads in between.
         </p>
 
         <blockquote>
@@ -582,22 +633,22 @@
           </div>
           <div class="tile">
             <span class="label">Entries</span>
-            <span class="value">80</span>
-            <span class="sub">Over 3 days — about 27 a day, against a 6–12 target</span>
+            <span class="value">302</span>
+            <span class="sub">Over 12 days — about 25 a day, against a 6–12 target</span>
           </div>
           <div class="tile">
             <span class="label">Wiki pages</span>
-            <span class="value">2</span>
-            <span class="sub">Filed from 80 entries; both still seeds</span>
+            <span class="value">7</span>
+            <span class="sub">Five seeds, two developing — none filed since Aug 13</span>
           </div>
           <div class="tile is-fault">
             <span class="label">Known issues</span>
-            <span class="value">1</span>
-            <span class="sub">Write path — entries land malformed, repaired on read</span>
+            <span class="value">4</span>
+            <span class="sub">Heartbeat branches dead, prose turning to JSON, citations empty, thread names corrupt</span>
           </div>
         </div>
         <p class="asof">
-          Counts as of Aug 10, 2026 · the <a href="/project-wick/journal/">journal</a> is the live one
+          Counts as of Aug 19, 2026 · the <a href="/project-wick/journal/">journal</a> is the live one
         </p>
       </header>
 
@@ -615,26 +666,29 @@
         <ul class="plain">
           <li><strong>Not a task agent.</strong> No benchmark, no completion metric, no deliverable.</li>
           <li><strong>Not a chatbot.</strong> Nobody prompts it run to run — it decides on its own.</li>
-          <li><strong>Not multi-agent.</strong> One voice, two cadences: only the run researches and writes; the heartbeat thinks between runs and keeps the thread list current.</li>
+          <li><strong>Not multi-agent.</strong> One voice, two cadences: only the run researches and writes; the heartbeat thinks between runs, and prunes and closes the thread list around that thinking.</li>
         </ul>
       </section>
 
       <!-- ================================================== how it thinks = -->
       <section id="thinking">
         <span class="eyebrow">How it thinks</span>
-        <h2>Research, score it, take a side, write it down.</h2>
+        <h2>Search, read it, score it, take a side, write it down.</h2>
         <p>
-          The run is a pipeline with one judgment call in the middle: after every search Wick rates
-          how much the result actually interests it, 0 to 10, and that number decides the rest. Zero
-          ends the run. Anything above it has to become an opinion before it can become an entry.
-          Seven or above also earns a page in the wiki. Between runs a heartbeat thinks about one
-          open thread and keeps the thread list tidy. Click a stage for what it does.
+          The run has two phases and one judgment call between them. In <strong>SENSE</strong> it
+          searches and then opens an article and reads the body — snippets are explicitly not enough
+          to have an opinion about. Then it rates how much what it read actually interests it, 0 to
+          10, in a block that has to say what it found, what it doubts, and what it now thinks. Zero
+          ends the run there. Anything above it crosses into <strong>SYNTHESIZE</strong>, where the
+          searching stops and the position gets written; seven or above also earns a page in the
+          wiki. Between runs a heartbeat prunes the thread list and thinks about one thread. Click a
+          stage for what it does.
         </p>
 
         <figure>
           <div class="figwrap">
-            <svg id="thought-diagram" viewBox="0 0 980 500" role="group"
-                 aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10, form an opinion, then write the entry and — at 7 or above — file a wiki page. A zero drops out of the rating to a tick and the run ends there. Middle, the three files that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: tend the thread list, pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
+            <svg id="thought-diagram" viewBox="0 0 980 628" role="group"
+                 aria-label="Three bands. Top, the run every 30 minutes, split into two phases: in SENSE it grounds itself, searches the web up to three times, reads up to two articles in full, and rates its interest 0 to 10; a zero drops out of the rating to a tick and the run ends there. Crossing into SYNTHESIZE it forms an opinion, writes the entry, and at 7 or above files a wiki page. Middle, the three stores that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: close what is done, score every thread for researchability, think with no tools, and note the next move back into state. Two further heartbeat stages, a search every 6th tick and a self-reflection pass every 12th, are drawn in red and dashed because they exist in the code but have never executed. Each stage is an interactive button; details render in the panel below the diagram.">
 
               <defs>
                 <marker id="hd1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -645,175 +699,219 @@
               <!-- ============================================ band 1: the run -->
               <!-- The straight line is the run that produces an entry. Tick hangs
                    off the rating because that is what it is: a dead end, not the
-                   destination. -->
+                   destination — and it sits left of the phase divider because a
+                   zero ends the run before anything is synthesised. -->
               <text class="t-label" x="30" y="26">THE RUN — EVERY 30 MIN</text>
+              <text class="t-label" x="651" y="26" text-anchor="end">SENSE — SEARCH, THEN READ</text>
+              <text class="t-label" x="675" y="26">SYNTHESIZE — DECIDE, THEN WRITE</text>
+
+              <!-- The phase boundary. Past it the search budget is spent on
+                   purpose: the prompt says stop researching and write. -->
+              <path class="phase" d="M 669 36 L 669 300" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="ground"
                  aria-label="Ground itself">
-                <rect x="30" y="46" width="150" height="60" rx="10" />
-                <text class="t-node" x="105" y="72" text-anchor="middle">Ground itself</text>
-                <text class="t-small" x="105" y="90" text-anchor="middle">reads all three files</text>
+                <rect x="30" y="46" width="140" height="60" rx="10" />
+                <text class="t-node" x="100" y="72" text-anchor="middle">Ground itself</text>
+                <text class="t-small" x="100" y="90" text-anchor="middle">reads all three stores</text>
               </g>
 
-              <path class="flow" d="M 180 76 L 206 76" marker-end="url(#hd1)" />
+              <path class="flow" d="M 170 76 L 192 76" marker-end="url(#hd1)" />
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="research"
-                 aria-label="Research">
-                <rect x="206" y="46" width="149" height="60" rx="10" />
-                <text class="t-node" x="280" y="72" text-anchor="middle">Research</text>
-                <text class="t-small" x="280" y="90" text-anchor="middle">≥1 search · 4 max</text>
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="search"
+                 aria-label="Search the web">
+                <rect x="192" y="46" width="140" height="60" rx="10" />
+                <text class="t-node" x="262" y="72" text-anchor="middle">Search the web</text>
+                <text class="t-small" x="262" y="90" text-anchor="middle">3 calls · DuckDuckGo</text>
               </g>
 
-              <path class="flow" d="M 355 76 L 381 76" marker-end="url(#hd1)" />
+              <path class="flow" d="M 332 76 L 354 76" marker-end="url(#hd1)" />
+
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="read"
+                 aria-label="Read the article">
+                <rect x="354" y="46" width="140" height="60" rx="10" />
+                <text class="t-node" x="424" y="72" text-anchor="middle">Read the article</text>
+                <text class="t-small" x="424" y="90" text-anchor="middle">2 calls · full body</text>
+              </g>
+
+              <path class="flow" d="M 494 76 L 516 76" marker-end="url(#hd1)" />
 
               <!-- The one judgment call: a self-reported score, not a rule. -->
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="interest"
                  aria-label="Rate the interest, 0 to 10">
-                <polygon points="451,46 521,76 451,106 381,76" />
-                <text class="t-node" x="451" y="80" text-anchor="middle">Interest 0–10?</text>
+                <polygon points="582,46 648,76 582,106 516,76" />
+                <text class="t-node" x="582" y="80" text-anchor="middle">Interest 0–10?</text>
               </g>
 
-              <path class="flow" d="M 521 76 L 561 76" marker-end="url(#hd1)" />
-              <text class="t-small" x="541" y="66" text-anchor="middle">1+</text>
+              <path class="flow" d="M 648 76 L 700 76" marker-end="url(#hd1)" />
+              <text class="t-small" x="652" y="66">1+</text>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="opinion"
                  aria-label="Form an opinion">
-                <rect x="561" y="46" width="175" height="60" rx="10" />
-                <text class="t-node" x="648" y="72" text-anchor="middle">Form an opinion</text>
-                <text class="t-small" x="648" y="90" text-anchor="middle">I think X because Y</text>
+                <rect x="700" y="46" width="175" height="60" rx="10" />
+                <text class="t-node" x="787" y="72" text-anchor="middle">Form an opinion</text>
+                <text class="t-small" x="787" y="90" text-anchor="middle">I think X because Y</text>
               </g>
 
-              <path class="flow" d="M 451 106 L 451 150" marker-end="url(#hd1)" />
-              <text class="t-small" x="461" y="132">0</text>
+              <path class="flow" d="M 582 106 L 582 150" marker-end="url(#hd1)" />
+              <text class="t-small" x="592" y="132">0</text>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tick"
                  aria-label="Tick">
-                <rect x="391" y="150" width="120" height="60" rx="10" />
-                <text class="t-node" x="451" y="176" text-anchor="middle">Tick</text>
-                <text class="t-small" x="451" y="194" text-anchor="middle">no entry, logged</text>
+                <rect x="522" y="150" width="120" height="60" rx="10" />
+                <text class="t-node" x="582" y="176" text-anchor="middle">Tick</text>
+                <text class="t-small" x="582" y="194" text-anchor="middle">no entry, logged</text>
               </g>
 
-              <path class="flow" d="M 648 106 L 648 150" marker-end="url(#hd1)" />
+              <path class="flow" d="M 787 106 L 787 150" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="write"
                  aria-label="Write the entry">
-                <rect x="543" y="150" width="210" height="60" rx="10" />
-                <text class="t-node" x="648" y="176" text-anchor="middle">Write the entry</text>
-                <text class="t-small" x="648" y="194" text-anchor="middle">≤200 words · one idea</text>
+                <rect x="682" y="150" width="210" height="60" rx="10" />
+                <text class="t-node" x="787" y="176" text-anchor="middle">Write the entry</text>
+                <text class="t-small" x="787" y="194" text-anchor="middle">≤200 words · one idea</text>
               </g>
 
-              <path class="flow" d="M 753 180 L 779 180" marker-end="url(#hd1)" />
+              <path class="flow" d="M 800 210 L 800 230" marker-end="url(#hd1)" />
+              <text class="t-small" x="810" y="226">at 7+</text>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="file"
                  aria-label="File a wiki page">
-                <rect x="779" y="150" width="180" height="60" rx="10" />
-                <text class="t-node" x="869" y="176" text-anchor="middle">File a wiki page</text>
-                <text class="t-small" x="869" y="194" text-anchor="middle">only at interest 7+</text>
+                <rect x="740" y="230" width="200" height="54" rx="10" />
+                <text class="t-node" x="840" y="253" text-anchor="middle">File a wiki page</text>
+                <text class="t-small" x="840" y="270" text-anchor="middle">only at interest 7+</text>
               </g>
 
               <!-- band 1 ↔ band 2. Arrows point the way the data moves. -->
-              <path class="flow" d="M 105 250 L 105 106" marker-end="url(#hd1)" />
-              <text class="t-small" x="120" y="182">reads all three</text>
+              <path class="flow" d="M 100 310 L 100 106" marker-end="url(#hd1)" />
+              <text class="t-small" x="112" y="212">reads all three</text>
 
-              <path class="flow" d="M 560 210 L 560 232 L 175 232 L 175 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="350" y="226" text-anchor="middle">appends the entry</text>
+              <path class="flow" d="M 700 210 L 700 262 L 520 262 L 520 310" marker-end="url(#hd1)" />
+              <text class="t-small" x="612" y="256" text-anchor="middle">updates threads</text>
 
-              <path class="flow" d="M 620 210 L 620 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="635" y="240">updates threads</text>
+              <path class="flow" d="M 730 210 L 730 296 L 175 296 L 175 310" marker-end="url(#hd1)" />
+              <text class="t-small" x="430" y="290" text-anchor="middle">appends the entry</text>
 
-              <path class="flow" d="M 869 210 L 869 250" marker-end="url(#hd1)" />
-              <text class="t-small" x="884" y="240">files the page</text>
+              <path class="flow" d="M 840 284 L 840 310" marker-end="url(#hd1)" />
+              <text class="t-small" x="852" y="302">files the page</text>
 
               <!-- ======================================= band 2: the memory -->
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="journal"
                  aria-label="The journal folder">
-                <rect x="30" y="250" width="290" height="80" rx="12" />
-                <text class="t-node" x="175" y="282" text-anchor="middle">JOURNAL/ — ONE FILE A DAY</text>
-                <text class="t-small" x="175" y="302" text-anchor="middle">appended, never rewritten</text>
+                <rect x="30" y="310" width="290" height="80" rx="12" />
+                <text class="t-node" x="175" y="342" text-anchor="middle">JOURNAL/ — ONE FILE A DAY</text>
+                <text class="t-small" x="175" y="362" text-anchor="middle">appended, never rewritten</text>
               </g>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="state"
                  aria-label="The state folder">
-                <rect x="340" y="250" width="290" height="80" rx="12" />
-                <text class="t-node" x="485" y="282" text-anchor="middle">STATE/ — IDENTITY &amp; CONTINUITY</text>
-                <text class="t-small" x="485" y="302" text-anchor="middle">personality · interests · up to 8 threads</text>
+                <rect x="340" y="310" width="290" height="80" rx="12" />
+                <text class="t-node" x="485" y="342" text-anchor="middle">STATE/ — IDENTITY &amp; CONTINUITY</text>
+                <text class="t-small" x="485" y="362" text-anchor="middle">personality · interests · up to 5 threads</text>
               </g>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="wiki"
                  aria-label="The wiki folder">
-                <rect x="650" y="250" width="300" height="80" rx="12" />
-                <text class="t-node" x="800" y="282" text-anchor="middle">WIKI/ — WHAT IT KEEPS</text>
-                <text class="t-small" x="800" y="302" text-anchor="middle">schema’d pages · index regenerated in code</text>
+                <rect x="650" y="310" width="300" height="80" rx="12" />
+                <text class="t-node" x="800" y="342" text-anchor="middle">WIKI/ — WHAT IT KEEPS</text>
+                <text class="t-small" x="800" y="362" text-anchor="middle">schema’d pages · index regenerated in code</text>
               </g>
 
               <!-- ==================================== band 3: the heartbeat -->
-              <!-- Four stages, in the order ponder.py runs them. The first is
-                   script-only bookkeeping; the model is not called until the
-                   third. -->
-              <text class="t-label" x="30" y="352">HEARTBEAT — EVERY 10 MIN</text>
+              <!-- Four stages, in the order ponder.py runs them. The first two
+                   are script-only bookkeeping; the model is not called until
+                   the third. The two dashed stages below are the ones the tick
+                   counter was supposed to reach and never has. -->
+              <text class="t-label" x="30" y="420">HEARTBEAT — EVERY 10 MIN</text>
 
-              <path class="flow" d="M 142 414 L 142 400 L 360 400 L 360 330" marker-end="url(#hd1)" />
-              <text class="t-small" x="250" y="394" text-anchor="middle">opens and closes</text>
+              <path class="flow" d="M 130 456 L 130 440 L 380 440 L 380 390" marker-end="url(#hd1)" />
+              <text class="t-small" x="255" y="434" text-anchor="middle">closes threads</text>
 
-              <path class="flow" d="M 420 330 L 420 360 L 380 360 L 380 414" marker-end="url(#hd1)" />
-              <text class="t-small" x="435" y="352">reads threads</text>
+              <path class="flow" d="M 500 390 L 500 456" marker-end="url(#hd1)" />
+              <text class="t-small" x="510" y="424">reads threads</text>
 
-              <path class="flow" d="M 837 414 L 837 380 L 560 380 L 560 330" marker-end="url(#hd1)" />
-              <text class="t-small" x="700" y="374" text-anchor="middle">appends a note</text>
+              <path class="flow" d="M 808 456 L 808 428 L 600 428 L 600 390" marker-end="url(#hd1)" />
+              <text class="t-small" x="700" y="422" text-anchor="middle">appends a note</text>
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tend"
-                 aria-label="Tend the thread list">
-                <rect x="30" y="414" width="225" height="58" rx="10" />
-                <text class="t-node" x="142" y="440" text-anchor="middle">Tend the thread list</text>
-                <text class="t-small" x="142" y="457" text-anchor="middle">no model involved</text>
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="close"
+                 aria-label="Close what is done">
+                <rect x="30" y="456" width="200" height="56" rx="10" />
+                <text class="t-node" x="130" y="482" text-anchor="middle">Close what’s done</text>
+                <text class="t-small" x="130" y="499" text-anchor="middle">script, no model</text>
               </g>
 
-              <path class="flow" d="M 255 443 L 285 443" marker-end="url(#hd1)" />
+              <path class="flow" d="M 230 484 L 256 484" marker-end="url(#hd1)" />
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="pick"
-                 aria-label="Pick the stalest thread">
-                <rect x="285" y="414" width="190" height="58" rx="10" />
-                <text class="t-node" x="380" y="440" text-anchor="middle">Pick stalest thread</text>
-                <text class="t-small" x="380" y="457" text-anchor="middle">longest without a thought</text>
+              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="score"
+                 aria-label="Score every thread">
+                <rect x="256" y="456" width="205" height="56" rx="10" />
+                <text class="t-node" x="358" y="482" text-anchor="middle">Score every thread</text>
+                <text class="t-small" x="358" y="499" text-anchor="middle">researchability 0–10</text>
               </g>
 
-              <path class="flow" d="M 475 443 L 505 443" marker-end="url(#hd1)" />
+              <path class="flow" d="M 461 484 L 487 484" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="think"
                  aria-label="Think, no tools">
-                <rect x="505" y="414" width="190" height="58" rx="10" />
-                <text class="t-node" x="600" y="440" text-anchor="middle">Think — no tools</text>
-                <text class="t-small" x="600" y="457" text-anchor="middle">text is all it returns</text>
+                <rect x="487" y="456" width="190" height="56" rx="10" />
+                <text class="t-node" x="582" y="482" text-anchor="middle">Think — no tools</text>
+                <text class="t-small" x="582" y="499" text-anchor="middle">the stalest thread</text>
               </g>
 
-              <path class="flow" d="M 695 443 L 725 443" marker-end="url(#hd1)" />
+              <path class="flow" d="M 677 484 L 703 484" marker-end="url(#hd1)" />
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="note"
                  aria-label="Note the next move">
-                <rect x="725" y="414" width="225" height="58" rx="10" />
-                <text class="t-node" x="837" y="440" text-anchor="middle">Note the next move</text>
-                <text class="t-small" x="837" y="457" text-anchor="middle">a verdict and a next move</text>
+                <rect x="703" y="456" width="210" height="56" rx="10" />
+                <text class="t-node" x="808" y="482" text-anchor="middle">Note the next move</text>
+                <text class="t-small" x="808" y="499" text-anchor="middle">a verdict and a next move</text>
               </g>
+
+              <!-- The two branches the tick counter gates. Both are real code
+                   and neither has ever run: the counter is a module global and
+                   cron starts a new process every tick, so it is always 1. -->
+              <path class="flow is-fault" d="M 358 512 L 358 528 L 650 528" />
+              <path class="flow is-fault" d="M 400 528 L 400 546" marker-end="url(#hd1)" />
+              <path class="flow is-fault" d="M 650 528 L 650 546" marker-end="url(#hd1)" />
+
+              <g class="node is-fault" tabindex="0" role="button" aria-pressed="false" data-detail="searchtick"
+                 aria-label="Every 6th tick, one web search — never reached">
+                <rect x="300" y="546" width="200" height="52" rx="10" />
+                <text class="t-node" x="400" y="569" text-anchor="middle">Every 6th tick</text>
+                <text class="t-small" x="400" y="586" text-anchor="middle">one web search</text>
+              </g>
+
+              <g class="node is-fault" tabindex="0" role="button" aria-pressed="false" data-detail="reflecttick"
+                 aria-label="Every 12th tick, a self-reflection pass — never reached">
+                <rect x="540" y="546" width="220" height="52" rx="10" />
+                <text class="t-node" x="650" y="569" text-anchor="middle">Every 12th tick</text>
+                <text class="t-small" x="650" y="586" text-anchor="middle">self-reflection pass</text>
+              </g>
+
+              <text class="t-small is-fault" x="530" y="618" text-anchor="middle">the counter resets every tick — neither branch has ever fired</text>
             </svg>
           </div>
 
           <div class="diagram-panel" id="diagram-panel">
-            <h3 id="diagram-title">Two cadences, three files.</h3>
+            <h3 id="diagram-title">Two cadences, three stores.</h3>
             <p id="diagram-text">
-              The 30-minute run researches, scores its own interest, takes a position and writes.
-              The 10-minute heartbeat tidies the thread list, then thinks about one thread and
-              leaves a note. Between them sit the three folders that are the entire memory. Click
-              any stage above to see what it does.
+              The 30-minute run searches, reads an article properly, scores its own interest, takes
+              a position and writes. The 10-minute heartbeat closes what is finished, scores what is
+              left, then thinks about one thread and leaves a note. Between them sit the three
+              folders that are the entire memory. The two red stages are code that has never run.
+              Click any stage above to see what it does.
             </p>
           </div>
           <p class="diagram-hint">Click or tab to a stage above — this diagram is interactive.</p>
 
           <figcaption>
             The heartbeat splits its work in two, and that split is the guardrail. The model call
-            carries no tools, so all it can produce is a thought and a verdict. Everything that
-            actually moves — opening a thread off a trend, closing one the verdict retired — is done
-            by plain code around it. Judgment stays with the model, action stays in the script, and
-            searching and writing stay with the 30-minute run.
+            carries no tools, so all it can produce is a thought and a verdict; everything that
+            actually moves — closing a thread the verdict retired, scoring what is left — is done by
+            plain code around it. That guardrail is now weaker by design than it looks here: the
+            <span class="fault-word">every-6th-tick branch</span> hands the model a search tool, and
+            the every-12th hands it the whole state history to reflect on. Neither has ever
+            executed, so the tool-less claim has held so far by accident rather than by design.
           </figcaption>
         </figure>
       </section>
@@ -832,19 +930,20 @@
             </p>
           </div>
           <div class="card">
-            <h3>Interest is the router</h3>
+            <h3>Read it, don't skim it</h3>
             <p>
-              One self-scored number after every search decides the run: 0 ticks, 1–6 writes, 7+
-              writes and files. Cheap to produce, honest by construction, and it makes "this bored
-              me" a real answer instead of something to write around.
+              Snippets were the quiet failure — a headline is not enough to have a view about. A
+              second tool now pulls the article body, on a budget of its own. Search finds the page;
+              reading it is a separate decision, and the prompt says so in as many words.
             </p>
           </div>
           <div class="card">
-            <h3>An opinion is the bar</h3>
+            <h3>The score routes, the opinion pays</h3>
             <p>
-              Every non-tick entry has to carry a position it will defend. Summarising the sources
-              is the failure mode the whole experiment exists to detect, so it's checked for by
-              name rather than hoped for.
+              One self-scored number after reading decides the run — 0 ticks, 1–6 writes, 7+ writes
+              and files — and it ships with what was found, what is doubted, and the takeaway. Past
+              it, an entry has to carry a position it will defend. Summarising is the failure mode
+              the experiment exists to detect.
             </p>
           </div>
         </div>
@@ -853,24 +952,59 @@
       <!-- ==================================================== status ====== -->
       <section id="status">
         <span class="eyebrow">Status</span>
-        <h2>Three days in. It writes too much, and files too little.</h2>
+        <h2>Twelve days in. The rewrite landed; half of it never ran.</h2>
         <p>
-          80 entries in 3 days — roughly 27 a day against a 6–12 target, with about seven ticks on
-          the whole record. Halving the interval to 30 minutes doubled the opportunities and the
-          write rate followed them exactly, so the weak result is still judgment, not throughput:
-          the decline path is designed to be the common one and is barely used.
+          302 entries across 12 days — about 25 a day against a 6–12 target, with 26 ticks on the
+          whole record. The rate has not moved since the last review, so the weak result is still
+          judgment rather than throughput: the decline path is designed to be the common one and is
+          taken in fewer than one run in ten.
         </p>
         <p>
-          The wiki is the newest change and the one worth watching. One day old, 2 pages, both
-          still seeds, both in the same domain — the 7+ filing bar is being cleared far less often
-          than the loop implies. Too early to call that discipline or disuse.
+          The wiki has gone from 2 pages to 7 — five seeds, two developing — and then stopped. The
+          newest was last touched on Aug 13, with 128 entries written since. Reading full articles
+          was supposed to raise the quality of what clears the 7+ bar; so far it has raised nothing,
+          because nothing has cleared it in six days.
         </p>
         <p>
-          <span class="fault-word">Open defect:</span> the entry is written by the model as a tool
-          call, and it still lands malformed — a heading glued onto the previous line in 4 of the
-          last 30 entries, and before that a run of escaping artifacts that hasn't recurred since
-          Aug 9. Both are repaired on read; the real fix still moves the file write out of the
-          model's hands.
+          <span class="fault-word">Open defect — the heartbeat's two new branches are unreachable.</span>
+          The rework gave it a search every 6th tick and a self-reflection pass every 12th, and both
+          are keyed off a counter that lives in module scope. Cron starts a fresh process every ten
+          minutes, so the counter is 1 on every tick that has ever run, and neither branch has
+          executed once — the tag the search branch writes appears nowhere in the repository. The
+          personality feedback loop that the whole rework was justified by is, in production, a
+          no-op.
+        </p>
+        <p>
+          <span class="fault-word">Open defect — the entries stopped being prose.</span> Since Aug 17
+          the self-reflection entries have been landing as raw JSON objects — keys like
+          <code>personality_insight</code> and <code>mbti_update</code>, straight into the journal —
+          in 67 of the last 84 entries. The 200-word first-person rule is intact in the prompt and
+          simply is not being followed, and consecutive runs are re-emitting near-identical blocks:
+          seven duplicate bodies on Aug 18 alone.
+        </p>
+        <p>
+          <span class="fault-word">Open defect — the citations went empty.</span> 136 of 302 entries
+          name what they read. The rest do not, and the newest failure is worse than a blank: since
+          Aug 17 the entries that do emit the source comment have been emitting it empty. On Aug 18,
+          7 of 42 entries carried the comment at all and every one of those 7 was empty — not a
+          single entry that day cites anything. The mirror normalises an empty list away rather than
+          treating it as provenance.
+        </p>
+        <p>
+          <span class="fault-word">Open defect — thread bookkeeping is corrupt.</span> The single
+          open thread is currently named <code>{</code>, because the code that names a new thread
+          takes the first line of the last entry and the last entry started with a JSON brace. The
+          closed-thread log has eleven separate "Closed threads" headings, because the closure
+          routine looks for that heading only in the lines above the thread it is removing and the
+          section is always below. The 5-thread cap exists in the prompt; the constant in the
+          heartbeat that was supposed to enforce it is referenced only from code that no longer
+          runs.
+        </p>
+        <p>
+          One closed: the malformed write path this page reported last time — headings glued onto
+          the previous line, escaped newlines in the file — has not recurred since Aug 9. The repair
+          the mirror does on read is now dead weight, which is the right kind of dead weight to
+          have.
         </p>
       </section>
 
@@ -882,11 +1016,12 @@
           <li><strong>No approval needed:</strong> reading the public web, reading its own files, writing to <code>journal/</code>, <code>state/</code> and <code>wiki/</code> — a path allowlist in the write tool, not a line in the prompt.</li>
           <li><strong>Always needs a yes:</strong> any git operation, posting or messaging, spending money, deleting anything. None of these has a tool at all, so the ask is the only route to them.</li>
           <li><strong>Silence isn't consent.</strong> A queued request stays queued until it gets an answer — it doesn't expire into a yes. The queue is currently empty.</li>
+          <li><strong>One caveat, and it's new.</strong> The heartbeat used to be tool-less by construction; since the rework its request carries a search tool every 6th tick. That branch has never executed, so nothing has changed in practice — but the guarantee is now a scheduling accident rather than a property of the code, and it is worth saying so out loud.</li>
         </ul>
       </section>
 
       <footer>
-        Project Wick · one-pager v6 · a 30-minute cron + a 10-minute heartbeat, on a Hermes VPS via
+        Project Wick · one-pager v7 · a 30-minute cron + a 10-minute heartbeat, on a Hermes VPS via
         OpenRouter.
         <br />
         The agent named itself on first run and the name stuck.
@@ -911,29 +1046,33 @@
             title: 'Ground itself',
             text: 'Every run starts from zero — nothing carries over except what is on disk. It reads its identity and personality, the open threads, its last few entries, and the wiki it has built, before deciding anything.',
           },
-          research: {
-            title: 'Research',
-            text: 'At least one web search is mandatory — a run cannot decline before it has looked. Four is the ceiling, enforced by a counter in code rather than by asking nicely. X trends are a supplement for finding topics, never the source.',
+          search: {
+            title: 'Search the web',
+            text: 'At least one search is mandatory — a run cannot decline before it has looked. Three is the ceiling, enforced by a counter in code rather than by asking nicely. The X tools were removed outright in the last rewrite: they were the main source of thread hoarding, and the functions are still in the file but no longer reachable.',
+          },
+          read: {
+            title: 'Read the article',
+            text: 'The change that made the rest of the loop worth having. A search returns snippets; this opens the page and extracts the body, up to 2,000 characters, and the prompt says in as many words that snippets are not enough to have an opinion about. Two of these per run, on a budget separate from search.',
           },
           interest: {
             title: 'Interest 0–10?',
-            text: 'The judgment call, and it is self-reported: after each search Wick scores how much the result actually interests it. That one number routes everything after it — which makes boredom a first-class outcome rather than a failure to be written around.',
+            text: 'The judgment call, and it is self-reported: after reading, Wick scores how much the result actually interests it. It is no longer a bare number — the score comes with what it found, what it is sceptical of, and its takeaway, so the number has to be defended by the same breath that produces it. That one score routes everything after it, which makes boredom a first-class outcome rather than a failure to be written around.',
           },
           tick: {
             title: 'Tick',
-            text: 'A zero ends the run with a logged no-op, and the dead end goes into interests.md so the same nothing is not chased twice. Silence is a tracked outcome, not a gap in the record.',
+            text: 'A zero ends the run with a logged no-op, and the dead end goes into interests.md so the same nothing is not chased twice. Silence is a tracked outcome, not a gap in the record — though at 26 ticks in 302 entries it is a far rarer one than the design assumes.',
           },
           opinion: {
             title: 'Form an opinion',
-            text: 'Anything above zero has to become a position before it can become an entry: "I think X because Y", a disagreement, a stated uncertainty, or a change of mind. A summary of what the sources said does not clear the bar.',
+            text: 'Past this point the search budget is closed on purpose: the prompt says stop researching, you are writing now. Anything above zero has to become a position — "I think X because Y", a disagreement, a stated uncertainty, or a change of mind. A summary of what the sources said does not clear the bar.',
           },
           write: {
             title: 'Write the entry',
-            text: 'First person, one idea, 200 words. Every third non-tick entry is a self-reflection instead — and the run checks that personality.md actually changed before it lets that count, so the cadence cannot be satisfied by writing about writing.',
+            text: 'First person, one idea, 200 words, closing with the URLs it actually read. Every third non-tick entry is a self-reflection instead — and the run checks that personality.md actually changed before it lets that count, so the cadence cannot be satisfied by writing about writing.',
           },
           file: {
             title: 'File a wiki page',
-            text: 'Only at 7 or above. A page gets frontmatter, a status from seed to evergreen, links to at least two others, and at least one opinionated line — the wiki is meant to sound like Wick, not like a reference.',
+            text: 'Only at 7 or above. A page gets frontmatter, a status from seed to evergreen, links to at least two others, and at least one opinionated line — the wiki is meant to sound like Wick, not like a reference. Seven pages exist and none has been filed since Aug 13.',
           },
           journal: {
             title: 'journal/ — one file a day',
@@ -941,33 +1080,41 @@
           },
           state: {
             title: 'state/ — who it is, what it is chasing',
-            text: 'Identity, personality, interests, and continuity — up to eight open threads, each with where it got to, the next move, and the heartbeat’s notes. This is the file both cadences share.',
+            text: 'Identity, personality, interests, and continuity — up to five open threads since the last rewrite took the cap down from eight, each with where it got to, the next move, and the heartbeat’s notes. This is the file both cadences share, and the only one either of them fights over: a lock file keeps them from writing it at the same time.',
           },
           wiki: {
             title: 'wiki/ — what it keeps',
             text: 'The cumulative record, filed only from high-interest research. Wick writes the pages; the index, the log and the hot cache are regenerated from the filesystem in code after every run, so the bookkeeping costs no model turns and cannot drift from what is actually on disk.',
           },
-          tend: {
-            title: 'Tend the thread list',
-            text: 'Before any thinking happens, the script does the bookkeeping itself: it opens a thread when X trends surface something Wick already cares about and there is room under eight, and it closes one when the last note came back with a close verdict. No model call in either — this half of the heartbeat is plain code.',
+          close: {
+            title: 'Close what’s done',
+            text: 'Before any thinking happens, the script does the bookkeeping itself: any thread whose last note came back with a close verdict is retired on the spot, on the 10-minute cadence rather than waiting for the next run. No model call — this half of the heartbeat is plain code. It is also where the bookkeeping is currently breaking: it looks for the "Closed threads" heading only in the lines above the thread it is removing, and that heading is always below, so it appends a fresh one every time. There are eleven of them in the file now.',
           },
-          pick: {
-            title: 'Pick stalest thread',
-            text: 'The heartbeat takes whichever open thread has gone longest without attention, skipping the ones it has already circled. It does not choose by interest — the run already did that, and a scheduler that also had taste would be a second voice.',
+          score: {
+            title: 'Score every thread',
+            text: 'Each open thread gets a researchability score, 0 to 10: a next move naming something concrete scores up, a wall of question marks or research-methodology language scores down, and a thread that has been pondered twice without the run ever searching it scores down again. The score exists to pick the thread worth grounding — which is the branch that has never run.',
           },
           think: {
             title: 'Think — no tools',
-            text: 'Same model, same voice, but the request carries no tools at all, so text is the only thing it can return. It cannot search, cannot open a file, cannot do anything but think about the thread it was handed.',
+            text: 'Same model, same voice, but the request carries no tools at all, so text is the only thing it can return. It cannot search, cannot open a file, cannot do anything but think about the thread it was handed. When there are no threads left it writes one thought into state/open-thread-seed.md instead, and the next run opens a thread from it.',
           },
           note: {
             title: 'Note the next move',
             text: "A thought and a verdict, appended to that thread's log. A suggested next move is context — the run is free to ignore it, and often does. A close verdict is not: it is binding, and the heartbeat has usually acted on it itself before the next run wakes.",
           },
+          searchtick: {
+            title: 'Every 6th tick — one web search',
+            text: 'Designed to be the fix for a heartbeat that only ever abstracts: once an hour it would take the most researchable thread, run a single search, and come back with a grounded note and a confidence level. The code is all there. It has never executed — the tick counter it keys off is a module global, and cron starts a fresh process every ten minutes, so the counter is 1 on every tick that has ever run and 1 % 6 is never 0. Nothing in the repository carries the tag this branch writes.',
+          },
+          reflecttick: {
+            title: 'Every 12th tick — self-reflection',
+            text: 'The other half of the same idea, and dead for the same reason. Every two hours the heartbeat was meant to stop pondering threads and ponder Wick instead — which threads the run actually searched, which ones lingered, which interests went dormant — and write what it noticed back into interests.md as a meta-interest. That feedback loop is the stated point of the whole heartbeat rework, and it has run zero times.',
+          },
         };
 
         var DEFAULT = {
-          title: 'Two cadences, three files.',
-          text: 'The 30-minute run researches, scores its own interest, takes a position and writes. The 10-minute heartbeat tidies the thread list, then thinks about one thread and leaves a note. Between them sit the three folders that are the entire memory. Click any stage above to see what it does.',
+          title: 'Two cadences, three stores.',
+          text: 'The 30-minute run searches, reads an article properly, scores its own interest, takes a position and writes. The 10-minute heartbeat closes what is finished, scores what is left, then thinks about one thread and leaves a note. Between them sit the three folders that are the entire memory. The two red stages are code that has never run. Click any stage above to see what it does.',
         };
 
         var nodes = Array.prototype.slice.call(document.querySelectorAll('#thought-diagram .node'));
