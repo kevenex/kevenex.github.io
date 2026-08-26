@@ -1,34 +1,8 @@
-import { useEffect, useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import CinematicText from './components/CinematicText';
-import Projects from './components/Projects';
-import Technology from './components/Technology';
-import Architecture from './components/Architecture';
-import Footer from './components/Footer';
-
-const ENTRANCE_DELAY_MS = 800;
-
+/*
+ * The home page, rebuilt. Sections are added back one at a time — see the
+ * redesign plan. Until they are, this is a deliberately bare shell: the goal
+ * of the strip was a page that compiles, not a broken tree.
+ */
 export default function App() {
-  const [entranceComplete, setEntranceComplete] = useState(false);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setEntranceComplete(true), ENTRANCE_DELAY_MS);
-    return () => window.clearTimeout(timeout);
-  }, []);
-
-  return (
-    <div
-      className="min-h-screen w-full bg-black text-white"
-      style={{ fontFamily: '"Space Mono", monospace' }}
-    >
-      <Navbar entranceComplete={entranceComplete} />
-      <Hero entranceComplete={entranceComplete} />
-      <CinematicText />
-      <Projects />
-      <Technology />
-      <Architecture />
-      <Footer />
-    </div>
-  );
+  return <div className="min-h-screen w-full bg-paper text-ink" />;
 }
