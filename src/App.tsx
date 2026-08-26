@@ -1,4 +1,5 @@
 import Arrival from './components/Arrival';
+import Contact from './components/Contact';
 import FlyerSpread from './components/FlyerSpread';
 import Position from './components/Position';
 import Practice from './components/Practice';
@@ -24,6 +25,7 @@ export default function App() {
           <WickSpread />
           <FlyerSpread />
           <Practice />
+          <Contact />
         </Spine>
       </main>
     </LenisProvider>
