@@ -30,17 +30,6 @@ export default function FlyerSpread() {
       data={DATA}
       href="/flyer-fable/"
       linkLabel="Open Flyer Fable"
-    >
-      <div className="max-w-measure border-l border-oxide/40 pl-6">
-        <p className="font-mono text-label uppercase text-muted">The honest part</p>
-
-        <p className="mt-4 font-serif text-lead text-ink">
-          The map is real. Distances between places are the distances between places, so
-          the flight from Seoul to Jeju takes as long as the distance says it should. Only
-          the mountains cheat — vertical is stretched fivefold, because at true scale
-          Hallasan is a bump you would fly straight over without noticing.
-        </p>
-      </div>
-    </Spread>
+    />
   );
 }

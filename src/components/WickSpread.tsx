@@ -5,10 +5,8 @@ import WickMark from './WickMark';
 const number = (value: number) => value.toLocaleString('en-US');
 
 /*
- * The one project on this page that is running right now, so the spread says
- * so with a timestamp. Figures come from the agent's own journal, read at
- * build time and refreshed by the daily deploy — no case-study copy can do
- * what a real last-run time does.
+ * Figures come from the agent's own journal, read at build time — a real
+ * entry count and last-run time say more than case-study copy could.
  */
 export default function WickSpread() {
   const data: SpreadDatum[] = wick.available
@@ -37,33 +35,6 @@ export default function WickSpread() {
       href="/project-wick/"
       linkLabel="Open Project Wick"
       mark={<WickMark className="text-oxide" width={28} height={28} />}
-    >
-      {wick.available && wick.latest.text ? (
-        <figure className="max-w-measure border-l border-oxide/40 pl-6">
-          <figcaption className="flex items-center gap-2 font-mono text-label uppercase text-muted">
-            <span
-              aria-hidden="true"
-              className="inline-block h-1.5 w-1.5 rounded-full bg-amber-dot"
-            />
-            Most recent entry — {wick.latest.date} {wick.latest.time}
-          </figcaption>
-
-          <blockquote className="mt-4 font-serif text-lead text-ink">
-            {wick.latest.text}
-          </blockquote>
-
-          {wick.openThread && (
-            <p className="mt-6 font-mono text-data text-muted">
-              Open thread — {wick.openThread}
-            </p>
-          )}
-        </figure>
-      ) : (
-        <p className="max-w-measure font-mono text-data text-muted">
-          Live figures unavailable at build time — the journal itself is still at
-          /project-wick/journal/.
-        </p>
-      )}
-    </Spread>
+    />
   );
 }

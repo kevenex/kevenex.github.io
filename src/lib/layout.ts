@@ -13,8 +13,16 @@ import { useEffect, useState } from 'react';
 export const RAIL = 'left-6 md:left-16 lg:left-24';
 export const RAIL_PAD = 'pl-16 md:pl-32 lg:pl-44';
 
-/** Right-hand breathing room, paired with RAIL_PAD. */
-export const RAIL_PAD_R = 'pr-6 md:pr-16 lg:pr-24';
+/*
+ * Right-hand breathing room — and, at lg and up, the section rail's gutter.
+ * The rail is fixed at right-6 and its widest label ("Project Wick") makes it
+ * 142px across, so it occupies the last 166px of the viewport. Anything less
+ * than that here and right-aligned content runs underneath it: the data strip
+ * was colliding with the active label at lg:pr-24. 192px clears it.
+ *
+ * Only lg needs it; below that the rail is hidden entirely.
+ */
+export const RAIL_PAD_R = 'pr-6 md:pr-16 lg:pr-48';
 
 /** One easing curve and one distance for every reveal on the page. */
 export const EASE = [0.22, 0.61, 0.36, 1] as const;

@@ -6,6 +6,7 @@ import Position from './components/Position';
 import Practice from './components/Practice';
 import Rail from './components/Rail';
 import Spine from './components/Spine';
+import ThemeToggle from './components/ThemeToggle';
 import WickSpread from './components/WickSpread';
 import { LenisProvider } from './lib/lenis';
 
@@ -17,6 +18,7 @@ import { LenisProvider } from './lib/lenis';
 export default function App() {
   return (
     <LenisProvider>
+      <ThemeToggle />
       <Rail />
 
       <main className="min-h-screen w-full bg-paper text-ink">

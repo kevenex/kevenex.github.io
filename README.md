@@ -1,8 +1,8 @@
 # KevinK
 
-Personal site for **Kevin Kim**. Paper ground, three typographic voices, and one
-continuous scroll. The home page is a single page; projects live as their own
-static pages under `public/`.
+Personal site for **Kevin Kim**. Three typographic voices, one continuous
+scroll, and a warm palette in both light and dark. The home page is a single
+page; projects live as their own static pages under `public/`.
 
 ## The design, in one paragraph
 
@@ -33,11 +33,12 @@ scripts/
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
 src/
   App.tsx                  Page composition
-  index.css                Fonts, Tailwind, reset, Lenis classes
+  index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
     lenis.tsx              The single Lenis instance
     lenis-context.ts       Context + useScrollTo
+    theme.ts               Light/dark resolution and the stored preference
     contact.ts             Contact validation and delivery (see Contact, below)
   components/
     Arrival.tsx            Typographic hero
@@ -50,6 +51,7 @@ src/
     Colophon.tsx           The closing dark band
     Spine.tsx              The rule that runs the page
     Rail.tsx               Fixed section indicator
+    ThemeToggle.tsx        Light/dark switch
     ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
     WickMark.tsx           Project Wick's mark
@@ -62,11 +64,28 @@ ideas). Instrument Sans is the working voice (body, UI). Space Mono is the
 machine's — timestamps, commit hashes, coordinates, counts, years. Anything a
 machine produced is mono; anything a person wrote is not.
 
-**Colour** lives in `tailwind.config.js`, with the measured contrast ratio
-recorded beside each token. Every pairing used on the page clears its threshold;
-`amber` is darkened from Project Wick's brighter tone specifically so it holds
-4.5:1 as text, and `oxide-lift` exists because the base accent manages only
-2.4:1 against the dark colophon.
+**Colour** resolves through CSS variables defined in `src/index.css`, with the
+measured contrast ratio recorded beside each block. Token names are roles, not
+appearances — `paper` is whatever the page is printed on and `ink` is what it is
+printed in, which stays true when the paper is black. Every pairing in both
+themes clears its threshold.
+
+**Dark mode** is therefore free at the component level: a class like `bg-paper`
+or `border-ink/15` is correct in both themes and there is no `dark:` variant
+anywhere in the markup. Two things make it work:
+
+- The theme is resolved by a **blocking inline script in the document head**,
+  before first paint. React mounts long after the browser paints, so deciding
+  in the bundle would flash the wrong theme on every load. It is duplicated in
+  `index.html` and `app/index.html` because the gate and the site share an
+  origin and a stored preference.
+- A stored choice outranks the OS. With nothing stored the page follows
+  `prefers-color-scheme` live; once someone picks a side, changing the system
+  theme no longer overrides them (`src/lib/theme.ts`).
+
+The colophon has its own `band` role rather than reusing `ink`, because in dark
+mode it goes *darker* than the page — inverting it into a pale slab would make
+the close shout when its job is to settle.
 
 **The spine** (`Spine.tsx`) is the continuity device: one rule running the
 length of the document's middle, which in `Practice.tsx` grows nodes and becomes
@@ -78,7 +97,11 @@ and both follow.
 liquidity is in the scroll (Lenis) and the spine's scroll-linked fill. Elements
 get one restrained reveal and nothing else.
 
-## Two things that will bite if you forget them
+**The rail owns the right gutter.** `RAIL_PAD_R` reserves 192px at `lg` because
+the fixed section rail occupies the last 166px of the viewport at its widest
+label. Narrow it and right-aligned content runs underneath the active label.
+
+## Three things that will bite if you forget them
 
 **`overflow-x` must stay `clip`, never `hidden`.** Both stop sideways scrolling,
 but `hidden` turns `html`/`body` into scroll containers, and every
@@ -107,6 +130,14 @@ the spread shows. Importing the file directly would inline ~117KB to display
 five numbers. A missing or malformed journal costs the spread its figures, not
 the site its build.
 
+**Known stale:** since 2026-08-10 the sync step has been failing with
+`GET /repos/kevenex/project-wick → 404`, so every deploy has been building from
+the committed snapshot. The step exits 0 by design — a failed sync must not fail
+the deploy — so this shows as a green run with a warning in the log, and the
+figures on the spread are the snapshot's, not today's. Fixing it means making
+that repository reachable to the workflow (it is not public to the default
+`GITHUB_TOKEN`), not changing anything here.
+
 ## Flyer Fable (`/flyer-fable/`)
 
 A stylized first-person flight over a low-poly South Korea. Vendored from
@@ -123,8 +154,9 @@ renders as 97 units — five times true scale.
 
 The form is complete; delivery is not. `submitContact` in `src/lib/contact.ts`
 reports whether a message was delivered and today always answers no, so the UI
-cannot claim otherwise. A notice above the form says so before anyone spends
-time writing.
+cannot claim otherwise — the confirmation says the message has not been
+delivered anywhere rather than thanking the sender for something that did not
+happen.
 
 When wiring it up: the site is served by the Cloudflare Worker configured in
 `wrangler.jsonc`, so a `POST /api/contact` handler can hold the credential as a
@@ -139,10 +171,9 @@ redirects back if `localStorage` has no access token. Deferred by decision, not
 forgotten:
 
 1. **Wire the contact form, or stop it claiming to send.** See above.
-2. **Fill the two plate slots** in the project spreads with captures of the
-   running work — the Flyer terrain, the Wick journal. The spreads are designed
-   to read as finished without them, which is why this is not urgent.
-3. Re-check contrast and focus states once real imagery is in.
+2. **Resolve the Project Wick sync** (see Known stale above), so the spread's
+   figures are current rather than a snapshot.
+3. Re-check contrast and focus states if imagery is ever added to the spreads.
 
 ## Notes
 
