@@ -1,39 +1,46 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './app/index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       /*
-       * One warm, analog palette. The page is paper throughout — "modern" is
-       * carried by register (mono data, live timestamps, a hard grid) rather
-       * than by cool tones or gradients.
+       * Colours resolve through CSS variables rather than literals, so a
+       * single class like `bg-paper` or `border-ink/15` is correct in both
+       * themes and no component needs a `dark:` variant. The channel triplets
+       * live in index.css; `<alpha-value>` keeps Tailwind's opacity modifiers
+       * working against them.
        *
-       * Every pairing below was contrast-checked against its ground:
-       *   ink/paper 14.3   oxide/paper 5.8   muted/paper 5.7
-       *   oxide/paper-lift 6.5   amber/paper 4.7
-       * `amber-dot` is the brighter fill and is for non-text marks only,
-       * where the 3:1 threshold applies — never for a label.
+       * The names are roles, not appearances: `paper` is the page ground and
+       * `ink` is the text on it, which stays true when the ground is dark.
+       * Measured ratios for both palettes are recorded in index.css beside the
+       * values themselves.
        */
       colors: {
         paper: {
-          DEFAULT: '#E5E1D8', // greige, closer to uncoated stock than to cream
-          deep: '#D6CFC2', // taupe band — Project Wick's spread
-          lift: '#EFECE4', // toward light, for Contact
+          DEFAULT: 'rgb(var(--c-paper) / <alpha-value>)',
+          deep: 'rgb(var(--c-paper-deep) / <alpha-value>)',
+          lift: 'rgb(var(--c-paper-lift) / <alpha-value>)',
         },
-        ink: '#161210',
-        muted: '#5C544A', // warm grey-brown, biased toward the accent
+        ink: 'rgb(var(--c-ink) / <alpha-value>)',
+        muted: 'rgb(var(--c-muted) / <alpha-value>)',
         oxide: {
-          DEFAULT: '#8C3A2E', // interactive accent — dark madder
-          /*
-           * The same accent lifted for the dark colophon. #8C3A2E manages
-           * only 2.4:1 against the ink ground — below the 3:1 a focus or
-           * hover indicator needs — where this reaches 3.4:1.
-           */
-          lift: '#B04A38',
+          DEFAULT: 'rgb(var(--c-oxide) / <alpha-value>)',
+          lift: 'rgb(var(--c-oxide-lift) / <alpha-value>)',
         },
         amber: {
-          DEFAULT: '#8A5714', // live-state text
-          dot: '#D9903F', // live-state mark only
+          DEFAULT: 'rgb(var(--c-amber) / <alpha-value>)',
+          dot: 'rgb(var(--c-amber-dot) / <alpha-value>)',
+        },
+        /*
+         * The colophon's band is its own role rather than a reuse of `ink`.
+         * In light it is near-black under pale text; in dark it goes darker
+         * still, so the close stays a distinct band instead of inverting into
+         * a bright slab.
+         */
+        band: {
+          DEFAULT: 'rgb(var(--c-band) / <alpha-value>)',
+          text: 'rgb(var(--c-band-text) / <alpha-value>)',
         },
       },
 

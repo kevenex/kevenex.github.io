@@ -14,8 +14,8 @@ interface SpreadProps {
   data: SpreadDatum[];
   href: string;
   linkLabel: string;
-  /** The plate: whatever this project can show as evidence of itself. */
-  children: ReactNode;
+  /** Optional plate: whatever a project can show as evidence of itself. */
+  children?: ReactNode;
   /** Project Wick's spread takes the page's one tonal shift. */
   ground?: 'paper' | 'deep';
   /** A project with its own mark shows it; one without simply does not. */
@@ -30,9 +30,17 @@ interface SpreadProps {
  * Explicit stops rather than a plain `to-b` gradient: the deep tone holds
  * flat across the middle 64% and only softens over the outer 18% at each
  * end, so the section still reads as a solid ground rather than as a wash.
+ *
+ * Built from the tokens rather than literals so it follows the theme — a
+ * hardcoded pair here would leave this one section stranded in light.
  */
-const DEEP_GROUND =
-  'linear-gradient(to bottom, #E5E1D8 0%, #D6CFC2 18%, #D6CFC2 82%, #E5E1D8 100%)';
+const DEEP_GROUND = [
+  'linear-gradient(to bottom,',
+  'rgb(var(--c-paper)) 0%,',
+  'rgb(var(--c-paper-deep)) 18%,',
+  'rgb(var(--c-paper-deep)) 82%,',
+  'rgb(var(--c-paper)) 100%)',
+].join(' ');
 
 /*
  * Both projects get a full movement and the same structure, so they read as a
@@ -102,13 +110,16 @@ export default function Spread({
         </motion.dl>
       </div>
 
-      <motion.div
-        className="mt-16"
-        {...reveal}
-        transition={{ ...reveal.transition, delay: 0.2 }}
-      >
-        {children}
-      </motion.div>
+      {/* No empty gap when a spread has no plate to show. */}
+      {children && (
+        <motion.div
+          className="mt-16"
+          {...reveal}
+          transition={{ ...reveal.transition, delay: 0.2 }}
+        >
+          {children}
+        </motion.div>
+      )}
 
       {/*
        * An editorial rule that draws, not a button. The underline grows from

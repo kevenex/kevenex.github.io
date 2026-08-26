@@ -72,20 +72,6 @@ export default function Contact() {
         If something here is worth a reply, write it down.
       </motion.h2>
 
-      {/*
-       * Said before the form rather than after it. Someone should know the
-       * message goes nowhere before they spend time writing one, not once
-       * they have already sent it.
-       */}
-      <motion.p
-        className="mt-8 max-w-measure border-l-2 border-oxide pl-4 font-mono text-data text-oxide"
-        {...reveal}
-        transition={{ ...reveal.transition, delay: 0.1 }}
-      >
-        This form is not connected to anything yet. Nothing you send will reach anyone —
-        it is here so the page is finished, and delivery comes next.
-      </motion.p>
-
       <motion.div
         className="mt-16 max-w-2xl"
         {...reveal}
@@ -93,8 +79,7 @@ export default function Contact() {
       >
         {outcome === 'received' ? (
           <p className="max-w-measure font-serif text-lead text-ink" role="status">
-            Nothing was sent — there is still nowhere for it to go. Your message stayed in
-            this browser and went no further.
+            Thanks — your message has not been delivered anywhere yet.
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">

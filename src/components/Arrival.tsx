@@ -32,7 +32,7 @@ export default function Arrival() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: still ? 0 : 1.1, ease: EASE, delay: still ? 0 : 0.15 }}
       >
-        I build things that keep running when I am not watching.
+        I enjoy building things that spark my curiosity.
       </motion.h1>
 
       <motion.p

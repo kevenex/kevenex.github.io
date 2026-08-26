@@ -12,19 +12,50 @@
     <title>Kevin Kim</title>
 
     <!--
-      Critical CSS, inlined so the first paint is already on paper instead of
-      a white flash while the bundled stylesheet is in flight. Mirrors the
-      html/body rules in src/index.css.
+      Critical CSS, inlined so the first paint is already on the right ground
+      instead of a white flash while the bundled stylesheet is in flight.
+      Mirrors the token blocks in src/index.css.
     -->
     <style>
+      :root {
+        --c-paper: 229 225 216;
+        --c-ink: 22 18 16;
+      }
+      html.dark {
+        --c-paper: 20 17 14;
+        --c-ink: 233 228 218;
+      }
       html,
       body {
         margin: 0;
-        background: #e5e1d8;
-        color: #161210;
+        background: rgb(var(--c-paper));
+        color: rgb(var(--c-ink));
         font-family: 'Instrument Sans', system-ui, sans-serif;
       }
     </style>
+
+    <!--
+      Resolve the theme before first paint. This is deliberately a blocking
+      inline script rather than anything the bundle does: React mounts long
+      after the browser has painted, so deciding there would show a flash of
+      the wrong theme on every load for anyone who chose dark.
+
+      Wrapped in try/catch because reading localStorage throws outright in
+      some privacy modes — the page must still render, just on the default.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (error) {
+          /* no stored preference available — fall through to light */
+        }
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

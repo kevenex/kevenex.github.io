@@ -10,6 +10,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * One palette, two settings. Every colour in the page resolves through these
+ * variables, so a component says `bg-paper` once and is correct in both
+ * themes — there is no `dark:` variant anywhere in the markup.
+ *
+ * Names are roles, not appearances: `paper` is whatever the page is printed
+ * on and `ink` is what it is printed in, which stays true when the paper is
+ * black. Values are RGB channels so Tailwind's opacity modifiers still work.
+ *
+ * Ratios below are measured, not estimated. Light: ink/paper 14.3,
+ * muted/paper 5.7, oxide/paper 5.8, amber/paper 4.7, oxide-lift/band 3.4.
+ * Dark: ink/paper 14.9, muted/paper 6.3, oxide/paper 6.0, amber/paper 7.2,
+ * and every text pairing on paper-deep and paper-lift clears 4.5 as well.
+ */
+:root {
+  --c-paper: 229 225 216; /* #E5E1D8 greige, closer to uncoated stock than cream */
+  --c-paper-deep: 214 207 194; /* #D6CFC2 taupe band — Project Wick's spread */
+  --c-paper-lift: 239 236 228; /* #EFECE4 toward light, for Contact */
+  --c-ink: 22 18 16; /* #161210 */
+  --c-muted: 92 84 74; /* #5C544A warm grey-brown, biased toward the accent */
+  --c-oxide: 140 58 46; /* #8C3A2E dark madder */
+  --c-oxide-lift: 176 74 56; /* #B04A38 the accent, lifted for the band */
+  --c-amber: 138 87 20; /* #8A5714 live-state text */
+  --c-amber-dot: 217 144 63; /* #D9903F live-state mark only, never text */
+  --c-band: 22 18 16; /* #161210 the colophon's ground */
+  --c-band-text: 229 225 216; /* #E5E1D8 */
+}
+
+/*
+ * Dark is warm near-black rather than neutral grey — the same analog world
+ * with the light turned down, not a different design. The colophon goes
+ * *darker* than the page here: inverting it into a pale slab would make the
+ * close shout, when its job is to settle.
+ */
+html.dark {
+  --c-paper: 20 17 14; /* #14110E */
+  --c-paper-deep: 28 24 21; /* #1C1815 */
+  --c-paper-lift: 34 30 25; /* #221E19 */
+  --c-ink: 233 228 218; /* #E9E4DA */
+  --c-muted: 158 148 136; /* #9E9488 */
+  --c-oxide: 208 122 99; /* #D07A63 lifted so it clears 4.5:1 on a dark ground */
+  --c-oxide-lift: 208 122 99; /* #D07A63 the band is dark in both themes */
+  --c-amber: 217 144 63; /* #D9903F reads as text here, unlike in light */
+  --c-amber-dot: 217 144 63; /* #D9903F */
+  --c-band: 11 9 6; /* #0B0906 darker than the page, not brighter */
+  --c-band-text: 233 228 218; /* #E9E4DA */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -18,23 +66,11 @@
 
 html,
 body {
-  background: #e5e1d8;
-  color: #161210;
+  background: rgb(var(--c-paper));
+  color: rgb(var(--c-ink));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Instrument Sans', system-ui, sans-serif;
-}
-
-/*
- * `clip`, never `hidden`. Both stop sideways scrolling, but `overflow:hidden`
- * turns these elements into scroll containers, and every `position: sticky`
- * descendant then binds to that container instead of the viewport and quietly
- * stops sticking — which is exactly what happened to the timeline's year
- * counter. `clip` creates no scroll container, so sticky keeps working.
- */
-html,
-body {
-  overflow-x: clip;
 }
 
 /* Headings balance rather than orphan their last word. */
@@ -69,6 +105,18 @@ h3 {
 }
 
 /*
+ * `clip`, never `hidden`. Both stop sideways scrolling, but `overflow:hidden`
+ * turns these elements into scroll containers, and every `position: sticky`
+ * descendant then binds to that container instead of the viewport and quietly
+ * stops sticking — which is exactly what happened to the timeline's year
+ * counter. `clip` creates no scroll container, so sticky keeps working.
+ */
+html,
+body {
+  overflow-x: clip;
+}
+
+/*
  * Lenis smooth scroll. These class names are Lenis v1's own — the library
  * applies them to <html>. Do not remove: without the `scroll-behavior: auto`
  * override the browser's native smooth scrolling fights Lenis for control of
@@ -89,7 +137,8 @@ h3 {
 /*
  * One motion language for the whole page: the page moves like weight, the
  * elements do not perform. Under reduced motion no Lenis instance is
- * constructed at all (see useLenis), and every reveal collapses to a fade.
+ * constructed at all (see lenis.tsx) and every reveal is switched off in
+ * JavaScript (see useReveal) — this block only catches CSS transitions.
  */
 @media (prefers-reduced-motion: reduce) {
   *,
