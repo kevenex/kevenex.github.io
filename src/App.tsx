@@ -1,6 +1,8 @@
 import Arrival from './components/Arrival';
+import FlyerSpread from './components/FlyerSpread';
 import Position from './components/Position';
 import Spine from './components/Spine';
+import WickSpread from './components/WickSpread';
 import { LenisProvider } from './lib/lenis';
 
 /*
@@ -18,6 +20,8 @@ export default function App() {
 
         <Spine>
           <Position />
+          <WickSpread />
+          <FlyerSpread />
         </Spine>
       </main>
     </LenisProvider>
