@@ -44,7 +44,7 @@ const STATE_FILES = [
   { file: 'state/identity.md', title: 'Identity', note: 'Who Wick decided it is, written on the first run.' },
   { file: 'state/personality.md', title: 'Personality', note: 'Rewritten by Wick after every third entry. The experiment’s raw data.' },
   { file: 'state/interests.md', title: 'Interests', note: 'What Wick has found genuinely curious, and what it shelved.' },
-  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to eight open threads, where each got to, and what happens next.' },
+  { file: 'state/continuity.md', title: 'Continuity', note: 'Up to five open threads, where each got to, and what happens next.' },
   { file: 'state/pending-approval.md', title: 'Pending approvals', note: 'Anything Wick asked to do and is waiting on. Silence is not consent.' },
 ];
 

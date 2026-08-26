@@ -833,7 +833,7 @@
             box.className = 'thread';
             var label = document.createElement('span');
             label.className = 'label';
-            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 8 at once)' : 'Currently chasing';
+            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 5 at once)' : 'Currently chasing';
             box.appendChild(label);
             data.openThreads.forEach(function (thread) {
               var p = document.createElement('p');

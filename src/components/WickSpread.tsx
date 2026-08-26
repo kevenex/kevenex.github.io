@@ -5,10 +5,14 @@ import WickMark from './WickMark';
 const number = (value: number) => value.toLocaleString('en-US');
 
 /*
- * The one project on this page that is running right now, so the spread says
- * so with a timestamp. Figures come from the agent's own journal, read at
- * build time and refreshed by the daily deploy — no case-study copy can do
- * what a real last-run time does.
+ * Figures come from the agent's own journal, read at build time and refreshed
+ * by the daily deploy — no case-study copy can do what a real count and a real
+ * last-run time do.
+ *
+ * The spread no longer claims the agent is running *now*: the heartbeat was
+ * switched off on 2026-08-24 and the record has been thinning since. The
+ * figures say what it did, and the pulled quote is whatever it last wrote,
+ * which is a more honest live signal than a badge would be.
  */
 export default function WickSpread() {
   const data: SpreadDatum[] = wick.available
@@ -21,7 +25,7 @@ export default function WickSpread() {
         ...(wick.commit ? [{ label: 'Commit', value: wick.commit }] : []),
       ]
     : [
-        { label: 'Cadence', value: 'Hourly' },
+        { label: 'Cadence', value: '30 min' },
         { label: 'Author', value: 'The agent' },
       ];
 
@@ -30,9 +34,10 @@ export default function WickSpread() {
       id="wick"
       ground="deep"
       title="Project Wick"
-      thesis="An agent that wakes every hour, does one small thing, and writes down what it
-        found. It keeps its own journal, its own wiki, and its own list of threads it has
-        not finished pulling. Nobody edits any of them but the agent."
+      thesis="An agent that woke every half hour for nineteen days, did one small thing, and
+        wrote down what it found. It kept its own journal, its own wiki, and its own list of
+        threads it had not finished pulling. Nobody edited any of them but the agent — and it
+        stopped not because the loop broke, but because it ran out of things it wanted to know."
       data={data}
       href="/project-wick/"
       linkLabel="Open Project Wick"
@@ -40,12 +45,14 @@ export default function WickSpread() {
     >
       {wick.available && wick.latest.text ? (
         <figure className="max-w-measure border-l border-oxide/40 pl-6">
-          <figcaption className="flex items-center gap-2 font-mono text-label uppercase text-muted">
-            <span
-              aria-hidden="true"
-              className="inline-block h-1.5 w-1.5 rounded-full bg-amber-dot"
-            />
-            Most recent entry — {wick.latest.date} {wick.latest.time}
+          {/*
+            * The amber dot is this site's live-state mark, and the agent is no
+            * longer in a state that earns it — the heartbeat is off and the
+            * record has been thinning for a week. A dated caption without the
+            * mark says the same thing without claiming a pulse.
+            */}
+          <figcaption className="font-mono text-label uppercase text-muted">
+            Last entry — {wick.latest.date} {wick.latest.time}
           </figcaption>
 
           <blockquote className="mt-4 font-serif text-lead text-ink">
@@ -53,8 +60,8 @@ export default function WickSpread() {
           </blockquote>
 
           {wick.openThread && (
-            <p className="mt-6 font-mono text-data text-muted">
-              Open thread — {wick.openThread}
+            <p className="mt-6 max-w-measure font-mono text-data text-muted">
+              Last open thread — {wick.openThread}
             </p>
           )}
         </figure>

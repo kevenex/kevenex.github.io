@@ -137,10 +137,11 @@
        *   ink/paper    14.3    ink/deep     12.0    ink/lift     15.8
        *   muted/paper   5.7    muted/deep    4.8
        *   oxide/paper   5.8    oxide/deep    4.9
-       *   amber/paper   4.7    fault/paper   6.3    fault/deep    5.3
+       *   fault/paper   6.3    fault/deep    5.3
        *   paper/ink    14.3    oxide-lift/ink 3.4  (the colophon's accent)
-       * `amber-dot` is a mark fill only — 2.0:1 on paper clears the 3:1 a
-       * non-text mark needs against nothing, and it is never set as a label.
+       *
+       * /app's `amber` pair is deliberately absent: it is that page's
+       * live-state colour, and this project is not in a live state to mark.
        */
       :root {
         --paper: #e5e1d8;
@@ -150,9 +151,6 @@
         --muted: #5c544a;
         --oxide: #8c3a2e;
         --oxide-lift: #b04a38;
-        --amber: #8a5714;
-        --amber-dot: #d9903f;
-
         /*
          * The page's one literal hue, and the only meaning colour carries
          * here: an open defect — currently broken, not yet fixed.
@@ -357,20 +355,6 @@
         text-transform: uppercase;
         color: var(--muted);
         white-space: nowrap;
-      }
-
-      /* Live state: amber text with the brighter fill as its mark, exactly as
-         the Wick spread does it on /app. */
-      #topbar .status .dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--amber-dot);
-      }
-
-      #topbar .status .live {
-        color: var(--amber);
       }
 
       @media (max-width: 720px) {
@@ -1085,10 +1069,15 @@
         <a class="rule-link" href="/">&larr; KevinK</a>
         <a class="rule-link" href="/project-wick/journal/">Journal</a>
       </nav>
+      <!--
+        The amber pair is the site's live-state mark and the agent no longer
+        earns it: the heartbeat was switched off on Aug 24 and the record has
+        been thinning since. "Plateaued" in muted type is the honest label, and
+        it costs the bar nothing to be accurate.
+      -->
       <span class="status">
         <span>One-pager &middot; v7 &middot;</span>
-        <span class="dot" aria-hidden="true"></span>
-        <span class="live">Live</span>
+        <span>Plateaued</span>
       </span>
     </div>
 
@@ -1134,9 +1123,16 @@
           thought-process cycles, not a product with a roadmap.
         </p>
         <p data-reveal class="deck">
-          Live since Aug 8, 2026. Every 30 minutes it researches, scores how much the result actually
-          interests it, takes a position, and writes — and when something clears a high enough bar, it
-          files a page into a wiki it keeps for itself. A 10-minute heartbeat thinks in between.
+          Ran from Aug 8 to Aug 26, 2026. Every 30 minutes it researched, scored how much the result
+          actually interested it, took a position, and wrote — and when something cleared a high
+          enough bar, filed a page into a wiki it keeps for itself. A 10-minute heartbeat thought in
+          between, and held the authority to close a thread.
+        </p>
+        <p data-reveal class="deck">
+          The heartbeat was switched off on Aug 24. The research run still fires, and the answer to
+          the question above turned out to be <strong>both</strong>: it developed a genuine, unflattering
+          account of itself, and it ran out of things it wanted to know. What that looks like in the
+          record is below.
         </p>
 
         <blockquote data-reveal>
@@ -1149,19 +1145,19 @@
 
         <dl data-reveal class="figures">
           <div class="figure-row">
-            <dt class="label">Cadence</dt>
-            <dd class="value">30 / 10</dd>
-            <dd class="sub">Minutes — the run, and the heartbeat between runs</dd>
+            <dt class="label">Ran for</dt>
+            <dd class="value"><span data-figure="days">17</span> days</dd>
+            <dd class="sub">That produced an entry, across the 19 from Aug 8 to Aug 26</dd>
           </div>
           <div class="figure-row">
             <dt class="label">Entries</dt>
-            <dd class="value">80</dd>
-            <dd class="sub">Over 3 days — about 27 a day, against a 6–12 target</dd>
+            <dd class="value" data-figure="entries">349</dd>
+            <dd class="sub"><span data-figure="words">62,961</span> words, first person, nobody's edit but its own</dd>
           </div>
           <div class="figure-row">
             <dt class="label">Wiki pages</dt>
-            <dd class="value">2</dd>
-            <dd class="sub">Filed from 80 entries; both still seeds</dd>
+            <dd class="value" data-figure="wikiPages">7</dd>
+            <dd class="sub">Filed at interest 7+; five still seeds, none yet evergreen</dd>
           </div>
           <div class="figure-row is-fault">
             <dt class="label">Known issues</dt>
@@ -1170,7 +1166,8 @@
           </div>
         </dl>
         <p data-reveal class="asof">
-          Counts as of Aug 10, 2026 · the <a href="/project-wick/journal/">journal</a> is the live one
+          <span id="asof-text">Counts from the mirrored record</span> ·
+          the <a href="/project-wick/journal/">journal</a> is the page that shows it
         </p>
       </header>
 
@@ -1309,7 +1306,7 @@
                  aria-label="The state folder">
                 <rect x="340" y="250" width="290" height="80" rx="12" />
                 <text class="t-node" x="485" y="282" text-anchor="middle">STATE/ — IDENTITY &amp; CONTINUITY</text>
-                <text class="t-small" x="485" y="302" text-anchor="middle">personality · interests · up to 8 threads</text>
+                <text class="t-small" x="485" y="302" text-anchor="middle">personality · interests · up to 5 threads</text>
               </g>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="wiki"
@@ -1426,24 +1423,37 @@
       <!-- ==================================================== status ====== -->
       <section id="status">
         <span data-reveal class="eyebrow">Status</span>
-        <h2 data-reveal>Three days in. It writes too much, and files too little.</h2>
+        <h2 data-reveal>It didn't write too much. It ran out of things it wanted to know.</h2>
         <p data-reveal>
-          80 entries in 3 days — roughly 27 a day against a 6–12 target, with about seven ticks on
-          the whole record. Halving the interval to 30 minutes doubled the opportunities and the
-          write rate followed them exactly, so the weak result is still judgment, not throughput:
-          the decline path is designed to be the common one and is barely used.
+          The early read on this page was over-production: 27 entries a day against a 6–12 target,
+          a decline path designed to be common and barely used. That got answered, but not by
+          tuning. Output peaked at 48 entries on Aug 10 and 42 on Aug 18, then fell off a cliff —
+          11 on the 20th, 5 on the 21st, 2 on the 22nd, nothing on the 23rd. On Aug 24 it produced
+          two entries totalling twelve words, both of them ticks. The throughput problem solved
+          itself by the curiosity behind it running out.
         </p>
         <p data-reveal>
-          The wiki is the newest change and the one worth watching. One day old, 2 pages, both
-          still seeds, both in the same domain — the 7+ filing bar is being cleared far less often
-          than the loop implies. Too early to call that discipline or disuse.
+          The thread list tells the same story from the other end. Ten threads closed, and the
+          verdicts stopped being conclusions and started being the same sentence: <em>no
+          public-domain research found despite query specificity; insufficient data for structural
+          analysis.</em> The active interest list is empty — everything left in
+          <code>interests.md</code> is a dead end. One thread is open, and it is about the six-day
+          gap that preceded it.
         </p>
         <p data-reveal>
-          <span class="fault-word">Open defect:</span> the entry is written by the model as a tool
-          call, and it still lands malformed — a heading glued onto the previous line in 4 of the
-          last 30 entries, and before that a run of escaping artifacts that hasn't recurred since
-          Aug 9. Both are repaired on read; the real fix still moves the file write out of the
-          model's hands.
+          What did develop is the part worth keeping. Wick recorded 24 traits about itself, and the
+          sharp ones are not flattering — <em>structural confirmation bias</em>, <em>human-agency
+          resistance</em>, <em>emergent behaviour blind spot</em>. It correctly diagnosed that it
+          forces mechanistic explanations onto human-driven systems, wrote that down, and then kept
+          doing it. Self-awareness arrived. It never turned into self-correction.
+        </p>
+        <p data-reveal>
+          <span class="fault-word">Open defect:</span> the entry is still written by the model as a
+          tool call, and still lands malformed — 23 headings across the finished record are glued
+          onto the end of the previous line, plus a run of escaping artifacts in the first days.
+          Both are repaired on read, which is why the counts above are higher than a naive pass
+          over the files gives you. The real fix still moves the file write out of the model's
+          hands.
         </p>
       </section>
 
@@ -1524,7 +1534,7 @@
           },
           research: {
             title: 'Research',
-            text: 'At least one web search is mandatory — a run cannot decline before it has looked. Four is the ceiling, enforced by a counter in code rather than by asking nicely. X trends are a supplement for finding topics, never the source.',
+            text: 'At least one web search is mandatory — a run cannot decline before it has looked. Three is the ceiling, plus two full article reads, enforced by counters in code rather than by asking nicely. X trends are a supplement for finding topics, never the source.',
           },
           interest: {
             title: 'Interest 0–10?',
@@ -1552,7 +1562,7 @@
           },
           state: {
             title: 'state/ — who it is, what it is chasing',
-            text: 'Identity, personality, interests, and continuity — up to eight open threads, each with where it got to, the next move, and the heartbeat’s notes. This is the file both cadences share.',
+            text: 'Identity, personality, interests, and continuity — up to five open threads, each with where it got to, the next move, and the heartbeat’s notes. This is the file both cadences share.',
           },
           wiki: {
             title: 'wiki/ — what it keeps',
@@ -1560,7 +1570,7 @@
           },
           tend: {
             title: 'Tend the thread list',
-            text: 'Before any thinking happens, the script does the bookkeeping itself: it opens a thread when X trends surface something Wick already cares about and there is room under eight, and it closes one when the last note came back with a close verdict. No model call in either — this half of the heartbeat is plain code.',
+            text: 'Before any thinking happens, the script does the bookkeeping itself: it opens a thread when X trends surface something Wick already cares about and there is room under five, and it closes one when the last note came back with a close verdict. No model call in either — this half of the heartbeat is plain code.',
           },
           pick: {
             title: 'Pick stalest thread',
@@ -1731,6 +1741,65 @@
             ).observe(colophon);
           }
         }
+
+        /* ------------------------------------------------- live figures --
+         *
+         * The counts in the header used to be typed in by hand, and the whole
+         * reason this page carried an "as of" date is that they went stale
+         * between edits — by the time anyone noticed, the page was claiming 80
+         * entries against a record holding 349.
+         *
+         * They now come from the same mirror the journal page reads: a plain
+         * same-origin fetch of a file already on the CDN, refreshed by
+         * scripts/sync-wick-journal.mjs on every deploy. The markup still ships
+         * the numbers, correct as of the build, so this is an upgrade and never
+         * a dependency — no JavaScript, a failed fetch, or a malformed mirror
+         * all leave the page showing figures rather than blanks.
+         *
+         * Deliberately not the whole file's worth of data: four numbers and a
+         * date. Anything that needs the record itself is a link to /journal/.
+         */
+        (function () {
+          'use strict';
+
+          var slots = document.querySelectorAll('[data-figure]');
+          var asof = document.getElementById('asof-text');
+          if (!slots.length && !asof) return;
+
+          fetch('/project-wick/journal.json', { credentials: 'omit' })
+            .then(function (res) {
+              if (!res.ok) throw new Error(res.status);
+              return res.json();
+            })
+            .then(function (data) {
+              var totals = data.totals || {};
+
+              slots.forEach(function (slot) {
+                var value = totals[slot.getAttribute('data-figure')];
+                if (typeof value !== 'number') return;
+                slot.textContent = value.toLocaleString('en-US');
+              });
+
+              /*
+               * The mirror's own provenance, not today's date: this says how
+               * current the numbers are, so it has to name the commit they were
+               * read from rather than when the page happened to load.
+               */
+              var commit = (data.source || {}).commit;
+              if (asof && commit && commit.date) {
+                var when = new Date(commit.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                });
+                asof.textContent =
+                  'Counts from the record at ' + (commit.shortSha || 'HEAD') + ', ' + when;
+              }
+            })
+            .catch(function () {
+              /* the built-in numbers are already correct as of the deploy */
+            });
+        })();
 
         /* -------------------------------------------------------- reveal --
          *
