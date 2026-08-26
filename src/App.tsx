@@ -1,8 +1,25 @@
+import Arrival from './components/Arrival';
+import Position from './components/Position';
+import Spine from './components/Spine';
+import { LenisProvider } from './lib/lenis';
+
 /*
- * The home page, rebuilt. Sections are added back one at a time — see the
- * redesign plan. Until they are, this is a deliberately bare shell: the goal
- * of the strip was a page that compiles, not a broken tree.
+ * One continuous canvas: paper throughout, with the spine running from the
+ * end of the hero to the start of the colophon so no movement inside it
+ * reads as a section boundary.
+ *
+ * Sections are still being added back — see the redesign plan.
  */
 export default function App() {
-  return <div className="min-h-screen w-full bg-paper text-ink" />;
+  return (
+    <LenisProvider>
+      <main className="min-h-screen w-full bg-paper text-ink">
+        <Arrival />
+
+        <Spine>
+          <Position />
+        </Spine>
+      </main>
+    </LenisProvider>
+  );
 }

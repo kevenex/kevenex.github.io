@@ -56,7 +56,13 @@ export default {
       },
 
       maxWidth: {
-        measure: '65ch', // running text never exceeds this
+        /*
+         * Tuned by measuring the rendered result, not by trusting the unit:
+         * `ch` is the advance of "0", which in Instrument Sans is narrower
+         * than the average lowercase letter, so a literal 65ch set lines
+         * running at ~74 characters. 58ch lands them near 65.
+         */
+        measure: '58ch',
       },
     },
   },
