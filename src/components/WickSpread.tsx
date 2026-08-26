@@ -5,8 +5,27 @@ import WickMark from './WickMark';
 const number = (value: number) => value.toLocaleString('en-US');
 
 /*
- * Figures come from the agent's own journal, read at build time — a real
- * entry count and last-run time say more than case-study copy could.
+ * The date of the newest entry, not `lastRun`. The agent stamped
+ * state/last-run.txt itself and stopped maintaining it days before it stopped
+ * writing, so that field now names a run that is not the last one. The journal
+ * page shows the stamp and says so; a six-row strip has no room for the
+ * caveat, so it prints the figure that needs none.
+ */
+const day = (iso: string) => {
+  const date = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+};
+
+/*
+ * Figures come from the agent's own journal, read at build time — a real entry
+ * count says more than case-study copy could. The run is over, so these are
+ * final rather than current.
  */
 export default function WickSpread() {
   const data: SpreadDatum[] = wick.available
@@ -15,11 +34,12 @@ export default function WickSpread() {
         { label: 'Words', value: number(wick.totals.words) },
         { label: 'Days', value: number(wick.totals.days) },
         { label: 'Wiki pages', value: number(wick.totals.wikiPages) },
-        { label: 'Last run', value: wick.lastRun },
+        ...(wick.latest.date ? [{ label: 'Last entry', value: day(wick.latest.date) }] : []),
         ...(wick.commit ? [{ label: 'Commit', value: wick.commit }] : []),
       ]
     : [
-        { label: 'Cadence', value: 'Hourly' },
+        // Nothing here can go stale: the run ended, so the span is fixed.
+        { label: 'Ran', value: 'Aug 8 – 26, 2026' },
         { label: 'Author', value: 'The agent' },
       ];
 
@@ -28,9 +48,11 @@ export default function WickSpread() {
       id="wick"
       ground="deep"
       title="Project Wick"
-      thesis="An agent that wakes every hour, does one small thing, and writes down what it
-        found. It keeps its own journal, its own wiki, and its own list of threads it has
-        not finished pulling. Nobody edits any of them but the agent."
+      thesis="An agent that woke on a cron for nineteen days, researched one thing, decided for
+        itself whether it was worth an entry, and wrote it down in first person. It kept its own
+        journal, its own wiki, and its own list of threads it had not finished pulling — and
+        nobody edited any of them but the agent. It developed real self-awareness. Its curiosity
+        died anyway."
       data={data}
       href="/project-wick/"
       linkLabel="Open Project Wick"

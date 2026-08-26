@@ -1,0 +1,526 @@
+/*
+ * The site's design system, restated in plain CSS for the two Project Wick
+ * pages.
+ *
+ * Those pages are hand-authored documents in public/ — Vite copies them to
+ * dist/ verbatim and they carry no build step, so Tailwind's classes are not
+ * available to them. Everything the SPA gets from tailwind.config.js and
+ * src/index.css therefore has to exist here as well, which makes this file a
+ * deliberate duplication with one rule attached:
+ *
+ *   THE TOKEN BLOCKS BELOW ARE COPIED FROM src/index.css. Change one, change
+ *   the other. A Wick page on a different greige than /app/ is worse than no
+ *   shared language at all, and nothing in the build will catch the drift.
+ *
+ * Shared here, page-specific inline: this file carries the palette, the three
+ * type voices, the rail, and the handful of components both pages use (the
+ * eyebrow, the drawing rule, the data strip, the theme toggle, the closing
+ * band). Anything only one page needs — the one-pager's diagram, the journal's
+ * entry list — stays in that page's own <style>.
+ */
+
+/* ------------------------------------------------------------------ tokens */
+
+/*
+ * One palette, two settings, copied from src/index.css. Names are roles, not
+ * appearances: `paper` is whatever the page is printed on and `ink` is what it
+ * is printed in, which stays true when the paper is black. Values are RGB
+ * channels so the `/ <alpha>` form keeps working.
+ */
+:root {
+  --c-paper: 229 225 216; /* #E5E1D8 greige, closer to uncoated stock than cream */
+  --c-paper-deep: 214 207 194; /* #D6CFC2 taupe band */
+  --c-paper-lift: 239 236 228; /* #EFECE4 toward light */
+  --c-ink: 22 18 16; /* #161210 */
+  --c-muted: 92 84 74; /* #5C544A warm grey-brown, biased toward the accent */
+  --c-oxide: 140 58 46; /* #8C3A2E dark madder */
+  --c-oxide-lift: 176 74 56; /* #B04A38 the accent, lifted for the band */
+  --c-amber: 138 87 20; /* #8A5714 live-state text */
+  --c-amber-dot: 217 144 63; /* #D9903F live-state mark only, never text */
+  --c-band: 22 18 16; /* #161210 the closing band's ground */
+  --c-band-text: 229 225 216; /* #E5E1D8 */
+
+  /*
+   * The one role these pages need that the SPA does not have. Both Wick pages
+   * mark open defects — the one-pager names them, the journal shows entries the
+   * write path cut off mid-sentence — and that needs a hue the reader cannot
+   * confuse with `oxide`, which is already the accent under every link and
+   * hover on the page. So: a cool crimson against oxide's rust-brown, far
+   * enough round the wheel to survive a glance.
+   *
+   * Measured, not estimated. Light fault/paper 5.8, fault/paper-deep 4.9,
+   * fault/paper-lift 6.4. Dark fault/paper 7.8, fault/paper-deep 7.4,
+   * fault/paper-lift 6.9. Every pairing clears 4.5:1 as text.
+   *
+   * Colour is never the only signal it carries — see `.defect`, which sets a
+   * mono DEFECT label beside it.
+   */
+  --c-fault: 163 29 43; /* #A31D2B */
+}
+
+/*
+ * Dark is warm near-black rather than neutral grey — the same analog world
+ * with the light turned down, not a different design. The closing band goes
+ * *darker* than the page here: inverting it into a pale slab would make the
+ * close shout, when its job is to settle.
+ */
+html.dark {
+  --c-paper: 20 17 14; /* #14110E */
+  --c-paper-deep: 28 24 21; /* #1C1815 */
+  --c-paper-lift: 34 30 25; /* #221E19 */
+  --c-ink: 233 228 218; /* #E9E4DA */
+  --c-muted: 158 148 136; /* #9E9488 */
+  --c-oxide: 208 122 99; /* #D07A63 lifted so it clears 4.5:1 on a dark ground */
+  --c-oxide-lift: 208 122 99; /* #D07A63 the band is dark in both themes */
+  --c-amber: 217 144 63; /* #D9903F reads as text here, unlike in light */
+  --c-amber-dot: 217 144 63; /* #D9903F */
+  --c-band: 11 9 6; /* #0B0906 darker than the page, not brighter */
+  --c-band-text: 233 228 218; /* #E9E4DA */
+  --c-fault: 240 137 154; /* #F0899A */
+}
+
+/*
+ * Three voices, each with a job: serif is the human, sans is the working
+ * voice, mono is the machine. Anything a machine produced — timestamps,
+ * commit hashes, counts, times of day — is mono. Sizes are tailwind.config.js's
+ * scale, which was tuned against the rendered result rather than derived.
+ */
+:root {
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --t-hero: clamp(52px, 9vw, 132px);
+  --t-spread: clamp(38px, 6vw, 84px);
+  --t-section: clamp(30px, 4.5vw, 56px);
+  --t-lead: clamp(19px, 2.1vw, 27px);
+  --t-body: 17px;
+  --t-small: 15px;
+  --t-label: 12px;
+  --t-data: 13px;
+
+  /* One easing curve and one duration for everything that moves. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --draw: 500ms;
+}
+
+/* -------------------------------------------------------------- foundation */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: rgb(var(--c-paper));
+  color: rgb(var(--c-ink));
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* `clip`, never `hidden`: hidden makes these scroll containers and every
+     sticky descendant then binds to them instead of the viewport. */
+  overflow-x: clip;
+}
+
+/* Headings balance rather than orphan their last word. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-hero);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: var(--t-section);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: var(--t-lead);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Digits that sit in a column must not shift width as they change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: rgb(var(--c-oxide));
+}
+
+::selection {
+  background: rgb(var(--c-oxide) / 0.22);
+}
+
+/*
+ * Anything focusable that is not one of the drawing rules below still needs a
+ * visible focus state, and the rules themselves get one on top of the draw.
+ */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-oxide));
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+/*
+ * The page hangs off one left rail and never resets it — the same axis
+ * /app/ uses (RAIL_PAD in src/lib/layout.ts, pl-16 md:pl-32 lg:pl-44). The
+ * right side needs far less than the SPA's, which is wide only to clear its
+ * fixed section rail; here the only fixed element is the theme toggle.
+ */
+.page {
+  padding-left: 4rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-left: 8rem;
+    padding-right: 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    padding-left: 11rem;
+    padding-right: 6rem;
+  }
+}
+
+/*
+ * 58ch, not 65ch. `ch` is the advance of "0", which in Instrument Sans is
+ * narrower than the average lowercase letter, so a literal 65ch sets lines
+ * running at ~74 characters. 58 lands them near 65.
+ */
+.measure {
+  max-width: 58ch;
+}
+
+section {
+  padding-top: 7rem;
+  padding-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  section {
+    padding-top: 9rem;
+  }
+}
+
+/* --------------------------------------------------------------- the voices */
+
+/*
+ * The mono label that opens every section and names every machine figure.
+ * Uppercase with 0.14em tracking, exactly as `text-label` sets it.
+ */
+.eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--c-muted));
+}
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: rgb(var(--c-muted));
+}
+
+.small {
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: rgb(var(--c-muted));
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-data);
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------------------- links */
+
+/*
+ * An editorial rule that draws, not a button. The underline grows from the
+ * left on hover and focus alike, so keyboard users get the same cue rather
+ * than a separate ring bolted on — and because the rule is the affordance,
+ * these opt out of the global outline.
+ *
+ *   <a class="rule-link">Label &rarr;<span class="rule" aria-hidden="true"></span></a>
+ */
+.rule-link {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--c-ink));
+  text-decoration: none;
+  outline: none;
+}
+
+.rule-link .rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: rgb(var(--c-oxide));
+  transition: transform var(--draw) var(--ease);
+}
+
+/*
+ * Quieter sibling for back-links and secondary destinations. It has to be
+ * declared *before* the state rules below: `.rule-link.muted` and
+ * `.rule-link:focus-visible` carry the same specificity, so whichever comes
+ * last wins, and a muted link that stayed muted on focus would lose half its
+ * focus cue.
+ */
+.rule-link.muted {
+  color: rgb(var(--c-muted));
+}
+
+.rule-link:hover,
+.rule-link:focus-visible {
+  color: rgb(var(--c-oxide));
+}
+
+.rule-link:hover .rule,
+.rule-link:focus-visible .rule {
+  transform: scaleX(1);
+}
+
+/*
+ * Inline links inside prose cannot be rules — they sit mid-sentence — so they
+ * take an underline that shifts to the accent instead.
+ */
+.link {
+  color: rgb(var(--c-ink));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--c-ink) / 0.3);
+  text-underline-offset: 4px;
+  transition: color 200ms var(--ease), text-decoration-color 200ms var(--ease);
+}
+
+.link:hover,
+.link:focus-visible {
+  color: rgb(var(--c-oxide));
+  text-decoration-color: rgb(var(--c-oxide));
+}
+
+/* -------------------------------------------------------------- data strip */
+
+/*
+ * The machine's voice as a list, the same shape the SPA's spreads use: label
+ * left, figure right, on a hairline. Deliberately not tiles — a boxed KPI grid
+ * is a dashboard device, and these pages are documents.
+ */
+.data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid rgb(var(--c-ink) / 0.15);
+  padding-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-data);
+  letter-spacing: 0.02em;
+}
+
+.data > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.data dt {
+  flex-shrink: 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--c-muted));
+}
+
+.data dd {
+  text-align: right;
+  color: rgb(var(--c-ink));
+  font-variant-numeric: tabular-nums;
+}
+
+/* A row whose value is a sentence rather than a figure needs the room. */
+.data.wide > div {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.data.wide dd {
+  text-align: left;
+  font-variant-numeric: normal;
+}
+
+@media (max-width: 640px) {
+  .data.wide > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+
+/* ------------------------------------------------------------ the two hues */
+
+/*
+ * Two literal hues, two fixed meanings, unchanged from the pages that came
+ * before this stylesheet — only their values moved onto the site's palette.
+ *
+ *   amber  the human, or something halted waiting on one
+ *   fault  an open defect: currently broken, not yet fixed
+ *
+ * Neither is ever the only signal. `.gate` and `.defect` both set a mono word
+ * beside the colour, so the meaning survives a greyscale print and a reader
+ * who cannot separate the two reds.
+ */
+.gate {
+  color: rgb(var(--c-amber));
+}
+
+.defect {
+  color: rgb(var(--c-fault));
+}
+
+.defect-label,
+.gate-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.defect-label {
+  color: rgb(var(--c-fault));
+}
+
+.gate-label {
+  color: rgb(var(--c-amber));
+}
+
+/* --------------------------------------------------------------- the toggle */
+
+/*
+ * Same place and same register as ThemeToggle.tsx: a mono label and a rule
+ * that draws, not an icon button with a pill around it. It names the theme you
+ * would get by pressing it, which is less ambiguous than a sun/moon glyph that
+ * could mean either the current state or the destination.
+ */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------- the closing band */
+
+/*
+ * The page's one dark band and the only place it departs from paper — the same
+ * close /app/ uses. Its ground is its own role, not a reuse of `ink`, because
+ * in dark mode it goes darker than the page rather than inverting into a pale
+ * slab.
+ *
+ * Links here use `oxide-lift`: the base accent manages only 2.4:1 against the
+ * light theme's band.
+ */
+.band {
+  background: rgb(var(--c-band));
+  color: rgb(var(--c-band-text));
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  margin-top: 9rem;
+}
+
+@media (min-width: 640px) {
+  .band {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+.band .eyebrow {
+  color: rgb(var(--c-band-text) / 0.7);
+}
+
+.band p {
+  color: rgb(var(--c-band-text) / 0.6);
+}
+
+.band .data {
+  border-top-color: rgb(var(--c-band-text) / 0.15);
+  color: rgb(var(--c-band-text) / 0.5);
+}
+
+.band .data dt {
+  color: rgb(var(--c-band-text) / 0.5);
+}
+
+.band .data dd {
+  color: rgb(var(--c-band-text) / 0.8);
+}
+
+.band .link {
+  color: rgb(var(--c-band-text) / 0.8);
+  text-decoration-color: rgb(var(--c-band-text) / 0.25);
+}
+
+.band .link:hover,
+.band .link:focus-visible {
+  color: rgb(var(--c-oxide-lift));
+  text-decoration-color: rgb(var(--c-oxide-lift));
+}
+
+.band :focus-visible {
+  outline-color: rgb(var(--c-oxide-lift));
+}
+
+/* ------------------------------------------------------------------ motion */
+
+/*
+ * Nothing on these pages animates on scroll, and nothing is hidden waiting for
+ * an intersection — every transition here is a hover or focus state on content
+ * that is already painted. That is why zeroing durations is safe: unlike the
+ * SPA, there is no JavaScript writing `opacity: 0` that CSS cannot reach.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -7,7 +7,7 @@ page; projects live as their own static pages under `public/`.
 ## The design, in one paragraph
 
 The page is paper-quiet — a greige ground, serif gravitas, generous space — and
-the content is machines: an agent that wakes hourly and writes, a flight engine
+the content is machines: an agent that woke on a cron and wrote, a flight engine
 over real terrain, enterprise data migrations. That tension is the identity.
 "Modern" is carried by register rather than by colour: mono data, live
 timestamps and a hard grid do that work while the palette stays warm and analog.
@@ -118,25 +118,76 @@ animated, or a reader who asked for no motion gets content that never appears.
 
 ## Project Wick (`/project-wick/`)
 
-A one-pager for an hourly journaling agent, plus a journal page at
-`/project-wick/journal/` rendering what the agent has actually written,
-mirrored at build time from [`kevenex/project-wick`](https://github.com/kevenex/project-wick)
-by `scripts/sync-wick-journal.mjs` (run by hand with `npm run sync:wick`).
+A one-pager for an autonomous journaling agent that ran from 8 to 26 August
+2026, plus a journal page at `/project-wick/journal/` rendering everything it
+wrote, mirrored at build time from
+[`kevenex/project-wick`](https://github.com/kevenex/project-wick) by
+`scripts/sync-wick-journal.mjs` (run by hand with `npm run sync:wick`).
 
-The home page spread prints that journal's real figures — entries, words, last
-run, source commit — via the `wick-summary` Vite plugin in `vite.config.ts`,
-which reads `journal.json` at build time and emits only the handful of values
-the spread shows. Importing the file directly would inline ~117KB to display
-five numbers. A missing or malformed journal costs the spread its figures, not
-the site its build.
+The run is over, so both pages are written in the past tense and the one-pager
+reports a result rather than a status. Its headline is a negative one — the
+agent developed real self-awareness and its curiosity died anyway — which is
+the finding, not a caveat on it.
 
-**Known stale:** since 2026-08-10 the sync step has been failing with
-`GET /repos/kevenex/project-wick → 404`, so every deploy has been building from
-the committed snapshot. The step exits 0 by design — a failed sync must not fail
-the deploy — so this shows as a green run with a warning in the log, and the
-figures on the spread are the snapshot's, not today's. Fixing it means making
-that repository reachable to the workflow (it is not public to the default
-`GITHUB_TOKEN`), not changing anything here.
+The home page spread prints that journal's real figures — entries, words, days,
+wiki pages, newest entry, source commit — via the `wick-summary` Vite plugin in
+`vite.config.ts`, which reads `journal.json` at build time and emits only the
+handful of values the spread shows. Importing the file directly would inline
+~640KB to display six numbers. A missing or malformed journal costs the spread
+its figures, not the site its build.
+
+**The last-run stamp is not the last run.** `state/last-run.txt` says
+2026-08-17; the newest entry is from the 26th. The agent wrote that file itself
+and stopped maintaining it before it stopped writing. The journal page shows the
+stamp and names the discrepancy; the spread prints the newest entry's date
+instead, because a six-row strip has nowhere to put the caveat. Do not
+"fix" either by quietly substituting one for the other — the gap is a finding.
+
+**Sync in CI is still broken.** Since 2026-08-10 the sync step has failed with
+`GET /repos/kevenex/project-wick → 404`, so every deploy builds from the
+committed snapshot. The step exits 0 by design — a failed sync must not fail the
+deploy — so it shows as a green run with a warning in the log. The snapshot
+committed here was refreshed by hand from a local checkout:
+
+```sh
+git clone --depth 1 https://github.com/kevenex/project-wick /tmp/project-wick
+WICK_LOCAL_REPO=/tmp/project-wick npm run sync:wick
+```
+
+`WICK_LOCAL_REPO` switches the script from the GitHub API to a directory on
+disk and is the way to refresh the journal while CI cannot reach the repo.
+Fixing CI means making that repository reachable to the workflow (it is not
+public to the default `GITHUB_TOKEN`), not changing anything here.
+
+**The agent's write path is broken and the mirror repairs it on read.** Entries
+land with `\n` where a line break belongs and with the next `## HH:MM` heading
+glued onto the end of the previous line. `repair()` in the sync script undoes
+both, which is why the pages count 349 entries where a naive grep of the day
+files finds 333. Leave it in until the upstream write path is fixed — without
+it, 23 entries disappear into the ends of other entries.
+
+### The standalone pages' design system
+
+Both Wick pages are hand-authored documents in `public/` with no build step, so
+Tailwind's classes are unavailable to them. `public/project-wick/wick.css`
+restates the SPA's system in plain CSS: the palette, the three type voices, the
+rail, and the components both pages share.
+
+**Its token blocks are copied from `src/index.css`. Change one, change the
+other** — nothing in the build catches the drift, and a Wick page on a different
+greige than `/app/` is worse than no shared language at all. Each page also
+inlines the critical tokens and the pre-paint theme script from
+`app/index.html`, against the same `localStorage` key, so a theme chosen
+anywhere on the site holds everywhere.
+
+`wick.css` adds exactly one role the SPA does not have: `--c-fault`, for an open
+defect. It has to be told apart from `--c-oxide` at a glance, since oxide is
+already the accent under every link and hover, so it is a cool crimson against
+oxide's rust-brown. Measured ratios are recorded beside the values. Neither it
+nor `--c-amber` is ever the only signal — both are set beside a written label.
+
+`/flyer-fable/` is the other standalone page and has **not** been brought onto
+`wick.css`; it still carries the old dark, mono-only look.
 
 ## Flyer Fable (`/flyer-fable/`)
 

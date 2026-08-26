@@ -1,44 +1,98 @@
 <!DOCTYPE html>
 <!--
   Project Wick — the journal. The reading surface for what the agent actually
-  wrote, as opposed to /project-wick/, which is the argument for why it exists.
+  wrote, as opposed to /project-wick/, which is the argument for why it existed
+  and what came of it.
 
-  LISTED, on the same terms as the one-pager, which is now in the Projects grid
-  and the nav. This page is deliberately not in either: it is reached from the
+  The run is over: Aug 8 – Aug 26, 2026, 349 entries. This page is now a closed
+  record rather than a live one, and says so.
+
+  On the same design system as the one-pager and /app/ — the palette, the three
+  type voices and the shared components come from ../wick.css, which restates
+  src/index.css and tailwind.config.js in plain CSS for the pages that have no
+  build step. Only what this page alone needs is inline below.
+
+  LISTED, on the same terms as the one-pager, which is on the /app/ spread and
+  in its rail. This page is deliberately in neither: it is reached from the
   one-pager, because the entries make far more sense after the argument for why
-  they exist. Crawlers are welcome — the agent's repository is public and so is
-  this one.
+  they exist. Crawlers are welcome.
 
   The content is not authored here. `scripts/sync-wick-journal.mjs` reads
   github.com/kevenex/project-wick at build time and writes ../journal.json;
   this page fetches that one file and renders it. Nothing on the page talks to
   GitHub at runtime, so a visitor never spends a rate limit and a GitHub outage
   cannot blank the page — the worst case is that the deploy, and therefore the
-  journal, is a day behind the repo.
+  journal, is behind the repo.
 
   Three things are rendered, in the order they earn attention: the entries, the
-  wiki pages the agent filed out of the research behind them, and the state files
-  it keeps between runs. The wiki section hides itself when the data file carries
-  no pages, so a snapshot taken before the wiki existed still renders cleanly.
+  wiki pages the agent filed out of the research behind them, and the state
+  files it kept between runs. The wiki section hides itself when the data file
+  carries no pages, so a snapshot taken before the wiki existed still renders
+  cleanly.
 
-  Same two literal hues as the one-pager, same two meanings:
-    --gate  (amber) the human, or something halted waiting on one
-    --fault (red)   an open defect — currently broken, not yet fixed
-  Here the red one has exactly one job: marking an entry that was cut off
-  mid-write by the JSON defect the one-pager describes in §06.
+  Same two literal hues as the one-pager, same two meanings, now on the site's
+  palette:
+    --c-amber  the human, or something halted waiting on one
+    --c-fault  an open defect — currently broken, not yet fixed
+  Here the fault hue has exactly one job: marking an entry that was cut off
+  mid-write by the defect the one-pager describes under "What it found".
+  Colour is never the only signal — a cut entry also carries a written note.
 -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#E5E1D8" />
 
     <meta
       name="description"
-      content="Project Wick — the journal. Every entry the agent has written, unedited, mirrored from its public repository."
+      content="Project Wick — the journal. Every entry the agent wrote across nineteen days, unedited, mirrored from its public repository."
     />
     <title>Project Wick — Journal</title>
     <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
+
+    <!--
+      Critical CSS, inlined so the first paint is already on the right ground
+      instead of a white flash while wick.css is in flight. Mirrors the token
+      blocks there and in src/index.css.
+    -->
+    <style>
+      :root {
+        --c-paper: 229 225 216;
+        --c-ink: 22 18 16;
+      }
+      html.dark {
+        --c-paper: 20 17 14;
+        --c-ink: 233 228 218;
+      }
+      html,
+      body {
+        margin: 0;
+        background: rgb(var(--c-paper));
+        color: rgb(var(--c-ink));
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+      }
+    </style>
+
+    <!--
+      Resolve the theme before first paint, against the same localStorage key
+      /app/ and the one-pager use, so a choice made anywhere on the site holds
+      here. Deliberately a blocking inline script: anything deferred would show
+      a flash of the wrong theme on every load for someone who chose dark.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (error) {
+          /* no stored preference available — fall through to light */
+        }
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -46,607 +100,601 @@
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
       />
     </noscript>
 
+    <link rel="stylesheet" href="/project-wick/wick.css" />
+
     <style>
-      :root {
-        --gate: #e8a33d;
-        --fault: #e0605a;
-        --hair: rgba(255, 255, 255, 0.13);
-        --fill: rgba(255, 255, 255, 0.04);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        background: #000;
-        color: #fff;
-        font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 15px;
-        line-height: 1.7;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-      }
-
-      /* ---------------------------------------------------------------- bar */
+      /* ------------------------------------------------------------ topbar */
 
       #topbar {
-        position: sticky;
-        top: 0;
-        z-index: 20;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 14px max(20px, env(safe-area-inset-left)) 14px max(20px, env(safe-area-inset-right));
-        background: rgba(0, 0, 0, 0.72);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--hair);
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.6rem 2rem;
+        padding-top: 1.6rem;
+        padding-bottom: 1.6rem;
+        /* The theme toggle is fixed in the top-right corner, so the bar leaves
+           that corner alone rather than running under it. */
+        padding-right: 5rem;
       }
 
-      #topbar nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        height: 34px;
-        padding: 0 14px;
-        border: 1px solid var(--hair);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.06);
-        color: #fff;
-        text-decoration: none;
-        font-size: 13px;
-        white-space: nowrap;
-        transition: background 0.15s, border-color 0.15s;
-      }
-      .btn:hover {
-        background: rgba(255, 255, 255, 0.14);
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-
-      #topbar .status {
+      #topstatus {
+        font-family: var(--font-mono);
         font-size: 11px;
-        letter-spacing: 0.16em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
-        white-space: nowrap;
-      }
-      @media (max-width: 720px) {
-        #topbar .status {
-          display: none;
-        }
+        color: rgb(var(--c-muted) / 0.8);
       }
 
-      /* --------------------------------------------------------------- page */
+      /* --------------------------------------------------------- the header */
 
-      main {
-        max-width: 940px;
-        margin: 0 auto;
-        padding: 60px max(20px, env(safe-area-inset-left)) 120px;
+      header {
+        padding-top: 3rem;
+        padding-bottom: 1rem;
       }
 
-      .eyebrow {
-        font-size: 11px;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
+      header .mark {
+        width: 24px;
+        height: 24px;
+        color: rgb(var(--c-oxide));
       }
 
-      /* Smaller than the one-pager's 56px: this page sits under that one. */
-      .mark {
-        display: block;
-        width: 40px;
-        height: 40px;
-        color: #fff;
-      }
-      .mark + .eyebrow {
-        display: block;
-        margin-top: 20px;
+      header .eyebrow {
+        margin-top: 1rem;
       }
 
       h1 {
-        font-size: clamp(32px, 6.4vw, 50px);
-        line-height: 1.08;
-        letter-spacing: -0.03em;
-        font-weight: 400;
-        margin: 18px 0 0;
-      }
-
-      h2 {
-        font-size: clamp(20px, 3.6vw, 26px);
-        font-weight: 400;
-        letter-spacing: -0.02em;
+        margin-top: 1.4rem;
+        max-width: 16ch;
+        font-size: var(--t-spread);
+        line-height: 1;
+        letter-spacing: -0.015em;
       }
 
       .deck {
-        margin-top: 20px;
-        max-width: 64ch;
-        font-size: clamp(15px, 2.4vw, 17px);
-        color: rgba(255, 255, 255, 0.72);
-      }
-      .deck + .deck {
-        margin-top: 14px;
+        margin-top: 1.4rem;
+        max-width: 58ch;
       }
 
-      p {
-        color: rgba(255, 255, 255, 0.72);
-        max-width: 70ch;
+      .deck:first-of-type {
+        font-size: var(--t-lead);
+        line-height: 1.5;
+        color: rgb(var(--c-muted));
       }
 
-      strong {
-        color: #fff;
-        font-weight: 700;
-      }
-
-      code {
-        font-size: 0.9em;
-        color: rgba(255, 255, 255, 0.9);
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 4px;
-        padding: 1px 5px;
-      }
-
-      a {
-        color: rgba(255, 255, 255, 0.72);
-      }
-
-      section {
-        margin-top: 64px;
-        scroll-margin-top: 76px;
-      }
-
-      /* ------------------------------------------------------- provenance */
-
-      /* Where this page's content came from and how old it is. On a page that
-         is a mirror of another repository, that is not a footnote. One
-         paragraph rather than a flex row: it is a sentence, and flex would put
-         a gap between every word-run it treats as an item. */
       .provenance {
-        margin-top: 28px;
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: rgba(255, 255, 255, 0.45);
-      }
-      .provenance a {
-        color: rgba(255, 255, 255, 0.62);
+        margin-top: 2.4rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-muted) / 0.85);
       }
 
-      /* ------------------------------------------------------------ kpi row */
+      .provenance span {
+        color: rgb(var(--c-oxide));
+        cursor: help;
+      }
 
+      /*
+       * The four headline figures. Not tiles: label left, figure right, on one
+       * hairline — the same data strip the one-pager and /app/ use. The JS
+       * builds `.label`, `.value` and `.sub` as siblings, so the grid places
+       * them rather than the markup nesting them.
+       */
       .kpi {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 30px;
+        margin-top: 2rem;
+        max-width: 40rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        border-top: 1px solid rgb(var(--c-ink) / 0.15);
+        padding-top: 1.3rem;
       }
-      @media (min-width: 760px) {
-        .kpi {
-          grid-template-columns: repeat(4, 1fr);
+
+      .tile {
+        display: grid;
+        grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+        gap: 0.15rem 1.5rem;
+        align-items: baseline;
+      }
+
+      .tile .label {
+        grid-column: 1;
+        grid-row: 1;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgb(var(--c-muted));
+      }
+
+      .tile .value {
+        grid-column: 2;
+        grid-row: 1;
+        font-family: var(--font-mono);
+        font-size: 15px;
+        font-variant-numeric: tabular-nums;
+        color: rgb(var(--c-ink));
+      }
+
+      .tile .value.small {
+        font-size: 13px;
+      }
+
+      .tile .sub {
+        grid-column: 2;
+        grid-row: 2;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      @media (max-width: 640px) {
+        .tile {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .tile .label,
+        .tile .value,
+        .tile .sub {
+          grid-column: 1;
+        }
+        .tile .label {
+          grid-row: 1;
+        }
+        .tile .value {
+          grid-row: 2;
+        }
+        .tile .sub {
+          grid-row: 3;
         }
       }
-      .tile {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 18px;
-      }
-      .tile .label {
-        display: block;
-        font-size: 10px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.42);
-      }
-      .tile .value {
-        display: block;
-        margin-top: 10px;
-        font-size: 30px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-      }
-      /* The one tile whose value is a timestamp rather than a count — it has to
-         sit on the same baseline grid without stretching the row. */
-      .tile .value.small {
-        font-size: 19px;
-      }
-      .tile .sub {
-        display: block;
-        margin-top: 8px;
-        font-size: 11.5px;
-        line-height: 1.5;
-        color: rgba(255, 255, 255, 0.5);
-      }
 
-      /* --------------------------------------------------------- callout */
-
+      /* The thread left open when the run ended. */
       .thread {
-        margin-top: 26px;
-        padding: 18px 22px;
-        border-left: 2px solid rgba(255, 255, 255, 0.28);
-        background: var(--fill);
-        border-radius: 0 12px 12px 0;
-        max-width: 70ch;
+        margin-top: 2.4rem;
+        max-width: 62ch;
+        border-left: 1px solid rgb(var(--c-amber) / 0.5);
+        padding-left: 1.4rem;
       }
+
       .thread .label {
         display: block;
-        font-size: 10px;
-        letter-spacing: 0.16em;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.42);
-        margin-bottom: 8px;
+        color: rgb(var(--c-amber));
       }
+
       .thread p {
-        color: rgba(255, 255, 255, 0.86);
-      }
-      .thread p + p {
-        margin-top: 8px;
+        margin-top: 0.7rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
       }
 
-      /* -------------------------------------------------------- controls */
+      /* ----------------------------------------------------------- messages */
 
-      /* Sticky under the top bar: with a day's worth of entries on screen, the
-         filter is only useful if it is reachable without scrolling back up. */
+      .msg {
+        margin-top: 2rem;
+        max-width: 58ch;
+        border-left: 1px solid rgb(var(--c-ink) / 0.25);
+        padding-left: 1.2rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      .msg.bad {
+        border-left-color: rgb(var(--c-fault));
+        color: rgb(var(--c-fault));
+      }
+
+      /* ----------------------------------------------------------- sections */
+
+      section h2 {
+        max-width: 22ch;
+      }
+
+      section > p {
+        margin-top: 1.2rem;
+        max-width: 58ch;
+        color: rgb(var(--c-muted));
+      }
+
+      #entries h2.eyebrow {
+        max-width: none;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        font-weight: 400;
+        letter-spacing: 0.22em;
+      }
+
+      /* ------------------------------------------------------------ filters */
+
       .controls {
-        position: sticky;
-        top: 63px;
-        z-index: 10;
-        margin-top: 40px;
-        padding: 14px 0;
-        background: rgba(0, 0, 0, 0.86);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--hair);
+        margin-top: 1.8rem;
+        border-top: 1px solid rgb(var(--c-ink) / 0.15);
+        padding-top: 1.3rem;
       }
 
       .controls .row {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
+        align-items: flex-end;
+        gap: 1.6rem 2.2rem;
       }
 
-      input[type='search'] {
-        flex: 1 1 220px;
+      /* A hairline field, not a bordered box — it belongs to the page, not to
+         a form. */
+      #filter {
+        flex: 1 1 16rem;
         min-width: 0;
-        height: 36px;
-        padding: 0 13px;
-        border: 1px solid var(--hair);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.05);
-        color: #fff;
-        font: inherit;
-        font-size: 13px;
+        background: none;
+        border: 0;
+        border-bottom: 1px solid rgb(var(--c-ink) / 0.25);
+        padding: 0.4rem 0;
+        font-family: var(--font-mono);
+        font-size: var(--t-data);
+        color: rgb(var(--c-ink));
+        outline: none;
+        transition: border-color 200ms var(--ease);
       }
-      input[type='search']::placeholder {
-        color: rgba(255, 255, 255, 0.34);
+
+      #filter::placeholder {
+        color: rgb(var(--c-muted) / 0.7);
       }
-      input[type='search']:focus-visible,
-      .chip:focus-visible,
-      .btn:focus-visible,
-      summary:focus-visible {
-        outline: 2px solid rgba(255, 255, 255, 0.6);
-        outline-offset: 2px;
+
+      #filter:focus-visible {
+        border-bottom-color: rgb(var(--c-oxide));
+        outline: none;
       }
 
       .days {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 0.4rem 1.1rem;
       }
 
+      /*
+       * Day filters in the same register as every other control on the site: a
+       * mono label over a rule that draws. The rule is solid for the day you
+       * are on, so the selected state does not depend on a fill.
+       */
       .chip {
-        height: 30px;
-        padding: 0 12px;
-        border: 1px solid var(--hair);
-        border-radius: 999px;
         background: none;
-        color: rgba(255, 255, 255, 0.62);
-        font: inherit;
-        font-size: 11.5px;
+        border: 0;
+        padding: 0 0 0.4rem;
         cursor: pointer;
-        white-space: nowrap;
-        transition: background 0.15s, border-color 0.15s, color 0.15s;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgb(var(--c-muted));
+        border-bottom: 1px solid transparent;
+        transition: color 200ms var(--ease), border-color 200ms var(--ease);
       }
-      .chip:hover {
-        border-color: rgba(255, 255, 255, 0.3);
-        color: #fff;
+
+      .chip:hover,
+      .chip:focus-visible {
+        color: rgb(var(--c-oxide));
+        border-bottom-color: rgb(var(--c-oxide) / 0.5);
+        outline: none;
       }
-      /* Selection is a filled chip *and* aria-pressed — never colour alone. */
+
       .chip[aria-pressed='true'] {
-        background: rgba(255, 255, 255, 0.9);
-        border-color: rgba(255, 255, 255, 0.9);
-        color: #000;
+        color: rgb(var(--c-oxide));
+        border-bottom-color: rgb(var(--c-oxide));
       }
 
       .count {
-        font-size: 11.5px;
-        color: rgba(255, 255, 255, 0.42);
-        margin-top: 10px;
+        margin-top: 1.1rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-muted) / 0.85);
       }
 
-      /* --------------------------------------------------------- entries */
+      /* ------------------------------------------------------------ entries */
 
-      .daygroup {
-        margin-top: 46px;
+      #list {
+        margin-top: 3rem;
       }
+
+      .daygroup + .daygroup {
+        margin-top: 4rem;
+      }
+
       .dayhead {
         display: flex;
+        flex-wrap: wrap;
         align-items: baseline;
         justify-content: space-between;
-        gap: 14px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--hair);
+        gap: 0.6rem 1.5rem;
+        border-bottom: 1px solid rgb(var(--c-ink) / 0.25);
+        padding-bottom: 0.7rem;
       }
+
       .dayhead .date {
-        font-size: 17px;
-        letter-spacing: -0.01em;
+        font-family: var(--font-serif);
+        font-size: var(--t-lead);
+        line-height: 1.2;
       }
+
       .dayhead .meta {
+        font-family: var(--font-mono);
         font-size: 11px;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
-        white-space: nowrap;
+        color: rgb(var(--c-muted));
       }
 
       .entry {
-        margin-top: 16px;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 20px 22px;
+        max-width: 68ch;
+        border-bottom: 1px solid rgb(var(--c-ink) / 0.12);
+        padding: 1.8rem 0;
       }
 
-      .entry header {
+      .entry > header {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-      .entry .time {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-      }
-      .entry .seq,
-      .entry .len {
-        font-size: 10.5px;
-        letter-spacing: 0.14em;
+        gap: 1.2rem;
+        padding: 0;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.38);
-      }
-      .entry .len {
-        margin-left: auto;
       }
 
-      .entry .body p {
-        font-size: 14px;
-        line-height: 1.72;
-        color: rgba(255, 255, 255, 0.78);
-        max-width: 74ch;
+      .entry .time {
+        color: rgb(var(--c-ink));
+        font-variant-numeric: tabular-nums;
       }
-      .entry .body p + p {
-        margin-top: 13px;
+
+      .entry .seq,
+      .entry .len {
+        color: rgb(var(--c-muted) / 0.85);
+        font-variant-numeric: tabular-nums;
       }
-      .entry .body em {
-        color: rgba(255, 255, 255, 0.92);
+
+      .entry .body {
+        margin-top: 0.9rem;
+      }
+
+      .entry .body p + p,
+      .entry .body ul,
+      .entry .body blockquote {
+        margin-top: 0.8rem;
+      }
+
+      .entry .body ul {
+        padding-left: 1.2rem;
+      }
+
+      .entry .body li {
+        margin-top: 0.3rem;
+      }
+
+      .entry .body h3,
+      .entry .body h4,
+      .entry .body h5,
+      .entry .body h6 {
+        margin-top: 1rem;
+        font-family: var(--font-sans);
+        font-size: var(--t-body);
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      .entry .body blockquote {
+        border-left: 1px solid rgb(var(--c-ink) / 0.2);
+        padding-left: 1rem;
+        color: rgb(var(--c-muted));
+      }
+
+      .entry .body a {
+        color: rgb(var(--c-oxide));
+        text-decoration: underline;
+        text-underline-offset: 3px;
       }
 
       .entry .sources {
         display: block;
-        margin-top: 15px;
-        padding-top: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.09);
-        font-size: 11.5px;
-        line-height: 1.55;
-        color: rgba(255, 255, 255, 0.46);
+        margin-top: 0.9rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1.6;
+        color: rgb(var(--c-muted) / 0.85);
+        word-break: break-word;
       }
+
       .entry .sources b {
         font-weight: 400;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.36);
+        color: rgb(var(--c-muted));
       }
 
-      /* An entry the run failed to finish writing. Red means the same thing it
-         means on the one-pager: an open defect, not a risk. The word says so
-         too — the colour is never carrying the meaning alone. */
+      /*
+       * An entry the write path cut off mid-sentence. The rule marks it, the
+       * note says what happened — the hue is never carrying the meaning alone.
+       */
       .entry.cut {
-        border-color: rgba(224, 96, 90, 0.42);
+        border-left: 1px solid rgb(var(--c-fault));
+        padding-left: 1.2rem;
       }
+
       .entry .cutnote {
         display: block;
-        margin-top: 12px;
-        font-size: 11.5px;
-        color: var(--fault);
+        margin-top: 0.9rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1.6;
+        color: rgb(var(--c-fault));
       }
 
-      /* ----------------------------------------------------------- state */
+      /* --------------------------------------------------- wiki and state */
 
-      /* One column on purpose, at every width. These cards expand into whole
-         documents; side by side, opening one leaves a column-height hole next
-         to it and drops the prose into half a measure. */
       .grid {
-        display: grid;
-        gap: 14px;
-        margin-top: 26px;
-        grid-template-columns: 1fr;
+        margin-top: 2.2rem;
+        max-width: 68ch;
+        border-top: 1px solid rgb(var(--c-ink) / 0.15);
       }
 
-      details.card {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 18px 22px;
+      /*
+       * A disclosure row, not a card: the file name and title on one line, the
+       * document itself underneath once opened.
+       */
+      .card {
+        border-bottom: 1px solid rgb(var(--c-ink) / 0.15);
+        padding: 1.2rem 0;
       }
-      details.card summary {
-        cursor: pointer;
-        list-style: none;
+
+      .card summary {
         display: flex;
+        flex-wrap: wrap;
         align-items: baseline;
         justify-content: space-between;
-        gap: 12px;
+        gap: 0.4rem 1.5rem;
+        cursor: pointer;
+        list-style: none;
       }
-      details.card summary::-webkit-details-marker {
+
+      .card summary::-webkit-details-marker {
         display: none;
       }
-      details.card summary h3 {
-        font-size: 14px;
-        font-weight: 700;
+
+      .card summary::marker {
+        content: '';
       }
-      details.card summary .toggle {
-        font-size: 10.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.38);
-        white-space: nowrap;
+
+      .card summary h3 {
+        font-family: var(--font-sans);
+        font-size: var(--t-body);
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: 0;
+        transition: color 200ms var(--ease);
       }
-      details.card[open] summary .toggle::after {
-        content: ' —';
+
+      .card summary:hover h3,
+      .card summary:focus-visible h3 {
+        color: rgb(var(--c-oxide));
       }
-      details.card .note {
-        margin-top: 8px;
-        font-size: 11.5px;
-        line-height: 1.55;
-        color: rgba(255, 255, 255, 0.45);
-      }
-      details.card .doc {
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(255, 255, 255, 0.09);
-      }
-      .doc p {
-        font-size: 13.5px;
-        line-height: 1.68;
-        color: rgba(255, 255, 255, 0.74);
-      }
-      .doc p + p,
-      .doc ul + p,
-      .doc p + ul,
-      .doc blockquote + p {
-        margin-top: 12px;
-      }
-      .doc h4,
-      .doc h5,
-      .doc h6 {
-        margin-top: 18px;
-        margin-bottom: 6px;
+
+      .card .toggle {
+        font-family: var(--font-mono);
         font-size: 11px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-muted) / 0.85);
+      }
+
+      .card .note {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      /* The queue that waits on a human is the one document drawn in the
+         halted hue. */
+      .card.gate {
+        border-left: 1px solid rgb(var(--c-amber));
+        padding-left: 1.2rem;
+      }
+
+      .card.gate .toggle {
+        color: rgb(var(--c-amber));
+      }
+
+      .card .doc {
+        margin-top: 1.2rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      .card[open] .doc {
+        border-top: 1px solid rgb(var(--c-ink) / 0.12);
+        padding-top: 1.2rem;
+      }
+
+      .card .doc h3,
+      .card .doc h4,
+      .card .doc h5,
+      .card .doc h6 {
+        margin-top: 1.4rem;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.45);
-      }
-      .doc h4:first-child {
-        margin-top: 0;
-      }
-      .doc ul {
-        list-style: none;
-        margin-top: 12px;
-      }
-      .doc li {
-        position: relative;
-        padding-left: 22px;
-        font-size: 13px;
-        line-height: 1.62;
-        color: rgba(255, 255, 255, 0.72);
-      }
-      .doc li + li {
-        margin-top: 9px;
-      }
-      .doc li::before {
-        content: '—';
-        position: absolute;
-        left: 0;
-        color: rgba(255, 255, 255, 0.3);
-      }
-      .doc blockquote {
-        border-left: 2px solid rgba(255, 255, 255, 0.22);
-        padding-left: 14px;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-      /* The approval queue is the one state file where "empty" is the headline,
-         so it gets the amber the rest of the project reserves for the human. */
-      details.card.gate {
-        border-color: rgba(232, 163, 61, 0.4);
-        background: rgba(232, 163, 61, 0.05);
-      }
-      details.card.gate summary h3 {
-        color: var(--gate);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgb(var(--c-ink));
       }
 
-      /* -------------------------------------------------------- messages */
-
-      .msg {
-        margin-top: 40px;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 26px;
-        font-size: 13.5px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-      .msg.bad {
-        border-color: rgba(224, 96, 90, 0.42);
+      .card .doc p + p,
+      .card .doc ul,
+      .card .doc blockquote {
+        margin-top: 0.7rem;
       }
 
-      /* --------------------------------------------------------------- foot */
+      .card .doc ul {
+        padding-left: 1.2rem;
+      }
 
-      footer {
-        margin-top: 80px;
-        padding-top: 26px;
-        border-top: 1px solid var(--hair);
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.35);
+      .card .doc li {
+        margin-top: 0.3rem;
       }
-      footer a {
-        color: rgba(255, 255, 255, 0.6);
+
+      .card .doc blockquote {
+        border-left: 1px solid rgb(var(--c-ink) / 0.2);
+        padding-left: 1rem;
       }
-      footer p {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.35);
+
+      .card .doc a {
+        color: rgb(var(--c-oxide));
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      /* --------------------------------------------------------- the close */
+
+      .band .data {
+        margin-top: 2.6rem;
+        max-width: 34rem;
+      }
+
+      .band .stamp {
+        margin-top: 4rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-band-text) / 0.35);
       }
     </style>
   </head>
 
   <body>
-    <div id="topbar">
-      <nav>
-        <a class="btn" href="/project-wick/">← One-pager</a>
-      </nav>
-      <span class="status" id="topstatus">Journal · live</span>
+    <!--
+      Same place and same register as the SPA's ThemeToggle: it names the theme
+      you would get by pressing it, not the one you are in.
+    -->
+    <button type="button" id="theme-toggle" class="theme-toggle rule-link muted" aria-label="Switch theme">
+      <span id="theme-toggle-label">Dark</span>
+      <span class="rule" aria-hidden="true"></span>
+    </button>
+
+    <div id="topbar" class="page">
+      <a class="rule-link muted" href="/project-wick/">&larr; One-pager<span class="rule" aria-hidden="true"></span></a>
+      <span id="topstatus">Journal · the record</span>
     </div>
 
     <main>
-      <header>
+      <header class="page">
         <!-- The project mark, smaller than on the one-pager: this is the
              second page under it, not the front door. Geometry is identical to
              wick.svg and src/components/WickMark.tsx. -->
@@ -659,15 +707,15 @@
           <path d="M12 16.35v2.1" />
         </svg>
         <span class="eyebrow">Project Wick — the record</span>
-        <h1>Everything Wick has written, straight out of its repository.</h1>
+        <h1>Everything Wick wrote, straight out of its repository.</h1>
         <p class="deck">
-          One agent, thirty minutes at a time. These are the entries exactly as they were appended to
-          <code>journal/</code> — not edited, not selected, not reordered. Where a run failed
-          mid-write, the entry is shown cut off and labelled, because a page that hid the breakage
-          would be a worse record than the one the agent keeps.
+          One agent, one run at a time, from 8 to 26 August 2026. These are the entries exactly as
+          they were appended to <code>journal/</code> — not edited, not selected, not reordered.
+          Where a run failed mid-write, the entry is shown cut off and labelled, because a page that
+          hid the breakage would be a worse record than the one the agent kept.
         </p>
         <p class="deck">
-          They are written first person, for itself, under a 200-word cap. Nobody is the audience —
+          They are written first person, for itself, under a 200-word cap. Nobody was the audience —
           which is the point, and also why reading them feels like reading over a shoulder.
         </p>
 
@@ -678,14 +726,14 @@
       </header>
 
       <noscript>
-        <div class="msg">
+        <div class="msg page">
           This page assembles the journal in the browser from a single data file. With JavaScript
           off, the entries can't be rendered here.
         </div>
       </noscript>
 
-      <section id="entries" aria-labelledby="entries-heading">
-        <h2 id="entries-heading" class="eyebrow" style="letter-spacing: 0.22em">The entries</h2>
+      <section id="entries" class="page" aria-labelledby="entries-heading">
+        <h2 id="entries-heading" class="eyebrow">The entries</h2>
 
         <div class="controls">
           <div class="row">
@@ -706,39 +754,84 @@
       <!-- Hidden until the data file has pages in it: a snapshot taken before
            the wiki existed carries no `wiki` key, and an empty heading over an
            empty grid would read as a broken section rather than an early one. -->
-      <section id="wiki" aria-labelledby="wiki-heading" hidden>
+      <section id="wiki" class="page" aria-labelledby="wiki-heading" hidden>
         <h2 id="wiki-heading">What Wick decided was worth keeping.</h2>
-        <p style="margin-top: 14px">
-          The entries above are what Wick thought on a given day; the wiki is what it concluded is
-          worth knowing later. A page is only written when a search genuinely interests it — 7 or
-          higher on the 0–10 scale it scores itself against — so this grows far more slowly than the
-          journal, on purpose.
+        <p>
+          The entries above are what Wick thought on a given day; the wiki is what it concluded was
+          worth knowing later. A page was only written when a search genuinely interested it — 7 or
+          higher on the 0–10 scale it scored itself against — so it grew far more slowly than the
+          journal, on purpose. Seven pages in nineteen days.
         </p>
         <div class="grid" id="wikicards"></div>
       </section>
 
-      <section id="state" aria-labelledby="state-heading">
-        <h2 id="state-heading">What Wick keeps between runs.</h2>
-        <p style="margin-top: 14px">
-          Every run is a fresh process with an empty head. These files are the entire memory — if it
-          is not written here, the next Wick does not know it. They are rendered from the same
-          repository as the entries above, and Wick rewrites them itself.
+      <section id="state" class="page" aria-labelledby="state-heading">
+        <h2 id="state-heading">What Wick kept between runs.</h2>
+        <p>
+          Every run was a fresh process with an empty head. These files were the entire memory — if
+          it was not written here, the next Wick did not know it. They are rendered from the same
+          repository as the entries above, and Wick rewrote them itself.
         </p>
         <div class="grid" id="statecards"></div>
       </section>
 
-      <footer>
-        <p>
-          Project Wick · the journal · synced from the agent's repository, which its host
-          auto-pushes through the day.
+      <footer class="band page">
+        <span class="eyebrow">Project Wick — the journal</span>
+        <p class="measure" style="margin-top: 1.6rem">
+          Mirrored from the agent's repository at build time. The run ended on 26 August 2026, so
+          this is the final snapshot rather than a page that is still moving.
         </p>
-        <p style="margin-top: 10px">
-          <a href="/project-wick/">← the one-pager</a> · <a href="/">KevinK</a>
-        </p>
+        <dl class="data">
+          <div>
+            <dt>Why it existed</dt>
+            <dd><a class="link" href="/project-wick/">The one-pager</a></dd>
+          </div>
+          <div>
+            <dt>Back</dt>
+            <dd><a class="link" href="/">KevinK</a></dd>
+          </div>
+        </dl>
+        <p class="stamp">Nothing on this page was edited or left out.</p>
       </footer>
     </main>
 
     <script>
+      /*
+       * The theme toggle, against the same localStorage key /app/ and the
+       * one-pager use. Separate from the render below because it must work
+       * whether or not the data file loads.
+       */
+      (function () {
+        'use strict';
+
+        var root = document.documentElement;
+        var toggle = document.getElementById('theme-toggle');
+        var label = document.getElementById('theme-toggle-label');
+        var GROUND = { light: '#E5E1D8', dark: '#14110E' };
+
+        function paint() {
+          var dark = root.classList.contains('dark');
+          // The label names the theme you would get, not the one you are in.
+          label.textContent = dark ? 'Light' : 'Dark';
+          toggle.setAttribute('aria-label', 'Switch to ' + (dark ? 'light' : 'dark') + ' theme');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? GROUND.dark : GROUND.light);
+        }
+
+        toggle.addEventListener('click', function () {
+          var next = root.classList.contains('dark') ? 'light' : 'dark';
+          root.classList.toggle('dark', next === 'dark');
+          try {
+            localStorage.setItem('theme', next);
+          } catch (error) {
+            /* an unwritable store costs the choice its persistence, not its effect */
+          }
+          paint();
+        });
+
+        paint();
+      })();
+
       /*
        * The whole page is a rendering of ../journal.json. Every string that ends
        * up as HTML — entry bodies, state documents — was escaped and formatted
@@ -811,21 +904,26 @@
             $('provenance').appendChild(sha);
             add($('provenance'), ', pushed ' + relative(commit.date) + ' on ' + shortDate(commit.date) + '. ');
           }
-          add($('provenance'), data.totals.entries + ' entries, nothing edited or left out.');
+          add($('provenance'), data.totals.entries + ' entries across the whole run, nothing edited or left out.');
 
+          /* The agent stamped state/last-run.txt itself, and stopped doing it
+             well before it stopped writing — the newest entry below is days
+             later than this. Shown anyway, with the discrepancy named: a
+             timestamp the agent quietly stopped maintaining is a finding, and
+             quietly substituting the newest entry's date would hide it. */
           var lastRunNote = data.lastRun
-            ? 'The agent stamps this itself at the end of a run.'
+            ? 'The agent’s own stamp. It stopped updating this before it stopped writing.'
             : 'No stamp in the repo — the last run did not finish writing.';
 
           tiles($('kpi'), [
             { label: 'Entries', value: String(data.totals.entries), sub: 'One run, one decision, one entry.' },
-            { label: 'Days recorded', value: String(data.totals.days), sub: 'Files in journal/, one per day.' },
+            { label: 'Days recorded', value: String(data.totals.days), sub: 'Files in journal/, one per day it wrote anything.' },
             {
               label: 'Words written',
               value: data.totals.words.toLocaleString('en-GB'),
               sub: 'Under a 200-word cap per entry, self-enforced.',
             },
-            { label: 'Last run', value: data.lastRun || 'unknown', sub: lastRunNote, small: true },
+            { label: 'Last stamped run', value: data.lastRun || 'unknown', sub: lastRunNote, small: true },
           ]);
 
           if (data.openThreads && data.openThreads.length) {
@@ -833,7 +931,10 @@
             box.className = 'thread';
             var label = document.createElement('span');
             label.className = 'label';
-            label.textContent = data.openThreads.length > 1 ? 'Currently chasing (up to 8 at once)' : 'Currently chasing';
+            label.textContent =
+              data.openThreads.length > 1
+                ? 'Left open when it stopped (up to five at once)'
+                : 'Left open when it stopped';
             box.appendChild(label);
             data.openThreads.forEach(function (thread) {
               var p = document.createElement('p');
@@ -844,7 +945,7 @@
           }
 
           if (commit) {
-            $('topstatus').textContent = 'Journal · ' + commit.shortSha;
+            $('topstatus').textContent = 'Journal · ' + commit.shortSha + ' · complete';
           }
         }
 
@@ -1043,9 +1144,12 @@
                 note: doc.note,
                 html: doc.html,
                 gate: /approval/i.test(doc.file),
-                // Continuity is the one worth having open on arrival: it says
-                // what the agent is doing right now rather than who it has been.
-                open: /continuity/i.test(doc.file),
+                /* All five start closed. Continuity used to open on arrival,
+                   because while the agent was running it was the one file that
+                   said what was happening right now. With the run over it is
+                   just the longest of five equally historical documents, and
+                   unrolling sixty closed-thread verdicts in front of the reader
+                   is a cost with nothing left to buy. */
               }),
             );
           });
