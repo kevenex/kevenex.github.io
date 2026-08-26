@@ -26,17 +26,12 @@ export default function ComingSoon() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-black px-6 text-white">
-      <KevinKLogo className="mb-8 text-white/70" width={28} height={28} />
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-paper px-6 text-ink">
+      <KevinKLogo className="mb-8 text-muted" width={28} height={28} />
 
-      <h1
-        className="text-center uppercase text-[clamp(32px,8vw,64px)] font-light leading-none tracking-[-0.02em]"
-        style={{ fontFamily: '"Anton SC", sans-serif' }}
-      >
-        Coming Soon
-      </h1>
+      <h1 className="text-center font-serif text-section">Coming Soon</h1>
 
-      <p className="mt-4 max-w-xs text-center text-[13px] leading-relaxed text-white/50 sm:text-[14px]">
+      <p className="mt-4 max-w-xs text-center font-sans text-small text-muted">
         This site is being rebuilt. Enter the access password to preview it.
       </p>
 
@@ -50,18 +45,20 @@ export default function ComingSoon() {
           }}
           placeholder="Password"
           autoFocus
-          className="w-full border-b border-white/20 bg-transparent px-1 py-2 text-center text-[14px] tracking-wide text-white outline-none placeholder:text-white/30 focus:border-white/60"
+          className="w-full border-b border-ink/25 bg-transparent px-1 py-2 text-center font-sans text-small text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-oxide focus:border-b-2"
         />
 
         <button
           type="submit"
-          className="mt-2 w-full border border-white/20 py-2 text-[12px] uppercase tracking-[0.15em] text-white/80 transition-colors hover:border-white/50 hover:text-white"
+          className="mt-2 w-full border border-ink/25 py-2 font-mono text-label uppercase text-muted transition-colors hover:border-oxide hover:text-oxide focus-visible:border-oxide focus-visible:text-oxide focus-visible:outline-none"
         >
           Enter
         </button>
 
         {error && (
-          <p className="mt-1 text-center text-[12px] text-white/50">Incorrect password.</p>
+          <p className="mt-1 text-center font-mono text-data text-oxide">
+            That password does not match. Check it and try again.
+          </p>
         )}
       </form>
     </div>
