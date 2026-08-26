@@ -1,7 +1,7 @@
 import { type MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import KevinKLogo from './KevinKLogo';
-import { RAIL_PAD, RAIL_PAD_R, reveal } from '../lib/layout';
+import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 import { useScrollTo } from '../lib/lenis-context';
 
 /*
@@ -15,6 +15,8 @@ import { useScrollTo } from '../lib/lenis-context';
  * becomes the accent, which would drop it below the ratio it needs as text.
  */
 export default function Colophon() {
+  const reveal = useReveal();
+
   const scrollTo = useScrollTo();
 
   const toTop = (event: MouseEvent<HTMLAnchorElement>) => {

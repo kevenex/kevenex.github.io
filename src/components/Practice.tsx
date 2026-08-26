@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { EASE, RAIL, RAIL_PAD, RAIL_PAD_R, RISE, reveal } from '../lib/layout';
+import {
+  EASE,
+  RAIL,
+  RAIL_PAD,
+  RAIL_PAD_R,
+  RISE,
+  usePrefersReducedMotion,
+  useReveal,
+} from '../lib/layout';
 
 interface Role {
   /** The year the counter snaps to while this entry is the one being read. */
@@ -89,6 +97,8 @@ const PRACTICE_AREAS = [
 ];
 
 export default function Practice() {
+  const reveal = useReveal();
+  const still = usePrefersReducedMotion();
   const entries = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(-1);
 
@@ -177,10 +187,10 @@ export default function Practice() {
               >
                 <div className={`${RAIL_PAD} ${RAIL_PAD_R} ${tier.pad} ${tier.type}`}>
                   <motion.div
-                    initial={{ opacity: 0, y: RISE }}
+                    initial={still ? false : { opacity: 0, y: RISE }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.6 }}
-                    transition={{ duration: 0.7, ease: EASE }}
+                    transition={{ duration: still ? 0 : 0.7, ease: EASE }}
                   >
                     {/*
                      * The node reaches back out of the content column to the
@@ -203,7 +213,7 @@ export default function Practice() {
                               : 'bg-paper ring-ink/30'
                         }`}
                       >
-                        {isNow && (
+                        {isNow && !still && (
                           <motion.span
                             className="absolute inset-0 rounded-full bg-amber-dot"
                             animate={{ scale: [1, 2.4], opacity: [0.5, 0] }}
@@ -220,10 +230,10 @@ export default function Practice() {
 
                     <motion.div
                       className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2"
-                      initial={{ opacity: 0 }}
+                      initial={still ? false : { opacity: 0 }}
                       whileInView={{ opacity: 1 }}
                       viewport={{ once: true, amount: 0.6 }}
-                      transition={{ duration: 0.7, ease: EASE, delay: 0.06 }}
+                      transition={{ duration: still ? 0 : 0.7, ease: EASE, delay: still ? 0 : 0.06 }}
                     >
                       <span className="tabular font-mono text-data uppercase text-muted">
                         {entry.span}

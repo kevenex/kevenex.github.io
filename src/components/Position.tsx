@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { RAIL_PAD, RAIL_PAD_R, reveal } from '../lib/layout';
+import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 
 /*
  * The thesis. This slot used to render a full viewport of video with no
@@ -7,6 +7,8 @@ import { RAIL_PAD, RAIL_PAD_R, reveal } from '../lib/layout';
  * the plainest possible answer: who this is and what the rest of the page is.
  */
 export default function Position() {
+  const reveal = useReveal();
+
   return (
     <section
       id="position"

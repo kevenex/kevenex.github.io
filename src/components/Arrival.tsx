@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { EASE, RAIL_PAD, RAIL_PAD_R } from '../lib/layout';
+import { EASE, RAIL_PAD, RAIL_PAD_R, usePrefersReducedMotion } from '../lib/layout';
 
 /*
  * Text is the visual. No video, no scrub, no watermark — the page opens on a
@@ -10,6 +10,8 @@ import { EASE, RAIL_PAD, RAIL_PAD_R } from '../lib/layout';
  * read, not to wait.
  */
 export default function Arrival() {
+  const still = usePrefersReducedMotion();
+
   return (
     <section
       id="arrival"
@@ -17,27 +19,27 @@ export default function Arrival() {
     >
       <motion.p
         className="font-mono text-label uppercase text-muted"
-        initial={{ opacity: 0 }}
+        initial={still ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: EASE }}
+        transition={{ duration: still ? 0 : 0.8, ease: EASE }}
       >
         Kevin Kim — Product Manager
       </motion.p>
 
       <motion.h1
         className="max-w-[18ch] font-serif text-hero"
-        initial={{ opacity: 0, y: 32 }}
+        initial={still ? false : { opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.1, ease: EASE, delay: 0.15 }}
+        transition={{ duration: still ? 0 : 1.1, ease: EASE, delay: still ? 0 : 0.15 }}
       >
         I build things that keep running when I am not watching.
       </motion.h1>
 
       <motion.p
         className="font-mono text-label uppercase text-muted"
-        initial={{ opacity: 0 }}
+        initial={still ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: EASE, delay: 0.6 }}
+        transition={{ duration: still ? 0 : 0.8, ease: EASE, delay: still ? 0 : 0.6 }}
       >
         Scroll
       </motion.p>

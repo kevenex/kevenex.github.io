@@ -1,6 +1,6 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { RAIL_PAD, RAIL_PAD_R, reveal } from '../lib/layout';
+import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 import {
   submitContact,
   validateContact,
@@ -18,6 +18,8 @@ const EMPTY: ContactMessage = { name: '', email: '', message: '' };
  * no rounded boxes, no shadows.
  */
 export default function Contact() {
+  const reveal = useReveal();
+
   const ids = useId();
   const [values, setValues] = useState<ContactMessage>(EMPTY);
   const [errors, setErrors] = useState<ContactErrors>({});

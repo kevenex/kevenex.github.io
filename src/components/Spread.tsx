@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { RAIL_PAD, RAIL_PAD_R, reveal } from '../lib/layout';
+import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 
 export interface SpreadDatum {
   label: string;
@@ -53,6 +53,8 @@ export default function Spread({
   ground = 'paper',
   mark,
 }: SpreadProps) {
+  const reveal = useReveal();
+
   return (
     <section
       id={id}
