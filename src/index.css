@@ -20,11 +20,21 @@ html,
 body {
   background: #e5e1d8;
   color: #161210;
-  overflow-x: hidden;
-  overflow-y: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Instrument Sans', system-ui, sans-serif;
+}
+
+/*
+ * `clip`, never `hidden`. Both stop sideways scrolling, but `overflow:hidden`
+ * turns these elements into scroll containers, and every `position: sticky`
+ * descendant then binds to that container instead of the viewport and quietly
+ * stops sticking — which is exactly what happened to the timeline's year
+ * counter. `clip` creates no scroll container, so sticky keeps working.
+ */
+html,
+body {
+  overflow-x: clip;
 }
 
 /* Headings balance rather than orphan their last word. */
