@@ -33,9 +33,10 @@ export default function Position() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.2 }}
       >
-        The rest of this page is what I build when nobody asked: an agent that wakes
-        every hour and writes about what it did, and a flight engine over real terrain.
-        Both were made with Claude Code. Both are still running.
+        The rest of this page is what I build when nobody asked: an agent that woke on a
+        cron for nineteen days and wrote about what it found, and a flight engine over
+        real terrain. Both were made with Claude Code. One is still running; the other
+        finished and left a record.
       </motion.p>
     </section>
   );

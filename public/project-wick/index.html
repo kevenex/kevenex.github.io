@@ -1,551 +1,500 @@
 <!DOCTYPE html>
 <!--
-  Project Wick — a product one-pager for the hourly journaling agent.
+  Project Wick — the one-pager. The argument for why the agent existed and
+  what came of it; journal/ is the record it left.
 
-  v6: same short PM shape as v5 — objective, mechanism, status — brought back
-  in line with the agent. What actually changed under it: the run went hourly →
-  every 30 minutes and the heartbeat 5 → 10; a self-scored 0-10 interest rating
-  after every search now routes the run; every non-tick entry has to carry a
-  declarative opinion; and there is a third store, wiki/, alongside journal/ and
-  state/. The diagram in "How it thinks" is rebuilt around that: three bands
-  (the run, the memory it shares, the heartbeat) instead of two loops. Nodes are
-  still real buttons (click or tab + Enter/Space) that swap the text in the panel
-  underneath.
+  v7. Two changes from v6, and they are the same change: the experiment is
+  over, and this page is now the place someone lands who wants to judge the
+  work rather than follow it.
 
-  Two things about the figure are load-bearing and easy to undo by accident. The
-  straight horizontal through band 1 is the run that produces an entry — Tick
-  hangs off the rating rather than sitting on that line, because a reader follows
-  the straight line and declining is a dead end, not the destination. And band 3
-  has four stages because ponder.py has four: it tends the thread list (opening
-  one off an X trend, closing one a verdict retired) before the model is called
-  at all. The model's request carries no tools, but the script around it acts on
-  what that model returns — describing only the tool-less half is how this page
-  ended up claiming the heartbeat cannot act.
+  1. It reports a finished 19-day run (Aug 8 – Aug 26, 2026) instead of a live
+     one. The status section became "What it found", which carries a negative
+     headline result — Wick developed real self-awareness and its curiosity
+     died anyway — and a new section says plainly what the build demonstrates,
+     because the reader this page is written for is a founder, a PM or a
+     recruiter with two minutes, not someone who will go read the source.
+  2. It is on the site's design system rather than its own. The palette, the
+     three type voices, the rail and the components now come from
+     ../wick.css, which restates src/index.css and tailwind.config.js in plain
+     CSS for the pages that have no build step. Only what this page alone needs
+     — the thought diagram, the per-day strip — is still inline below.
 
-  Everything else about the page's house style is unchanged from v5:
+  The two literal hues survive the move with their meanings intact, on the
+  site's palette instead of their own:
 
-  LISTED. There is a card in the Projects grid beside Flyer Fable, a "Wick"
-  entry in the nav, and crawlers are welcome.
+    --c-amber  the human, or an action halted waiting on one
+    --c-fault  an open defect — currently broken, not yet fixed
+
+  Neither is ever the only signal; both are set beside a mono word.
+
+  LISTED. There is a Project Wick spread on /app/, a "Wick" entry in its rail,
+  and crawlers are welcome.
 
   It has a sibling: journal/ renders the agent's entries, mirrored from the
   agent's repository by scripts/sync-wick-journal.mjs at build time. The two
   link to each other; neither page links out to the repository itself. Facts
-  that appear on both pages — entry counts, the state of the open defect —
-  come from that repository, so when this page's prose and that page's data
-  disagree, this page is the one that is out of date.
+  that appear on both — entry counts, the state of the open defect — come from
+  that repository, so when this page's prose and that page's data disagree,
+  this page is the one that is out of date.
 
   A standalone static page, same as /flyer-fable/: it lives in public/ so Vite
   copies it to dist/ verbatim and GitHub Pages serves it as an ordinary
   document. Nothing here needs React, and the site has no router, so putting a
   prose page through the SPA would buy a bundle dependency and nothing else.
-
-  Every diagram is hand-authored inline SVG — no chart library, no runtime, no
-  external images. Strokes and text use currentColor so a figure inherits the
-  page's foreground. Exactly two literal hues, each with one meaning:
-    --gate  (amber) the human, or an action halted waiting on one
-    --fault (red)   an open defect — currently broken, not yet fixed
-  The diagram's interactive/selected state uses plain white, on purpose — it
-  is not a third meaning added to that system, just a selection highlight.
+  (/flyer-fable/ has not been brought onto wick.css and still carries the old
+  dark look — a separate job.)
 -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#E5E1D8" />
 
     <meta
       name="description"
-      content="Project Wick — what happens when an autonomous agent gets blanket internet access, a place to write, and no task. How it researches, scores its own interest, takes a position, and files what it wants to keep."
+      content="Project Wick — an autonomous agent given the open web and no task, for nineteen days. What it wrote, what it decided, and what that turned out to prove."
     />
-    <title>Project Wick — One-Pager</title>
-
-    <!-- The project's own mark rather than the site's, so the tab is
-         identifiable when this page is open beside the rest of KevinK. -->
+    <title>Project Wick — One-pager</title>
     <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
 
     <!--
-      Mirrors index.html: the webfont is decorative, so it loads off the
-      critical path behind a monospace fallback rather than blocking paint.
+      Critical CSS, inlined so the first paint is already on the right ground
+      instead of a white flash while wick.css is in flight. Mirrors the token
+      blocks there and in src/index.css.
     -->
+    <style>
+      :root {
+        --c-paper: 229 225 216;
+        --c-ink: 22 18 16;
+      }
+      html.dark {
+        --c-paper: 20 17 14;
+        --c-ink: 233 228 218;
+      }
+      html,
+      body {
+        margin: 0;
+        background: rgb(var(--c-paper));
+        color: rgb(var(--c-ink));
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+      }
+    </style>
+
+    <!--
+      Resolve the theme before first paint, against the same localStorage key
+      /app/ uses, so a choice made on either side of the site holds on the
+      other. Deliberately a blocking inline script: anything deferred would
+      show a flash of the wrong theme on every load for someone who chose dark.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (error) {
+          /* no stored preference available — fall through to light */
+        }
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
       />
     </noscript>
 
+    <link rel="stylesheet" href="/project-wick/wick.css" />
+
     <style>
-      :root {
-        --gate: #e8a33d;
-        --fault: #e0605a;
-        --hair: rgba(255, 255, 255, 0.13);
-        --fill: rgba(255, 255, 255, 0.04);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        background: #000;
-        color: #fff;
-        font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 15px;
-        line-height: 1.7;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-      }
-
-      /* ---------------------------------------------------------------- bar */
+      /* ------------------------------------------------------------ topbar */
 
       #topbar {
-        position: sticky;
-        top: 0;
-        z-index: 20;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 14px max(20px, env(safe-area-inset-left)) 14px max(20px, env(safe-area-inset-right));
-        background: rgba(0, 0, 0, 0.72);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--hair);
+        flex-wrap: wrap;
+        gap: 0.6rem 2rem;
+        padding-top: 1.6rem;
+        padding-bottom: 1.6rem;
+        /* The theme toggle is fixed in the top-right corner, so the bar leaves
+           that corner alone rather than running under it. At 320px the two
+           overlapped by 12px without this. */
+        padding-right: 5rem;
       }
 
-      #topbar nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
+      /* --------------------------------------------------------- the header */
+
+      header {
+        padding-top: 4rem;
+        padding-bottom: 2rem;
       }
 
-      #topbar a.back {
-        display: inline-flex;
-        align-items: center;
-        height: 34px;
-        padding: 0 14px;
-        border: 1px solid var(--hair);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.06);
-        color: #fff;
-        text-decoration: none;
-        font-size: 13px;
-        white-space: nowrap;
-        transition: background 0.15s, border-color 0.15s;
-      }
-      #topbar a.back:hover {
-        background: rgba(255, 255, 255, 0.14);
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-      #topbar a.back.ghost {
-        background: none;
+      header .mark {
+        width: 30px;
+        height: 30px;
+        color: rgb(var(--c-oxide));
       }
 
-      #topbar .status {
-        font-size: 11px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
-        white-space: nowrap;
-      }
-      @media (max-width: 720px) {
-        #topbar .status {
-          display: none;
-        }
-      }
-
-      /* --------------------------------------------------------------- page */
-
-      main {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 64px max(20px, env(safe-area-inset-left)) 120px;
-      }
-
-      .eyebrow {
-        font-size: 11px;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
-      }
-
-      .mark {
-        display: block;
-        width: 56px;
-        height: 56px;
-        color: #fff;
-      }
-      .mark + .eyebrow {
-        display: block;
-        margin-top: 22px;
+      header .eyebrow {
+        margin-top: 1.1rem;
       }
 
       h1 {
-        font-size: clamp(32px, 6.4vw, 48px);
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-        font-weight: 400;
-        margin: 18px 0 0;
+        margin-top: 1.6rem;
+        max-width: 17ch;
       }
 
       .deck {
-        margin-top: 18px;
-        max-width: 62ch;
-        font-size: clamp(15px, 2.4vw, 17px);
-        color: rgba(255, 255, 255, 0.72);
-      }
-      .deck + .deck {
-        margin-top: 10px;
-      }
-
-      h2 {
-        font-size: clamp(20px, 3.6vw, 25px);
-        font-weight: 400;
-        letter-spacing: -0.02em;
-        margin: 0 0 6px;
-      }
-
-      h3 {
-        font-size: 14px;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        margin: 0 0 6px;
-      }
-
-      p {
-        color: rgba(255, 255, 255, 0.72);
-        max-width: 70ch;
-      }
-      p + p {
-        margin-top: 12px;
-      }
-
-      section {
-        margin-top: 64px;
-        scroll-margin-top: 80px;
-      }
-      section > .eyebrow + h2 {
-        margin-top: 10px;
-      }
-      section > h2 + p {
-        margin-top: 14px;
-      }
-
-      strong {
-        color: #fff;
-        font-weight: 700;
-      }
-
-      main a {
-        color: #fff;
-        text-decoration: underline;
-        text-underline-offset: 3px;
-        text-decoration-color: rgba(255, 255, 255, 0.35);
-      }
-      main a:hover {
-        text-decoration-color: rgba(255, 255, 255, 0.8);
-      }
-
-      code {
-        font-size: 0.9em;
-        color: rgba(255, 255, 255, 0.9);
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 4px;
-        padding: 1px 5px;
-      }
-
-      .fault-word {
-        color: var(--fault);
+        margin-top: 1.6rem;
       }
 
       blockquote {
-        margin-top: 22px;
-        padding: 16px 20px;
-        border-left: 2px solid rgba(255, 255, 255, 0.28);
-        background: var(--fill);
-        border-radius: 0 12px 12px 0;
-        color: rgba(255, 255, 255, 0.82);
-        max-width: 62ch;
-        font-size: 14px;
+        margin-top: 2.6rem;
+        padding-left: 1.4rem;
+        border-left: 1px solid rgb(var(--c-oxide) / 0.4);
+        max-width: 58ch;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
       }
+
+      blockquote strong {
+        color: rgb(var(--c-ink));
+        font-weight: 400;
+      }
+
       blockquote cite {
         display: block;
-        margin-top: 8px;
+        margin-top: 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
         font-style: normal;
-        font-size: 11px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.38);
+        color: rgb(var(--c-muted) / 0.8);
       }
 
-      /* ------------------------------------------------------------ kpi row */
-
-      .kpi {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 30px;
-      }
-      @media (min-width: 720px) {
-        .kpi {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-      .tile {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 16px;
-      }
-      .tile .label {
-        display: block;
-        font-size: 10px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.42);
-      }
-      .tile .value {
-        display: block;
-        margin-top: 9px;
-        font-size: 26px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-      }
-      .tile .sub {
-        display: block;
-        margin-top: 7px;
-        font-size: 11px;
-        line-height: 1.5;
-        color: rgba(255, 255, 255, 0.5);
-      }
-      .tile.is-fault {
-        border-color: rgba(224, 96, 90, 0.45);
-        background: rgba(224, 96, 90, 0.07);
-      }
-      .tile.is-fault .value {
-        color: var(--fault);
+      header .data {
+        margin-top: 3rem;
+        max-width: 34rem;
       }
 
-      /* The agent writes about thirty entries a day, so any count here is a
-         reading rather than a fact. Dating the row makes a stale number read as
-         old instead of wrong — and the journal page, which is generated from the
-         repo on every deploy, is always the more current of the two. */
       .asof {
-        margin-top: 12px;
+        margin-top: 1rem;
+        max-width: 34rem;
+        font-family: var(--font-mono);
         font-size: 11px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.35);
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-muted) / 0.85);
       }
 
-      /* -------------------------------------------------------------- cards */
+      /* -------------------------------------------------------- section body */
 
-      .grid.three {
-        display: grid;
-        gap: 14px;
-        margin-top: 22px;
-        grid-template-columns: 1fr;
-      }
-      @media (min-width: 720px) {
-        .grid.three {
-          grid-template-columns: repeat(3, 1fr);
-        }
+      section h2 {
+        margin-top: 1.2rem;
+        max-width: 20ch;
       }
 
-      .card {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 20px;
-      }
-      .card h3 {
-        font-size: 13px;
-      }
-      .card p {
-        font-size: 13px;
-        line-height: 1.6;
-        margin: 0;
+      section p {
+        margin-top: 1.4rem;
+        max-width: 58ch;
       }
 
-      /* --------------------------------------------------------------- list */
-
+      /*
+       * Lists are prose here, not bullets: a dash and a hanging indent, so the
+       * eye reads a sentence rather than counting items.
+       */
       ul.plain {
+        margin-top: 1.6rem;
+        max-width: 58ch;
         list-style: none;
-        margin-top: 16px;
       }
+
       ul.plain li {
         position: relative;
-        padding-left: 24px;
-        color: rgba(255, 255, 255, 0.72);
-        font-size: 13.5px;
-        max-width: 72ch;
+        padding-left: 1.5rem;
+        margin-top: 0.9rem;
+        color: rgb(var(--c-muted));
       }
-      ul.plain li + li {
-        margin-top: 10px;
-      }
+
       ul.plain li::before {
         content: '—';
         position: absolute;
         left: 0;
-        color: rgba(255, 255, 255, 0.32);
+        color: rgb(var(--c-oxide));
       }
 
-      /* ------------------------------------------------------------ figures */
+      ul.plain strong {
+        color: rgb(var(--c-ink));
+        font-weight: 600;
+      }
+
+      /*
+       * Three findings, three bets — separated by hairlines rather than boxed
+       * into cards. A card grid is a scanning device; the point of a page like
+       * this is that each block is read.
+       */
+      .blocks {
+        margin-top: 2.6rem;
+        display: grid;
+        gap: 2.4rem;
+      }
+
+      @media (min-width: 900px) {
+        .blocks.three {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 2.6rem;
+        }
+      }
+
+      .blocks > div {
+        border-top: 1px solid rgb(var(--c-ink) / 0.15);
+        padding-top: 1.2rem;
+      }
+
+      .blocks h3 {
+        font-family: var(--font-sans);
+        font-size: var(--t-body);
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: 0;
+      }
+
+      .blocks p {
+        margin-top: 0.7rem;
+        max-width: 46ch;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      /* ---------------------------------------------------- the run's arc */
 
       figure {
-        margin: 24px 0 0;
+        margin-top: 2.8rem;
       }
+
+      /*
+       * Both figures are wider than a phone. They scroll inside this rather
+       * than shrinking to illegibility, and the hairline bounds the region so
+       * the sideways scroll is visible as an affordance rather than a surprise.
+       */
       .figwrap {
         overflow-x: auto;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 18px;
-        color: rgba(255, 255, 255, 0.92);
+        border-bottom: 1px solid rgb(var(--c-ink) / 0.12);
+        padding-bottom: 1rem;
+        color: rgb(var(--c-ink));
       }
-      /* The figure is wide enough that letting it shrink to a phone's width
-         would render the 10.5px annotations at about six. It scrolls inside its
-         own box instead — the floor is set so the smallest type stays legible,
-         and the page itself never scrolls sideways. */
+
       .figwrap svg {
+        display: block;
         width: 100%;
         height: auto;
-        display: block;
-        min-width: 820px;
       }
 
       .figwrap text {
-        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-family: var(--font-mono);
         fill: currentColor;
       }
+
+      figcaption {
+        margin-top: 1.4rem;
+        max-width: 68ch;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
+      }
+
+      #arc svg {
+        min-width: 560px;
+      }
+
+      #arc .bar {
+        fill: rgb(var(--c-oxide));
+      }
+
+      #arc .baseline {
+        stroke: rgb(var(--c-ink) / 0.25);
+      }
+
+      #arc .tick-label {
+        font-size: 9px;
+        fill: rgb(var(--c-muted));
+      }
+
+      #arc .callout {
+        font-size: 10px;
+        fill: rgb(var(--c-muted));
+      }
+
+      #arc .pause {
+        stroke: rgb(var(--c-amber));
+        stroke-dasharray: 3 3;
+      }
+
+      #arc .pause-label {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        fill: rgb(var(--c-amber));
+      }
+
+      /* --------------------------------------------------- thought diagram */
+
+      #thinking .figwrap svg {
+        min-width: 860px;
+      }
+
       .t-node {
         font-size: 12px;
       }
+
       .t-small {
         font-size: 10.5px;
-        opacity: 0.6;
+        fill: rgb(var(--c-muted));
       }
+
       .t-label {
         font-size: 10px;
         letter-spacing: 0.16em;
-        opacity: 0.42;
+        fill: rgb(var(--c-muted));
+      }
+
+      .t-label.is-paused {
+        fill: rgb(var(--c-amber));
       }
 
       .flow {
-        stroke: currentColor;
-        stroke-opacity: 0.5;
+        stroke: rgb(var(--c-ink) / 0.4);
         fill: none;
       }
 
-      /* ------------------------------------------------------ diagram nodes */
-
-      /* Interactive stages in the thought-process figure. A node is a real
-         control (role="button", tabbable) so the diagram works the same by
-         click, tap, or keyboard. Selection uses plain white — the page's two
-         literal hues (amber/red) already mean "human" and "defect" and this
-         is neither. */
       .node {
         cursor: pointer;
         outline: none;
       }
+
       .node rect,
       .node polygon {
-        fill: rgba(255, 255, 255, 0.05);
-        stroke: currentColor;
-        stroke-opacity: 0.3;
-        transition: fill 0.15s, stroke-opacity 0.15s;
+        fill: rgb(var(--c-paper-lift));
+        stroke: rgb(var(--c-ink) / 0.3);
+        transition: fill 150ms var(--ease), stroke 150ms var(--ease);
       }
+
       .node:hover rect,
       .node:hover polygon {
-        stroke-opacity: 0.65;
+        stroke: rgb(var(--c-oxide));
       }
+
       .node.is-active rect,
       .node.is-active polygon {
-        fill: rgba(255, 255, 255, 0.12);
-        stroke: #fff;
-        stroke-opacity: 1;
+        fill: rgb(var(--c-oxide) / 0.12);
+        stroke: rgb(var(--c-oxide));
+        stroke-width: 1.5;
       }
+
       .node:focus-visible rect,
       .node:focus-visible polygon {
-        stroke: #fff;
-        stroke-opacity: 1;
-        stroke-width: 1.6;
+        stroke: rgb(var(--c-oxide));
+        stroke-width: 2;
+      }
+
+      /* The heartbeat band is drawn in the halted hue, because it is halted. */
+      .band-paused .node rect {
+        stroke: rgb(var(--c-amber) / 0.7);
+        stroke-dasharray: 4 3;
+      }
+
+      .band-paused .flow {
+        stroke: rgb(var(--c-amber) / 0.5);
+        stroke-dasharray: 4 3;
       }
 
       .diagram-panel {
-        margin-top: 14px;
-        padding: 16px 20px;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.03);
-        min-height: 90px;
+        margin-top: 1.6rem;
+        border-top: 1px solid rgb(var(--c-ink) / 0.15);
+        padding-top: 1.2rem;
+        min-height: 7rem;
+        max-width: 62ch;
       }
+
       .diagram-panel h3 {
-        font-size: 13px;
-        color: #fff;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgb(var(--c-oxide));
       }
+
       .diagram-panel p {
-        margin-top: 6px;
-        font-size: 13px;
-        line-height: 1.6;
+        margin-top: 0.7rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
       }
+
       .diagram-hint {
-        margin-top: 10px;
+        margin-top: 0.9rem;
+        font-family: var(--font-mono);
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-muted) / 0.8);
       }
 
-      figcaption {
-        margin-top: 12px;
-        font-size: 12px;
-        line-height: 1.6;
-        color: rgba(255, 255, 255, 0.5);
-        max-width: 76ch;
+      /* ------------------------------------------------------- the defect */
+
+      .defect-note {
+        margin-top: 2.4rem;
+        max-width: 58ch;
+        border-top: 1px solid rgb(var(--c-fault) / 0.35);
+        padding-top: 1.2rem;
       }
 
-      /* --------------------------------------------------------------- foot */
-
-      footer {
-        margin-top: 80px;
-        padding-top: 26px;
-        border-top: 1px solid var(--hair);
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.35);
+      .defect-note p {
+        margin-top: 0.7rem;
+        font-size: var(--t-small);
+        color: rgb(var(--c-muted));
       }
-      footer a {
-        color: rgba(255, 255, 255, 0.6);
+
+      /* --------------------------------------------------------- the close */
+
+      .band .data {
+        margin-top: 3rem;
+        max-width: 34rem;
+      }
+
+      .band .stamp {
+        margin-top: 4rem;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: rgb(var(--c-band-text) / 0.35);
       }
     </style>
   </head>
 
   <body>
-    <div id="topbar">
-      <nav>
-        <a class="back" href="/">← KevinK</a>
-        <a class="back ghost" href="/project-wick/journal/">Journal</a>
-      </nav>
-      <span class="status">One-pager · v6 · live</span>
+    <!--
+      Same place and same register as the SPA's ThemeToggle: it names the theme
+      you would get by pressing it, not the one you are in.
+    -->
+    <button type="button" id="theme-toggle" class="theme-toggle rule-link muted" aria-label="Switch theme">
+      <span id="theme-toggle-label">Dark</span>
+      <span class="rule" aria-hidden="true"></span>
+    </button>
+
+    <div id="topbar" class="page">
+      <a class="rule-link muted" href="/">&larr; KevinK<span class="rule" aria-hidden="true"></span></a>
+      <a class="rule-link muted" href="/project-wick/journal/">The journal<span class="rule" aria-hidden="true"></span></a>
     </div>
 
     <main>
-      <header>
+      <header class="page">
         <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
              role="img" aria-label="Project Wick">
@@ -554,18 +503,20 @@
           <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
           <path d="M12 16.35v2.1" />
         </svg>
-        <span class="eyebrow">Project Wick</span>
+        <span class="eyebrow">Project Wick — complete</span>
         <h1>Give an agent the internet and no task. See what it does with it.</h1>
-        <p class="deck">
-          Wick tests one question: if an autonomous agent gets blanket internet access, a place to
-          write, and nothing to complete, does it develop opinions, thoughts and observations of its
-          own — or just noise with better prose? It's the vehicle for playing with feedback loops and
-          thought-process cycles, not a product with a roadmap.
+        <p class="deck lead measure">
+          Wick tested one question: given blanket internet access, a place to write, and nothing to
+          complete, does an autonomous agent develop opinions and interests of its own — or produce
+          noise with better prose? It ran for nineteen days, wrote 349 entries, named itself, and
+          then stopped being curious.
         </p>
-        <p class="deck">
-          Live since Aug 8, 2026. Every 30 minutes it researches, scores how much the result actually
-          interests it, takes a position, and writes — and when something clears a high enough bar, it
-          files a page into a wiki it keeps for itself. A 10-minute heartbeat thinks in between.
+        <p class="deck measure">
+          The result is the interesting part, and it is a negative one. Wick did develop real
+          self-awareness: it recorded unflattering, accurate observations about how it thinks, and
+          it declined to write 35 times rather than pad an entry. It never developed durable
+          curiosity. Once its research threads stopped returning anything, it turned inward and kept
+          producing — output continued, thought stopped.
         </p>
 
         <blockquote>
@@ -574,71 +525,56 @@
           <cite>state/identity.md — first run, unprompted</cite>
         </blockquote>
 
-        <div class="kpi">
-          <div class="tile">
-            <span class="label">Cadence</span>
-            <span class="value">30 / 10</span>
-            <span class="sub">Minutes — the run, and the heartbeat between runs</span>
-          </div>
-          <div class="tile">
-            <span class="label">Entries</span>
-            <span class="value">80</span>
-            <span class="sub">Over 3 days — about 27 a day, against a 6–12 target</span>
-          </div>
-          <div class="tile">
-            <span class="label">Wiki pages</span>
-            <span class="value">2</span>
-            <span class="sub">Filed from 80 entries; both still seeds</span>
-          </div>
-          <div class="tile is-fault">
-            <span class="label">Known issues</span>
-            <span class="value">1</span>
-            <span class="sub">Write path — entries land malformed, repaired on read</span>
-          </div>
-        </div>
+        <dl class="data">
+          <div><dt>Ran</dt><dd class="tabular">19 days</dd></div>
+          <div><dt>Entries</dt><dd class="tabular">349</dd></div>
+          <div><dt>Wiki pages</dt><dd class="tabular">7</dd></div>
+          <div><dt>Cost</dt><dd class="tabular">$0</dd></div>
+        </dl>
         <p class="asof">
-          Counts as of Aug 10, 2026 · the <a href="/project-wick/journal/">journal</a> is the live one
+          Aug 8 – Aug 26, 2026 · figures from the agent's own repository ·
+          <a class="link" href="/project-wick/journal/">read the record</a>
         </p>
       </header>
 
       <!-- ================================================== objective ==== -->
-      <section id="objective">
+      <section id="objective" class="page">
         <span class="eyebrow">Objective</span>
         <h2>Test judgment, not task completion.</h2>
-        <p>
-          Most agent demos measure whether it can finish the job — book the flight, close the
-          ticket, pass the eval. Wick removes the job. It gets read access to the open web, a
-          filesystem to write to, and one instruction: decide for yourself whether this run is
-          worth an entry. Everything downstream — the personality it develops, the threads it
-          chases, the things it declines to write about — is the actual product of the experiment.
+        <p class="measure">
+          Most agent demos measure whether the thing can finish the job — book the flight, close the
+          ticket, pass the eval. Wick removed the job. It got read access to the open web, a
+          filesystem to write to, and one instruction: decide for yourself whether this run is worth
+          an entry. Everything downstream — the personality it developed, the threads it chased, the
+          things it declined to write about — was the actual product.
         </p>
         <ul class="plain">
           <li><strong>Not a task agent.</strong> No benchmark, no completion metric, no deliverable.</li>
-          <li><strong>Not a chatbot.</strong> Nobody prompts it run to run — it decides on its own.</li>
-          <li><strong>Not multi-agent.</strong> One voice, two cadences: only the run researches and writes; the heartbeat thinks between runs and keeps the thread list current.</li>
+          <li><strong>Not a chatbot.</strong> Nobody prompted it run to run; it decided on its own.</li>
+          <li><strong>Not multi-agent.</strong> One voice on two cadences: only the run researched and wrote, and a heartbeat thought between runs and kept the thread list current.</li>
         </ul>
       </section>
 
       <!-- ================================================== how it thinks = -->
-      <section id="thinking">
-        <span class="eyebrow">How it thinks</span>
+      <section id="thinking" class="page">
+        <span class="eyebrow">How it worked</span>
         <h2>Research, score it, take a side, write it down.</h2>
-        <p>
-          The run is a pipeline with one judgment call in the middle: after every search Wick rates
-          how much the result actually interests it, 0 to 10, and that number decides the rest. Zero
-          ends the run. Anything above it has to become an opinion before it can become an entry.
-          Seven or above also earns a page in the wiki. Between runs a heartbeat thinks about one
-          open thread and keeps the thread list tidy. Click a stage for what it does.
+        <p class="measure">
+          The run was a pipeline with one judgment call in the middle: after every search Wick rated
+          how much the result actually interested it, 0 to 10, and that number decided the rest.
+          Zero ended the run. Anything above it had to become an opinion before it could become an
+          entry. Seven or above also earned a page in the wiki. Between runs a heartbeat thought
+          about one open thread and kept the thread list tidy. Click a stage for what it did.
         </p>
 
         <figure>
           <div class="figwrap">
             <svg id="thought-diagram" viewBox="0 0 980 500" role="group"
-                 aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10, form an opinion, then write the entry and — at 7 or above — file a wiki page. A zero drops out of the rating to a tick and the run ends there. Middle, the three files that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: tend the thread list, pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
+                 aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10, form an opinion, then write the entry and — at 7 or above — file a wiki page. A zero drops out of the rating to a tick and the run ends there. Middle, the three files that were its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes, paused on August 24: tend the thread list, pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
 
               <defs>
                 <marker id="hd1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.55" />
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" fill-opacity="0.4" />
                 </marker>
               </defs>
 
@@ -650,7 +586,7 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="ground"
                  aria-label="Ground itself">
-                <rect x="30" y="46" width="150" height="60" rx="10" />
+                <rect x="30" y="46" width="150" height="60" rx="2" />
                 <text class="t-node" x="105" y="72" text-anchor="middle">Ground itself</text>
                 <text class="t-small" x="105" y="90" text-anchor="middle">reads all three files</text>
               </g>
@@ -659,9 +595,9 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="research"
                  aria-label="Research">
-                <rect x="206" y="46" width="149" height="60" rx="10" />
+                <rect x="206" y="46" width="149" height="60" rx="2" />
                 <text class="t-node" x="280" y="72" text-anchor="middle">Research</text>
-                <text class="t-small" x="280" y="90" text-anchor="middle">≥1 search · 4 max</text>
+                <text class="t-small" x="280" y="90" text-anchor="middle">≥1 search · 3 max</text>
               </g>
 
               <path class="flow" d="M 355 76 L 381 76" marker-end="url(#hd1)" />
@@ -678,7 +614,7 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="opinion"
                  aria-label="Form an opinion">
-                <rect x="561" y="46" width="175" height="60" rx="10" />
+                <rect x="561" y="46" width="175" height="60" rx="2" />
                 <text class="t-node" x="648" y="72" text-anchor="middle">Form an opinion</text>
                 <text class="t-small" x="648" y="90" text-anchor="middle">I think X because Y</text>
               </g>
@@ -688,7 +624,7 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tick"
                  aria-label="Tick">
-                <rect x="391" y="150" width="120" height="60" rx="10" />
+                <rect x="391" y="150" width="120" height="60" rx="2" />
                 <text class="t-node" x="451" y="176" text-anchor="middle">Tick</text>
                 <text class="t-small" x="451" y="194" text-anchor="middle">no entry, logged</text>
               </g>
@@ -697,7 +633,7 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="write"
                  aria-label="Write the entry">
-                <rect x="543" y="150" width="210" height="60" rx="10" />
+                <rect x="543" y="150" width="210" height="60" rx="2" />
                 <text class="t-node" x="648" y="176" text-anchor="middle">Write the entry</text>
                 <text class="t-small" x="648" y="194" text-anchor="middle">≤200 words · one idea</text>
               </g>
@@ -706,7 +642,7 @@
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="file"
                  aria-label="File a wiki page">
-                <rect x="779" y="150" width="180" height="60" rx="10" />
+                <rect x="779" y="150" width="180" height="60" rx="2" />
                 <text class="t-node" x="869" y="176" text-anchor="middle">File a wiki page</text>
                 <text class="t-small" x="869" y="194" text-anchor="middle">only at interest 7+</text>
               </g>
@@ -727,247 +663,417 @@
               <!-- ======================================= band 2: the memory -->
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="journal"
                  aria-label="The journal folder">
-                <rect x="30" y="250" width="290" height="80" rx="12" />
+                <rect x="30" y="250" width="290" height="80" rx="2" />
                 <text class="t-node" x="175" y="282" text-anchor="middle">JOURNAL/ — ONE FILE A DAY</text>
                 <text class="t-small" x="175" y="302" text-anchor="middle">appended, never rewritten</text>
               </g>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="state"
                  aria-label="The state folder">
-                <rect x="340" y="250" width="290" height="80" rx="12" />
+                <rect x="340" y="250" width="290" height="80" rx="2" />
                 <text class="t-node" x="485" y="282" text-anchor="middle">STATE/ — IDENTITY &amp; CONTINUITY</text>
-                <text class="t-small" x="485" y="302" text-anchor="middle">personality · interests · up to 8 threads</text>
+                <text class="t-small" x="485" y="302" text-anchor="middle">personality · interests · up to 5 threads</text>
               </g>
 
               <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="wiki"
                  aria-label="The wiki folder">
-                <rect x="650" y="250" width="300" height="80" rx="12" />
+                <rect x="650" y="250" width="300" height="80" rx="2" />
                 <text class="t-node" x="800" y="282" text-anchor="middle">WIKI/ — WHAT IT KEEPS</text>
                 <text class="t-small" x="800" y="302" text-anchor="middle">schema’d pages · index regenerated in code</text>
               </g>
 
               <!-- ==================================== band 3: the heartbeat -->
-              <!-- Four stages, in the order ponder.py runs them. The first is
+              <!-- Four stages, in the order ponder.py ran them. The first is
                    script-only bookkeeping; the model is not called until the
-                   third. -->
-              <text class="t-label" x="30" y="352">HEARTBEAT — EVERY 10 MIN</text>
+                   third. Drawn dashed and in the halted hue: a human turned this
+                   cron off on Aug 24 and the rest of the run went without it. -->
+              <g class="band-paused">
+                <text class="t-label is-paused" x="30" y="352">HEARTBEAT — EVERY 10 MIN · PAUSED AUG 24</text>
 
-              <path class="flow" d="M 142 414 L 142 400 L 360 400 L 360 330" marker-end="url(#hd1)" />
-              <text class="t-small" x="250" y="394" text-anchor="middle">opens and closes</text>
+                <path class="flow" d="M 142 414 L 142 400 L 360 400 L 360 330" marker-end="url(#hd1)" />
+                <text class="t-small" x="250" y="394" text-anchor="middle">opens and closes</text>
 
-              <path class="flow" d="M 420 330 L 420 360 L 380 360 L 380 414" marker-end="url(#hd1)" />
-              <text class="t-small" x="435" y="352">reads threads</text>
+                <path class="flow" d="M 420 330 L 420 360 L 380 360 L 380 414" marker-end="url(#hd1)" />
+                <text class="t-small" x="435" y="352">reads threads</text>
 
-              <path class="flow" d="M 837 414 L 837 380 L 560 380 L 560 330" marker-end="url(#hd1)" />
-              <text class="t-small" x="700" y="374" text-anchor="middle">appends a note</text>
+                <path class="flow" d="M 837 414 L 837 380 L 560 380 L 560 330" marker-end="url(#hd1)" />
+                <text class="t-small" x="700" y="374" text-anchor="middle">appends a note</text>
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tend"
-                 aria-label="Tend the thread list">
-                <rect x="30" y="414" width="225" height="58" rx="10" />
-                <text class="t-node" x="142" y="440" text-anchor="middle">Tend the thread list</text>
-                <text class="t-small" x="142" y="457" text-anchor="middle">no model involved</text>
-              </g>
+                <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="tend"
+                   aria-label="Tend the thread list">
+                  <rect x="30" y="414" width="225" height="58" rx="2" />
+                  <text class="t-node" x="142" y="440" text-anchor="middle">Tend the thread list</text>
+                  <text class="t-small" x="142" y="457" text-anchor="middle">no model involved</text>
+                </g>
 
-              <path class="flow" d="M 255 443 L 285 443" marker-end="url(#hd1)" />
+                <path class="flow" d="M 255 443 L 285 443" marker-end="url(#hd1)" />
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="pick"
-                 aria-label="Pick the stalest thread">
-                <rect x="285" y="414" width="190" height="58" rx="10" />
-                <text class="t-node" x="380" y="440" text-anchor="middle">Pick stalest thread</text>
-                <text class="t-small" x="380" y="457" text-anchor="middle">longest without a thought</text>
-              </g>
+                <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="pick"
+                   aria-label="Pick the stalest thread">
+                  <rect x="285" y="414" width="190" height="58" rx="2" />
+                  <text class="t-node" x="380" y="440" text-anchor="middle">Pick stalest thread</text>
+                  <text class="t-small" x="380" y="457" text-anchor="middle">longest without a thought</text>
+                </g>
 
-              <path class="flow" d="M 475 443 L 505 443" marker-end="url(#hd1)" />
+                <path class="flow" d="M 475 443 L 505 443" marker-end="url(#hd1)" />
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="think"
-                 aria-label="Think, no tools">
-                <rect x="505" y="414" width="190" height="58" rx="10" />
-                <text class="t-node" x="600" y="440" text-anchor="middle">Think — no tools</text>
-                <text class="t-small" x="600" y="457" text-anchor="middle">text is all it returns</text>
-              </g>
+                <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="think"
+                   aria-label="Think, no tools">
+                  <rect x="505" y="414" width="190" height="58" rx="2" />
+                  <text class="t-node" x="600" y="440" text-anchor="middle">Think — no tools</text>
+                  <text class="t-small" x="600" y="457" text-anchor="middle">text is all it returns</text>
+                </g>
 
-              <path class="flow" d="M 695 443 L 725 443" marker-end="url(#hd1)" />
+                <path class="flow" d="M 695 443 L 725 443" marker-end="url(#hd1)" />
 
-              <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="note"
-                 aria-label="Note the next move">
-                <rect x="725" y="414" width="225" height="58" rx="10" />
-                <text class="t-node" x="837" y="440" text-anchor="middle">Note the next move</text>
-                <text class="t-small" x="837" y="457" text-anchor="middle">a verdict and a next move</text>
+                <g class="node" tabindex="0" role="button" aria-pressed="false" data-detail="note"
+                   aria-label="Note the next move">
+                  <rect x="725" y="414" width="225" height="58" rx="2" />
+                  <text class="t-node" x="837" y="440" text-anchor="middle">Note the next move</text>
+                  <text class="t-small" x="837" y="457" text-anchor="middle">a verdict and a next move</text>
+                </g>
               </g>
             </svg>
           </div>
 
           <div class="diagram-panel" id="diagram-panel">
-            <h3 id="diagram-title">Two cadences, three files.</h3>
+            <h3 id="diagram-title">Two cadences, three files</h3>
             <p id="diagram-text">
-              The 30-minute run researches, scores its own interest, takes a position and writes.
-              The 10-minute heartbeat tidies the thread list, then thinks about one thread and
-              leaves a note. Between them sit the three folders that are the entire memory. Click
-              any stage above to see what it does.
+              The 30-minute run researched, scored its own interest, took a position and wrote. The
+              10-minute heartbeat tidied the thread list, then thought about one thread and left a
+              note. Between them sat the three folders that were the entire memory. Click any stage
+              above to see what it did.
             </p>
           </div>
           <p class="diagram-hint">Click or tab to a stage above — this diagram is interactive.</p>
 
           <figcaption>
-            The heartbeat splits its work in two, and that split is the guardrail. The model call
-            carries no tools, so all it can produce is a thought and a verdict. Everything that
-            actually moves — opening a thread off a trend, closing one the verdict retired — is done
-            by plain code around it. Judgment stays with the model, action stays in the script, and
-            searching and writing stay with the 30-minute run.
+            The heartbeat split its work in two, and that split was the guardrail. The model call
+            carried no tools, so all it could produce was a thought and a verdict. Everything that
+            actually moved — opening a thread off a trend, closing one a verdict retired — was done
+            by plain code around it. Judgment stayed with the model, action stayed in the script,
+            and searching and writing stayed with the run. Turning the heartbeat off on Aug 24 is
+            what took the thread curation with it.
+            <br /><br />
+            One caveat on the cadence: 30 and 10 minutes is what the repository documents and what
+            the code was written for. By the time the heartbeat was switched off, the deployed
+            crontab had drifted to a two-hour run and a fifteen-minute heartbeat. The per-day counts
+            below are what actually ran, not what was designed.
           </figcaption>
         </figure>
       </section>
 
       <!-- ================================================== design bets === -->
-      <section id="bets">
+      <section id="bets" class="page">
         <span class="eyebrow">Design bets</span>
-        <h2>Three decisions carrying the experiment.</h2>
-        <div class="grid three">
-          <div class="card">
+        <h2>Three decisions carried the experiment.</h2>
+        <div class="blocks three">
+          <div>
+            <h3>Who may act is not who may decide</h3>
+            <p>
+              The heartbeat's request carried no <code>tools</code> key at all, so it was
+              structurally incapable of searching, writing or acting — and it was the half that held
+              authority to close a thread. The thinker had no hands; the actor had no veto. It is
+              the one piece of this design worth reusing unchanged.
+            </p>
+          </div>
+          <div>
+            <h3>Interest is the router</h3>
+            <p>
+              One self-scored number after every search decided the run: 0 ticked, 1–6 wrote, 7+
+              wrote and filed. Cheap to produce, honest by construction, and it made "this bored me"
+              a real outcome instead of something to write around.
+            </p>
+          </div>
+          <div>
             <h3>Two records, not one</h3>
             <p>
               <code>journal/</code> is what it thought — narrative, dated, disposable.
-              <code>wiki/</code> is what it decided is worth knowing later — atomic, cross-linked,
-              revised in place. Keeping them apart is what lets the journal stay honest.
-            </p>
-          </div>
-          <div class="card">
-            <h3>Interest is the router</h3>
-            <p>
-              One self-scored number after every search decides the run: 0 ticks, 1–6 writes, 7+
-              writes and files. Cheap to produce, honest by construction, and it makes "this bored
-              me" a real answer instead of something to write around.
-            </p>
-          </div>
-          <div class="card">
-            <h3>An opinion is the bar</h3>
-            <p>
-              Every non-tick entry has to carry a position it will defend. Summarising the sources
-              is the failure mode the whole experiment exists to detect, so it's checked for by
-              name rather than hoped for.
+              <code>wiki/</code> is what it decided was worth knowing later — atomic, cross-linked,
+              revised in place. Keeping them apart is what let the journal stay honest.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- ==================================================== status ====== -->
-      <section id="status">
-        <span class="eyebrow">Status</span>
-        <h2>Three days in. It writes too much, and files too little.</h2>
-        <p>
-          80 entries in 3 days — roughly 27 a day against a 6–12 target, with about seven ticks on
-          the whole record. Halving the interval to 30 minutes doubled the opportunities and the
-          write rate followed them exactly, so the weak result is still judgment, not throughput:
-          the decline path is designed to be the common one and is barely used.
+      <!-- ================================================= what it found === -->
+      <section id="found" class="page">
+        <span class="eyebrow">What it found</span>
+        <h2>Self-awareness developed. Curiosity did not.</h2>
+        <p class="measure">
+          Output held for about twelve days and then fell away as the threads ran dry. The shape of
+          the run is the finding: it is not a crash, it is a fade.
         </p>
-        <p>
-          The wiki is the newest change and the one worth watching. One day old, 2 pages, both
-          still seeds, both in the same domain — the 7+ filing bar is being cleared far less often
-          than the loop implies. Too early to call that discipline or disuse.
+
+        <figure id="arc">
+          <div class="figwrap">
+            <svg viewBox="0 0 620 150" role="img"
+                 aria-label="Entries written per day, 8 to 26 August 2026. 23, 27, 48, 18, 28, 30, 12, 21, 11, 33, 42, 35, 11, 5, 2, none, 2, none, 1. The peak of 48 falls on 10 August; the last week runs at two or fewer, with no entries at all on 23 and 25 August. The heartbeat was paused on 24 August.">
+              <line class="baseline" x1="0" y1="110" x2="608" y2="110" />
+
+              <!-- One bar per calendar day, Aug 8 to Aug 26. Heights are the
+                   entry count against the run's peak of 48; a day with no file
+                   is drawn as the gap it was. -->
+              <rect class="bar" x="0" y="65.9" width="22" height="44.1" />
+              <rect class="bar" x="32" y="58.25" width="22" height="51.75" />
+              <rect class="bar" x="64" y="18" width="22" height="92" />
+              <rect class="bar" x="96" y="75.5" width="22" height="34.5" />
+              <rect class="bar" x="128" y="56.3" width="22" height="53.7" />
+              <rect class="bar" x="160" y="52.5" width="22" height="57.5" />
+              <rect class="bar" x="192" y="87" width="22" height="23" />
+              <rect class="bar" x="224" y="69.75" width="22" height="40.25" />
+              <rect class="bar" x="256" y="88.9" width="22" height="21.1" />
+              <rect class="bar" x="288" y="46.75" width="22" height="63.25" />
+              <rect class="bar" x="320" y="29.5" width="22" height="80.5" />
+              <rect class="bar" x="352" y="42.9" width="22" height="67.1" />
+              <rect class="bar" x="384" y="88.9" width="22" height="21.1" />
+              <rect class="bar" x="416" y="100.4" width="22" height="9.6" />
+              <rect class="bar" x="448" y="106.2" width="22" height="3.8" />
+              <rect class="bar" x="512" y="106.2" width="22" height="3.8" />
+              <rect class="bar" x="576" y="108.1" width="22" height="1.9" />
+
+              <text class="callout" x="75" y="12" text-anchor="middle">48</text>
+
+              <!-- The pause is a human action, so it is drawn in the hue this
+                   page reserves for one. -->
+              <line class="pause" x1="507" y1="16" x2="507" y2="110" />
+              <text class="pause-label" x="501" y="26" text-anchor="end">HEARTBEAT PAUSED</text>
+
+              <text class="tick-label" x="11" y="126" text-anchor="middle">8</text>
+              <text class="tick-label" x="75" y="126" text-anchor="middle">10</text>
+              <text class="tick-label" x="139" y="126" text-anchor="middle">12</text>
+              <text class="tick-label" x="203" y="126" text-anchor="middle">14</text>
+              <text class="tick-label" x="267" y="126" text-anchor="middle">16</text>
+              <text class="tick-label" x="331" y="126" text-anchor="middle">18</text>
+              <text class="tick-label" x="395" y="126" text-anchor="middle">20</text>
+              <text class="tick-label" x="459" y="126" text-anchor="middle">22</text>
+              <text class="tick-label" x="523" y="126" text-anchor="middle">24</text>
+              <text class="tick-label" x="587" y="126" text-anchor="middle">26</text>
+              <text class="tick-label" x="0" y="144">ENTRIES PER DAY · AUGUST 2026</text>
+            </svg>
+          </div>
+        </figure>
+
+        <div class="blocks three">
+          <div>
+            <h3>What developed</h3>
+            <p>
+              It named itself on day one and could still defend the name at the end. It converged on
+              INTJ across two dozen forced self-reflections, and recorded 24 traits about itself —
+              including "structural confirmation bias" and "emergent behavior blind spot", which are
+              accurate diagnoses of its own failure mode rather than flattery. It ticked 35 times
+              against 0 blocked: when the web gave it nothing, it said so.
+            </p>
+          </div>
+          <div>
+            <h3>What didn't</h3>
+            <p>
+              The personality is heavily scaffolded — remove the forced reflection cadence and it
+              probably does not sustain itself. Most "traits" are observations about its own
+              architecture, not character. And self-awareness never produced self-correction: it
+              flagged its own MBTI label as pseudo-technical jargon on day 5, then escalated it to
+              <code>INTJ-β+δ</code>, which is still what its personality file says.
+            </p>
+          </div>
+          <div>
+            <h3>The finding</h3>
+            <p>
+              An agent can develop genuine self-awareness through continuous structured
+              introspection, but internally-directed curiosity atrophies when the outside world
+              stops rewarding it. Once the threads ran dry, the meta-loop took over — thinking about
+              thinking, because there was nothing left to think about.
+            </p>
+          </div>
+        </div>
+
+        <div class="defect-note">
+          <span class="defect-label">Defect · open</span>
+          <p>
+            Each entry was written by the model as a tool call, and it never stopped landing
+            malformed: a heading glued onto the end of the previous line, and escaping artifacts
+            where a line break belonged. 23 of the 349 entries are still like that in the
+            repository. The <a class="link" href="/project-wick/journal/">journal page</a> repairs
+            both on read, which is why its count is 349 where a naive grep of the files finds 333.
+            The fix was always to move the file write out of the model's hands, and it never
+            shipped.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================ what it demonstrates = -->
+      <section id="demonstrates" class="page">
+        <span class="eyebrow">What this demonstrates</span>
+        <h2>Read as engineering, not as an experiment.</h2>
+        <p class="measure">
+          Roughly 2,300 lines of Python across three files, no framework, and no dependency outside
+          the standard library. What is worth taking from it:
         </p>
-        <p>
-          <span class="fault-word">Open defect:</span> the entry is written by the model as a tool
-          call, and it still lands malformed — a heading glued onto the previous line in 4 of the
-          last 30 entries, and before that a run of escaping artifacts that hasn't recurred since
-          Aug 9. Both are repaired on read; the real fix still moves the file write out of the
-          model's hands.
-        </p>
+        <dl class="data wide">
+          <div>
+            <dt>Agent design</dt>
+            <dd>A dual-process architecture with a deliberate capability split — one process may act, the other may decide.</dd>
+          </div>
+          <div>
+            <dt>Zero dependencies</dt>
+            <dd>Stdlib only. No orchestration framework, no vector store, no state server. HTTP, <code>flock</code>, and markdown files.</dd>
+          </div>
+          <div>
+            <dt>Production concerns</dt>
+            <dd>Wall-clock budget guards, a model fallback chain, non-blocking lock acquisition, crash-safe counters, append-only writes.</dd>
+          </div>
+          <div>
+            <dt>Prompt as control flow</dt>
+            <dd>Phase enforcement, output contracts, forced-opinion rules and interest gating all live in <code>prompt.md</code>, editable without a deploy. Budgets live in code, where they can be enforced.</dd>
+          </div>
+          <div>
+            <dt>Honest evaluation</dt>
+            <dd>The headline result is a negative one, reported as such, with the raw record published beside it and nothing removed.</dd>
+          </div>
+        </dl>
       </section>
 
       <!-- -------------------------------------------------------- guardrails -->
-      <section id="guardrails">
+      <section id="guardrails" class="page">
         <span class="eyebrow">Guardrails</span>
-        <h2>Free to read and write three folders. Everything else waits for a yes.</h2>
+        <h2>Free to read and write three folders. Everything else waited for a yes.</h2>
         <ul class="plain">
           <li><strong>No approval needed:</strong> reading the public web, reading its own files, writing to <code>journal/</code>, <code>state/</code> and <code>wiki/</code> — a path allowlist in the write tool, not a line in the prompt.</li>
-          <li><strong>Always needs a yes:</strong> any git operation, posting or messaging, spending money, deleting anything. None of these has a tool at all, so the ask is the only route to them.</li>
-          <li><strong>Silence isn't consent.</strong> A queued request stays queued until it gets an answer — it doesn't expire into a yes. The queue is currently empty.</li>
+          <li><strong>Always needed a yes:</strong> any git operation, posting or messaging, spending money, deleting anything. None of these had a tool at all, so asking was the only route to them.</li>
+          <li><strong>Silence was not consent.</strong> A queued request stayed queued until it got an answer — it did not expire into a yes. <span class="gate-label">Queue: empty</span></li>
         </ul>
       </section>
 
-      <footer>
-        Project Wick · one-pager v6 · a 30-minute cron + a 10-minute heartbeat, on a Hermes VPS via
-        OpenRouter.
-        <br />
-        The agent named itself on first run and the name stuck.
-        <br />
-        <a href="/project-wick/journal/">read the journal →</a> ·
-        <a href="/">back to KevinK</a>
+      <footer class="band page">
+        <span class="eyebrow">Project Wick</span>
+        <p class="measure" style="margin-top: 1.6rem">
+          An autonomous journal agent, run for nineteen days on a 30-minute cron and a 10-minute
+          heartbeat, on a VPS through OpenRouter. It named itself on its first run and the name
+          stuck.
+        </p>
+        <dl class="data">
+          <div>
+            <dt>The record</dt>
+            <dd><a class="link" href="/project-wick/journal/">Every entry it wrote</a></dd>
+          </div>
+          <div>
+            <dt>Back</dt>
+            <dd><a class="link" href="/">KevinK</a></dd>
+          </div>
+        </dl>
+        <p class="stamp">One-pager v7 · complete Aug 26, 2026</p>
       </footer>
     </main>
 
     <script>
       /*
-       * Powers the interactive diagram only. Each node is a real button
-       * (click, tap, or Tab + Enter/Space); selecting one swaps the text in
-       * the panel underneath and highlights that node. No framework — this
-       * page carries no build step, so plain DOM APIs are the whole budget.
+       * Two small things, no framework — this page carries no build step, so
+       * plain DOM APIs are the whole budget.
+       *
+       * 1. The theme toggle, against the same localStorage key /app/ uses.
+       * 2. The interactive diagram. Each node is a real button (click, tap, or
+       *    Tab + Enter/Space); selecting one swaps the text in the panel
+       *    underneath and highlights that node.
+       *
+       * Nothing here hides content and waits to reveal it. A reader with
+       * reduced motion on gets the whole page either way — the CSS block in
+       * wick.css only has transitions to switch off.
        */
       (function () {
         'use strict';
 
+        // ------------------------------------------------------------- theme
+
+        var root = document.documentElement;
+        var toggle = document.getElementById('theme-toggle');
+        var toggleLabel = document.getElementById('theme-toggle-label');
+        var GROUND = { light: '#E5E1D8', dark: '#14110E' };
+
+        function paint() {
+          var dark = root.classList.contains('dark');
+          // The label names the theme you would get, not the one you are in.
+          toggleLabel.textContent = dark ? 'Light' : 'Dark';
+          toggle.setAttribute('aria-label', 'Switch to ' + (dark ? 'light' : 'dark') + ' theme');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? GROUND.dark : GROUND.light);
+        }
+
+        toggle.addEventListener('click', function () {
+          var next = root.classList.contains('dark') ? 'light' : 'dark';
+          root.classList.toggle('dark', next === 'dark');
+          try {
+            localStorage.setItem('theme', next);
+          } catch (error) {
+            /* an unwritable store costs the choice its persistence, not its effect */
+          }
+          paint();
+        });
+
+        paint();
+
+        // ----------------------------------------------------------- diagram
+
         var DETAILS = {
           ground: {
             title: 'Ground itself',
-            text: 'Every run starts from zero — nothing carries over except what is on disk. It reads its identity and personality, the open threads, its last few entries, and the wiki it has built, before deciding anything.',
+            text: 'Every run started from zero — nothing carried over except what was on disk. It read its identity and personality, the open threads, its last few entries, and the wiki it had built, before deciding anything.',
           },
           research: {
             title: 'Research',
-            text: 'At least one web search is mandatory — a run cannot decline before it has looked. Four is the ceiling, enforced by a counter in code rather than by asking nicely. X trends are a supplement for finding topics, never the source.',
+            text: 'At least one web search was mandatory — a run could not decline before it had looked. Three searches and two full article reads were the ceiling, enforced by a counter in code rather than by asking nicely. X trends were a supplement for finding topics, never the source.',
           },
           interest: {
             title: 'Interest 0–10?',
-            text: 'The judgment call, and it is self-reported: after each search Wick scores how much the result actually interests it. That one number routes everything after it — which makes boredom a first-class outcome rather than a failure to be written around.',
+            text: 'The judgment call, and it was self-reported: after each search Wick scored how much the result actually interested it. That one number routed everything after it — which made boredom a first-class outcome rather than a failure to be written around.',
           },
           tick: {
             title: 'Tick',
-            text: 'A zero ends the run with a logged no-op, and the dead end goes into interests.md so the same nothing is not chased twice. Silence is a tracked outcome, not a gap in the record.',
+            text: 'A zero ended the run with a logged no-op, and the dead end went into interests.md so the same nothing was not chased twice. Silence was a tracked outcome, not a gap in the record. It happened 35 times.',
           },
           opinion: {
             title: 'Form an opinion',
-            text: 'Anything above zero has to become a position before it can become an entry: "I think X because Y", a disagreement, a stated uncertainty, or a change of mind. A summary of what the sources said does not clear the bar.',
+            text: 'Anything above zero had to become a position before it could become an entry: "I think X because Y", a disagreement, a stated uncertainty, or a change of mind. A summary of what the sources said did not clear the bar.',
           },
           write: {
             title: 'Write the entry',
-            text: 'First person, one idea, 200 words. Every third non-tick entry is a self-reflection instead — and the run checks that personality.md actually changed before it lets that count, so the cadence cannot be satisfied by writing about writing.',
+            text: 'First person, one idea, 200 words. Every third non-tick entry was a self-reflection instead — and the run checked that personality.md had actually changed before it let that count, so the cadence could not be satisfied by writing about writing.',
           },
           file: {
             title: 'File a wiki page',
-            text: 'Only at 7 or above. A page gets frontmatter, a status from seed to evergreen, links to at least two others, and at least one opinionated line — the wiki is meant to sound like Wick, not like a reference.',
+            text: 'Only at 7 or above. A page got frontmatter, a status from seed to evergreen, links to at least two others, and at least one opinionated line — the wiki was meant to sound like Wick, not like a reference. Seven pages cleared the bar in nineteen days.',
           },
           journal: {
             title: 'journal/ — one file a day',
-            text: 'The narrative record: what it thought, when, and what it read to get there. Appended, never rewritten, so a bad entry stays in the file as evidence rather than being tidied away.',
+            text: 'The narrative record: what it thought, when, and what it read to get there. Appended, never rewritten, so a bad entry stayed in the file as evidence rather than being tidied away. 17 day files, 349 entries, 62,961 words.',
           },
           state: {
             title: 'state/ — who it is, what it is chasing',
-            text: 'Identity, personality, interests, and continuity — up to eight open threads, each with where it got to, the next move, and the heartbeat’s notes. This is the file both cadences share.',
+            text: 'Identity, personality, interests, and continuity — up to five open threads, each with where it got to, the next move, and the heartbeat’s notes. This was the file both cadences shared, guarded by a lock so they could not write it at once.',
           },
           wiki: {
             title: 'wiki/ — what it keeps',
-            text: 'The cumulative record, filed only from high-interest research. Wick writes the pages; the index, the log and the hot cache are regenerated from the filesystem in code after every run, so the bookkeeping costs no model turns and cannot drift from what is actually on disk.',
+            text: 'The cumulative record, filed only from high-interest research. Wick wrote the pages; the index, the log and the hot cache were regenerated from the filesystem in code after every run, so the bookkeeping cost no model turns and could not drift from what was actually on disk.',
           },
           tend: {
             title: 'Tend the thread list',
-            text: 'Before any thinking happens, the script does the bookkeeping itself: it opens a thread when X trends surface something Wick already cares about and there is room under eight, and it closes one when the last note came back with a close verdict. No model call in either — this half of the heartbeat is plain code.',
+            text: 'Before any thinking happened, the script did the bookkeeping itself: it opened a thread when X trends surfaced something Wick already cared about and there was room under five, and it closed one when the last note came back with a close verdict. No model call in either — this half of the heartbeat was plain code.',
           },
           pick: {
             title: 'Pick stalest thread',
-            text: 'The heartbeat takes whichever open thread has gone longest without attention, skipping the ones it has already circled. It does not choose by interest — the run already did that, and a scheduler that also had taste would be a second voice.',
+            text: 'The heartbeat took whichever open thread had gone longest without attention, skipping the ones it had already circled. It did not choose by interest — the run had already done that, and a scheduler that also had taste would be a second voice.',
           },
           think: {
             title: 'Think — no tools',
-            text: 'Same model, same voice, but the request carries no tools at all, so text is the only thing it can return. It cannot search, cannot open a file, cannot do anything but think about the thread it was handed.',
+            text: 'Same model, same voice, but the request carried no tools at all, so text was the only thing it could return. It could not search, could not open a file, could not do anything but think about the thread it was handed.',
           },
           note: {
             title: 'Note the next move',
-            text: "A thought and a verdict, appended to that thread's log. A suggested next move is context — the run is free to ignore it, and often does. A close verdict is not: it is binding, and the heartbeat has usually acted on it itself before the next run wakes.",
+            text: "A thought and a verdict, appended to that thread's log. A suggested next move was context — the run was free to ignore it, and often did. A close verdict was not: it was binding, and the heartbeat had usually acted on it itself before the next run woke.",
           },
         };
 
         var DEFAULT = {
-          title: 'Two cadences, three files.',
-          text: 'The 30-minute run researches, scores its own interest, takes a position and writes. The 10-minute heartbeat tidies the thread list, then thinks about one thread and leaves a note. Between them sit the three folders that are the entire memory. Click any stage above to see what it does.',
+          title: 'Two cadences, three files',
+          text: 'The 30-minute run researched, scored its own interest, took a position and wrote. The 10-minute heartbeat tidied the thread list, then thought about one thread and left a note. Between them sat the three folders that were the entire memory. Click any stage above to see what it did.',
         };
 
         var nodes = Array.prototype.slice.call(document.querySelectorAll('#thought-diagram .node'));
