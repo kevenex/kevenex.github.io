@@ -1,5 +1,6 @@
 import wick from 'virtual:wick-summary';
 import Spread, { type SpreadDatum } from './Spread';
+import WickMark from './WickMark';
 
 const number = (value: number) => value.toLocaleString('en-US');
 
@@ -35,6 +36,7 @@ export default function WickSpread() {
       data={data}
       href="/project-wick/"
       linkLabel="Open Project Wick"
+      mark={<WickMark className="text-oxide" width={28} height={28} />}
     >
       {wick.available && wick.latest.text ? (
         <figure className="max-w-measure border-l border-oxide/40 pl-6">

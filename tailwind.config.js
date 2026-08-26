@@ -22,7 +22,15 @@ export default {
         },
         ink: '#161210',
         muted: '#5C544A', // warm grey-brown, biased toward the accent
-        oxide: '#8C3A2E', // interactive accent — dark madder
+        oxide: {
+          DEFAULT: '#8C3A2E', // interactive accent — dark madder
+          /*
+           * The same accent lifted for the dark colophon. #8C3A2E manages
+           * only 2.4:1 against the ink ground — below the 3:1 a focus or
+           * hover indicator needs — where this reaches 3.4:1.
+           */
+          lift: '#B04A38',
+        },
         amber: {
           DEFAULT: '#8A5714', // live-state text
           dot: '#D9903F', // live-state mark only

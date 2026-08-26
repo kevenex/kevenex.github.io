@@ -18,6 +18,8 @@ interface SpreadProps {
   children: ReactNode;
   /** Project Wick's spread takes the page's one tonal shift. */
   ground?: 'paper' | 'deep';
+  /** A project with its own mark shows it; one without simply does not. */
+  mark?: ReactNode;
 }
 
 /*
@@ -49,6 +51,7 @@ export default function Spread({
   linkLabel,
   children,
   ground = 'paper',
+  mark,
 }: SpreadProps) {
   return (
     <section
@@ -56,9 +59,10 @@ export default function Spread({
       className={`w-full py-32 sm:py-40 ${RAIL_PAD} ${RAIL_PAD_R}`}
       style={ground === 'deep' ? { backgroundImage: DEEP_GROUND } : undefined}
     >
-      <motion.p className="font-mono text-label uppercase text-muted" {...reveal}>
-        Featured work
-      </motion.p>
+      <motion.div className="flex items-center gap-4" {...reveal}>
+        {mark}
+        <p className="font-mono text-label uppercase text-muted">Featured work</p>
+      </motion.div>
 
       <motion.h2
         className="mt-8 font-serif text-spread"
