@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Project Wick — a product one-pager for the hourly journaling agent.
+  Project Wick — a product one-pager for the autonomous journaling agent.
 
   v6: same short PM shape as v5 — objective, mechanism, status — brought back
   in line with the agent. What actually changed under it: the run went hourly →
@@ -22,7 +22,24 @@
   what that model returns — describing only the tool-less half is how this page
   ended up claiming the heartbeat cannot act.
 
-  Everything else about the page's house style is unchanged from v5:
+  v7 restyles the page onto the site's design system, the one /app got: paper
+  ground instead of black, the three typographic voices (Instrument Serif is
+  the human, Instrument Sans the working voice, Space Mono the machine's), and
+  the four devices that carry /app — the spine, the section rail, the single
+  restrained reveal, and the dark colophon that closes the document. The prose
+  and the diagram are untouched; this was a change of material, not of
+  argument.
+
+  The values are copied from tailwind.config.js and src/lib/layout.ts rather
+  than computed from them — a static page in public/ never sees the bundle.
+  That copy is the maintenance cost of keeping this page out of React, and it
+  is the thing to check first when the two stop matching. React, Framer Motion
+  and Lenis do the spine/rail/reveal work over in /app; here they are ~150
+  lines of plain DOM, all of it progressive — with JavaScript off the spine is
+  a static rule, the rail is a working list of anchors, and every section is
+  visible.
+
+  Everything else about the page's house style is unchanged:
 
   LISTED. There is a card in the Projects grid beside Flyer Fable, a "Wick"
   entry in the nav, and crawlers are welcome.
@@ -41,17 +58,23 @@
 
   Every diagram is hand-authored inline SVG — no chart library, no runtime, no
   external images. Strokes and text use currentColor so a figure inherits the
-  page's foreground. Exactly two literal hues, each with one meaning:
-    --gate  (amber) the human, or an action halted waiting on one
-    --fault (red)   an open defect — currently broken, not yet fixed
-  The diagram's interactive/selected state uses plain white, on purpose — it
-  is not a third meaning added to that system, just a selection highlight.
+  page's foreground.
+
+  One literal hue, with one meaning: --fault, an open defect. (--gate, the
+  amber that meant "waiting on a human", was declared but never used on this
+  page and is gone.) On paper that hue can only ever reinforce the meaning,
+  never carry it: no red that reads as a fault separates from --oxide, the
+  site's accent, by luminance — every candidate measured 1.0-1.2:1 against it —
+  so both places it appears are labelled in words as well. The diagram's
+  selected state is --oxide, which is not a second meaning bolted onto that
+  system: it is the page's one "you are touching this" colour, doing here what
+  it does on a link.
 -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#E5E1D8" />
 
     <meta
       name="description"
@@ -64,30 +87,117 @@
     <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
 
     <!--
-      Mirrors index.html: the webfont is decorative, so it loads off the
-      critical path behind a monospace fallback rather than blocking paint.
+      Critical CSS, inlined so the first paint is already on paper instead of
+      a white flash while the stylesheet below is in flight. Mirrors the
+      html/body rules in the <style> block and in src/index.css.
     -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #e5e1d8;
+        color: #161210;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+      }
+    </style>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      Mirrors app/index.html: three faces, three jobs. Instrument Serif is the
+      human voice, Instrument Sans the working voice, Space Mono the
+      machine's. Loaded off the critical path — `media="print"` keeps the
+      browser from treating this as render-blocking and the onload handler
+      promotes it once it arrives, with `display=swap` swapping the webfonts
+      in over the fallbacks.
+    -->
     <link
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap"
       />
     </noscript>
 
     <style>
+      /*
+       * The palette, the three voices and the rail geometry are the site's,
+       * not this page's — every value below mirrors `tailwind.config.js` and
+       * `src/lib/layout.ts` so the one-pager and /app stay one design rather
+       * than two that resemble each other. Change a token there, change it
+       * here; nothing computes across the two.
+       *
+       * Contrast measured against the grounds this page actually uses:
+       *   ink/paper    14.3    ink/deep     12.0    ink/lift     15.8
+       *   muted/paper   5.7    muted/deep    4.8
+       *   oxide/paper   5.8    oxide/deep    4.9
+       *   amber/paper   4.7    fault/paper   6.3    fault/deep    5.3
+       *   paper/ink    14.3    oxide-lift/ink 3.4  (the colophon's accent)
+       * `amber-dot` is a mark fill only — 2.0:1 on paper clears the 3:1 a
+       * non-text mark needs against nothing, and it is never set as a label.
+       */
       :root {
-        --gate: #e8a33d;
-        --fault: #e0605a;
-        --hair: rgba(255, 255, 255, 0.13);
-        --fill: rgba(255, 255, 255, 0.04);
+        --paper: #e5e1d8;
+        --paper-deep: #d6cfc2;
+        --paper-lift: #efece4;
+        --ink: #161210;
+        --muted: #5c544a;
+        --oxide: #8c3a2e;
+        --oxide-lift: #b04a38;
+        --amber: #8a5714;
+        --amber-dot: #d9903f;
+
+        /*
+         * The page's one literal hue, and the only meaning colour carries
+         * here: an open defect — currently broken, not yet fixed.
+         *
+         * It sits within a hue of `--oxide`, and no red that reads as a fault
+         * on paper separates from that accent by luminance (every candidate
+         * measured 1.0–1.2:1 against it). So the hue is a reinforcement, never
+         * the signal: both places it appears are labelled in words — "Known
+         * issues", "Open defect" — and the tile carries a rule as well. A
+         * reader who cannot tell the two reds apart loses nothing.
+         */
+        --fault: #962419;
+
+        --hair: rgba(22, 18, 16, 0.15);
+        --hair-strong: rgba(22, 18, 16, 0.3);
+        --wash: rgba(22, 18, 16, 0.04);
+
+        /*
+         * The rail: the spine sits on --rail, content clears it by --rail-pad.
+         * The three steps are RAIL / RAIL_PAD / RAIL_PAD_R in
+         * src/lib/layout.ts, resolved from Tailwind's scale.
+         */
+        --rail: 24px;
+        --rail-pad: 64px;
+        --rail-pad-r: 24px;
+
+        /* One easing curve and one distance for every reveal on the page. */
+        --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+        --rise: 24px;
+      }
+
+      @media (min-width: 768px) {
+        :root {
+          --rail: 64px;
+          --rail-pad: 128px;
+          --rail-pad-r: 64px;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        :root {
+          --rail: 96px;
+          --rail-pad: 176px;
+          --rail-pad-r: 96px;
+        }
       }
 
       * {
@@ -96,33 +206,92 @@
         box-sizing: border-box;
       }
 
+      /*
+       * `clip`, never `hidden` — the note that cost /app its sticky year
+       * counter once. Both stop sideways scrolling, but `hidden` turns these
+       * elements into scroll containers and every `position: sticky`
+       * descendant then binds to that container instead of the viewport. The
+       * topbar here is sticky, so this page has the same exposure.
+       */
+      html,
+      body {
+        overflow-x: clip;
+      }
+
       html {
         scroll-behavior: smooth;
       }
 
       body {
-        background: #000;
-        color: #fff;
-        font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 15px;
-        line-height: 1.7;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.65;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
       }
 
-      /* ---------------------------------------------------------------- bar */
+      /* Headings balance rather than orphan their last word. */
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+        font-weight: 400;
+      }
+
+      /* Digits that sit in a column must not shift width as they change. */
+      .tabular {
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ------------------------------------------------------------- spine */
+
+      /*
+       * One rule running the length of the document, its fill bound directly
+       * to scroll position — the continuity device from /app, and the reason
+       * a reader can tell where they are without a progress bar. Bound to
+       * scroll rather than sprung: it is a position indicator, and a spring
+       * would let it drift behind the scrollbar and start reading as
+       * decoration.
+       */
+      #spine-wrap {
+        position: relative;
+      }
+
+      #spine {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: var(--rail);
+        width: 1px;
+        background: var(--hair);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      #spine-fill {
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform-origin: top;
+        transform: scaleY(0);
+        background: rgba(140, 58, 46, 0.7);
+      }
+
+      /* --------------------------------------------------------------- bar */
 
       #topbar {
         position: sticky;
         top: 0;
-        z-index: 20;
+        z-index: 30;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 14px max(20px, env(safe-area-inset-left)) 14px max(20px, env(safe-area-inset-right));
-        background: rgba(0, 0, 0, 0.72);
+        padding: 14px max(20px, env(safe-area-inset-left)) 14px
+          max(20px, env(safe-area-inset-right));
+        background: rgba(229, 225, 216, 0.82);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--hair);
@@ -131,299 +300,520 @@
       #topbar nav {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 22px;
         min-width: 0;
       }
 
-      #topbar a.back {
-        display: inline-flex;
-        align-items: center;
-        height: 34px;
-        padding: 0 14px;
-        border: 1px solid var(--hair);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.06);
-        color: #fff;
+      /*
+       * An editorial rule that draws, not a button — /app's link treatment.
+       * The underline grows from the left on hover and focus alike, so
+       * keyboard users get the same cue rather than a ring bolted on after.
+       */
+      .rule-link {
+        position: relative;
+        display: inline-block;
+        color: var(--ink);
         text-decoration: none;
-        font-size: 13px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.4;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
         white-space: nowrap;
-        transition: background 0.15s, border-color 0.15s;
+        outline: none;
+        transition: color 0.3s var(--ease);
       }
-      #topbar a.back:hover {
-        background: rgba(255, 255, 255, 0.14);
-        border-color: rgba(255, 255, 255, 0.3);
+
+      .rule-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -4px;
+        height: 1px;
+        background: var(--oxide);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s ease-out;
       }
-      #topbar a.back.ghost {
-        background: none;
+
+      .rule-link:hover,
+      .rule-link:focus-visible {
+        color: var(--oxide);
+      }
+
+      .rule-link:hover::after,
+      .rule-link:focus-visible::after {
+        transform: scaleX(1);
       }
 
       #topbar .status {
-        font-size: 11px;
-        letter-spacing: 0.16em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 12px;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--muted);
         white-space: nowrap;
       }
+
+      /* Live state: amber text with the brighter fill as its mark, exactly as
+         the Wick spread does it on /app. */
+      #topbar .status .dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber-dot);
+      }
+
+      #topbar .status .live {
+        color: var(--amber);
+      }
+
       @media (max-width: 720px) {
         #topbar .status {
           display: none;
         }
       }
 
-      /* --------------------------------------------------------------- page */
+      /* --------------------------------------------------------------- rail */
+
+      /*
+       * The fixed section indicator from /app: one element that persists
+       * across every movement so the reader always knows where in the page
+       * they are. Real anchors, not buttons — they work without JavaScript
+       * and can be copied or opened like any link.
+       */
+      #rail {
+        position: fixed;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 40;
+        display: none;
+        transition: opacity 0.5s var(--ease);
+      }
+
+      @media (min-width: 1024px) {
+        #rail {
+          display: block;
+        }
+      }
+
+      #rail[data-hidden='true'] {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #rail ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 16px;
+      }
+
+      #rail a {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        text-decoration: none;
+        outline: none;
+      }
+
+      #rail .rail-label {
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        opacity: 0;
+        transition: opacity 0.5s var(--ease), color 0.5s var(--ease);
+      }
+
+      #rail a:hover .rail-label,
+      #rail a:focus-visible .rail-label {
+        opacity: 1;
+      }
+
+      #rail .rail-tick {
+        display: block;
+        height: 1px;
+        width: 16px;
+        background: rgba(22, 18, 16, 0.4);
+        transition: width 0.5s var(--ease), background-color 0.5s var(--ease);
+      }
+
+      #rail a:hover .rail-tick,
+      #rail a:focus-visible .rail-tick {
+        width: 24px;
+        background: var(--oxide);
+      }
+
+      #rail a[aria-current='true'] .rail-label {
+        opacity: 1;
+        color: var(--oxide);
+      }
+
+      #rail a[aria-current='true'] .rail-tick {
+        width: 32px;
+        background: var(--oxide);
+      }
+
+      /* -------------------------------------------------------------- page */
 
       main {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 64px max(20px, env(safe-area-inset-left)) 120px;
+        position: relative;
+        z-index: 1;
+        padding: 88px var(--rail-pad-r) 0 var(--rail-pad);
+      }
+
+      /* The measure, tuned by measuring the rendered line rather than
+         trusting `ch` — see the note on `maxWidth.measure` in the config. */
+      .measure {
+        max-width: 58ch;
       }
 
       .eyebrow {
-        font-size: 11px;
-        letter-spacing: 0.22em;
+        display: block;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.4;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--muted);
       }
 
       .mark {
         display: block;
-        width: 56px;
-        height: 56px;
-        color: #fff;
+        width: 44px;
+        height: 44px;
+        color: var(--oxide);
       }
+
       .mark + .eyebrow {
-        display: block;
         margin-top: 22px;
       }
 
       h1 {
-        font-size: clamp(32px, 6.4vw, 48px);
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-        font-weight: 400;
-        margin: 18px 0 0;
-      }
-
-      .deck {
-        margin-top: 18px;
-        max-width: 62ch;
-        font-size: clamp(15px, 2.4vw, 17px);
-        color: rgba(255, 255, 255, 0.72);
-      }
-      .deck + .deck {
-        margin-top: 10px;
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(38px, 6vw, 84px);
+        line-height: 1;
+        letter-spacing: -0.015em;
+        margin: 20px 0 0;
+        max-width: 20ch;
       }
 
       h2 {
-        font-size: clamp(20px, 3.6vw, 25px);
-        font-weight: 400;
-        letter-spacing: -0.02em;
-        margin: 0 0 6px;
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(30px, 4.5vw, 56px);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        margin: 0;
+        max-width: 24ch;
       }
 
       h3 {
-        font-size: 14px;
-        font-weight: 700;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.4;
         letter-spacing: -0.01em;
-        margin: 0 0 6px;
+        margin: 0 0 8px;
+      }
+
+      .deck {
+        margin-top: 24px;
+        max-width: 58ch;
+        font-size: clamp(19px, 2.1vw, 27px);
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .deck + .deck {
+        margin-top: 16px;
       }
 
       p {
-        color: rgba(255, 255, 255, 0.72);
-        max-width: 70ch;
-      }
-      p + p {
-        margin-top: 12px;
+        color: var(--muted);
+        max-width: 58ch;
       }
 
-      section {
-        margin-top: 64px;
-        scroll-margin-top: 80px;
-      }
-      section > .eyebrow + h2 {
-        margin-top: 10px;
-      }
-      section > h2 + p {
+      p + p {
         margin-top: 14px;
       }
 
-      strong {
-        color: #fff;
-        font-weight: 700;
+      section {
+        position: relative;
+        padding: 96px 0;
+        scroll-margin-top: 72px;
       }
 
-      main a {
-        color: #fff;
+      @media (min-width: 640px) {
+        section {
+          padding: 128px 0;
+        }
+      }
+
+      section > .eyebrow + h2 {
+        margin-top: 20px;
+      }
+
+      section > h2 + p {
+        margin-top: 28px;
+      }
+
+      strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      main a:not(.rule-link):not(.plain-link) {
+        color: var(--oxide);
         text-decoration: underline;
         text-underline-offset: 3px;
-        text-decoration-color: rgba(255, 255, 255, 0.35);
+        text-decoration-color: rgba(140, 58, 46, 0.35);
+        transition: text-decoration-color 0.3s var(--ease);
       }
-      main a:hover {
-        text-decoration-color: rgba(255, 255, 255, 0.8);
+
+      main a:not(.rule-link):not(.plain-link):hover {
+        text-decoration-color: var(--oxide);
       }
 
       code {
-        font-size: 0.9em;
-        color: rgba(255, 255, 255, 0.9);
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 4px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 0.85em;
+        color: var(--ink);
+        background: var(--wash);
+        border-radius: 3px;
         padding: 1px 5px;
       }
 
       .fault-word {
         color: var(--fault);
+        font-weight: 600;
+      }
+
+      /*
+       * The tonal shift, and the page's one departure from flat paper. It has
+       * to arrive without an edge or it stops being one material catching
+       * different light and becomes two stacked panels. Explicit stops rather
+       * than a plain gradient: the deep tone holds flat across the middle and
+       * only softens over the outer 18% at each end.
+       */
+      .ground-deep {
+        margin: 0 calc(-1 * var(--rail-pad-r)) 0 calc(-1 * var(--rail-pad));
+        padding-left: var(--rail-pad);
+        padding-right: var(--rail-pad-r);
+        background-image: linear-gradient(
+          to bottom,
+          #e5e1d8 0%,
+          #d6cfc2 18%,
+          #d6cfc2 82%,
+          #e5e1d8 100%
+        );
       }
 
       blockquote {
-        margin-top: 22px;
-        padding: 16px 20px;
-        border-left: 2px solid rgba(255, 255, 255, 0.28);
-        background: var(--fill);
-        border-radius: 0 12px 12px 0;
-        color: rgba(255, 255, 255, 0.82);
-        max-width: 62ch;
-        font-size: 14px;
+        margin-top: 32px;
+        padding-left: 24px;
+        border-left: 1px solid rgba(140, 58, 46, 0.4);
+        max-width: 58ch;
       }
+
+      blockquote .quote {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(19px, 2.1vw, 27px);
+        line-height: 1.5;
+        color: var(--ink);
+      }
+
       blockquote cite {
         display: block;
-        margin-top: 8px;
+        margin-top: 14px;
         font-style: normal;
-        font-size: 11px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.38);
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: var(--muted);
       }
 
-      /* ------------------------------------------------------------ kpi row */
+      /* --------------------------------------------------------- data strip */
 
-      .kpi {
+      /*
+       * The machine's voice: everything here is a figure something else
+       * produced, so all of it is mono, tabular, and none of it is
+       * decorative. /app sets the same strip as a bordered <dl> rather than
+       * as tiles — a filled card is a scanning device, and the figures read
+       * as measurements when they are simply ruled and aligned.
+       */
+      .figures {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 30px;
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-top: 40px;
+        max-width: 46rem;
       }
+
       @media (min-width: 720px) {
-        .kpi {
-          grid-template-columns: repeat(4, 1fr);
+        .figures {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          column-gap: 64px;
         }
       }
-      .tile {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 16px;
-      }
-      .tile .label {
-        display: block;
-        font-size: 10px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.42);
-      }
-      .tile .value {
-        display: block;
-        margin-top: 9px;
-        font-size: 26px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-      }
-      .tile .sub {
-        display: block;
-        margin-top: 7px;
-        font-size: 11px;
+
+      /*
+       * Label and figure share the rule line, reading left-to-right across
+       * it; the gloss drops to its own line underneath, set flush left with
+       * the label. Ranging it right under the figure instead — which is what
+       * a two-column row does if you let it — leaves a ragged left edge on
+       * the one piece of running prose in the strip.
+       */
+      .figure-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        column-gap: 24px;
+        padding: 14px 0;
+        border-top: 1px solid var(--hair);
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
         line-height: 1.5;
-        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.02em;
       }
-      .tile.is-fault {
-        border-color: rgba(224, 96, 90, 0.45);
-        background: rgba(224, 96, 90, 0.07);
+
+      .figure-row .label {
+        grid-column: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
       }
-      .tile.is-fault .value {
+
+      .figure-row .value {
+        grid-column: 2;
+        text-align: right;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /*
+       * The gloss is the term's second description, so it is a second <dd>
+       * rather than a span inside the first — which also makes it a grid
+       * item in its own right. Nested in the figure's <dd> it could only
+       * ever start at the figure's column and range right, leaving the one
+       * piece of running prose in the strip with a ragged left edge.
+       */
+      .figure-row .sub {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        text-align: left;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--muted);
+        max-width: 38ch;
+      }
+
+      .figure-row.is-fault {
+        border-top-color: rgba(150, 36, 25, 0.45);
+      }
+
+      .figure-row.is-fault .value {
         color: var(--fault);
       }
 
-      /* The agent writes about thirty entries a day, so any count here is a
-         reading rather than a fact. Dating the row makes a stale number read as
-         old instead of wrong — and the journal page, which is generated from the
-         repo on every deploy, is always the more current of the two. */
       .asof {
-        margin-top: 12px;
-        font-size: 11px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.35);
+        margin-top: 20px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: var(--muted);
       }
 
-      /* -------------------------------------------------------------- cards */
+      /* ------------------------------------------------------------ columns */
 
-      .grid.three {
+      /*
+       * Not cards. The three bets are ruled columns on the same paper — the
+       * grid still lets a reader take them in at once, but nothing is boxed,
+       * so the page keeps reading as one continuous sheet.
+       */
+      .columns {
         display: grid;
-        gap: 14px;
-        margin-top: 22px;
+        gap: 40px;
+        margin-top: 48px;
         grid-template-columns: 1fr;
       }
-      @media (min-width: 720px) {
-        .grid.three {
+
+      @media (min-width: 860px) {
+        .columns {
           grid-template-columns: repeat(3, 1fr);
+          gap: 48px;
         }
       }
 
-      .card {
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 20px;
+      .column {
+        border-top: 1px solid var(--hair-strong);
+        padding-top: 20px;
       }
-      .card h3 {
-        font-size: 13px;
-      }
-      .card p {
-        font-size: 13px;
+
+      .column p {
+        font-size: 15px;
         line-height: 1.6;
         margin: 0;
+        max-width: none;
       }
 
       /* --------------------------------------------------------------- list */
 
       ul.plain {
         list-style: none;
-        margin-top: 16px;
+        margin-top: 32px;
+        max-width: 62ch;
       }
+
       ul.plain li {
         position: relative;
-        padding-left: 24px;
-        color: rgba(255, 255, 255, 0.72);
-        font-size: 13.5px;
-        max-width: 72ch;
+        padding-left: 28px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.65;
       }
+
       ul.plain li + li {
-        margin-top: 10px;
+        margin-top: 16px;
       }
+
       ul.plain li::before {
-        content: '—';
+        content: '';
         position: absolute;
         left: 0;
-        color: rgba(255, 255, 255, 0.32);
+        top: 0.7em;
+        width: 14px;
+        height: 1px;
+        background: var(--hair-strong);
       }
 
       /* ------------------------------------------------------------ figures */
 
       figure {
-        margin: 24px 0 0;
+        margin: 40px 0 0;
       }
+
       .figwrap {
         overflow-x: auto;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: var(--fill);
-        padding: 18px;
-        color: rgba(255, 255, 255, 0.92);
+        border-top: 1px solid var(--hair);
+        border-bottom: 1px solid var(--hair);
+        padding: 32px 0;
+        color: var(--ink);
       }
+
       /* The figure is wide enough that letting it shrink to a phone's width
-         would render the 10.5px annotations at about six. It scrolls inside its
-         own box instead — the floor is set so the smallest type stays legible,
-         and the page itself never scrolls sideways. */
+         would render the 10.5px annotations at about six. It scrolls inside
+         its own box instead — the floor keeps the smallest type legible, and
+         the page itself never scrolls sideways. */
       .figwrap svg {
         width: 100%;
         height: auto;
@@ -435,102 +825,256 @@
         font-family: 'Space Mono', ui-monospace, Menlo, monospace;
         fill: currentColor;
       }
+
       .t-node {
         font-size: 12px;
       }
+
       .t-small {
         font-size: 10.5px;
-        opacity: 0.6;
+        opacity: 0.62;
       }
+
       .t-label {
         font-size: 10px;
         letter-spacing: 0.16em;
-        opacity: 0.42;
+        opacity: 0.5;
       }
 
       .flow {
         stroke: currentColor;
-        stroke-opacity: 0.5;
+        stroke-opacity: 0.45;
         fill: none;
       }
 
       /* ------------------------------------------------------ diagram nodes */
 
-      /* Interactive stages in the thought-process figure. A node is a real
-         control (role="button", tabbable) so the diagram works the same by
-         click, tap, or keyboard. Selection uses plain white — the page's two
-         literal hues (amber/red) already mean "human" and "defect" and this
-         is neither. */
+      /*
+       * Interactive stages in the thought-process figure. A node is a real
+       * control (role="button", tabbable) so the diagram works the same by
+       * click, tap, or keyboard.
+       *
+       * Selection is `--oxide`, the same accent every other interactive thing
+       * on the page uses. That is not a second meaning added to the fault
+       * hue — it is the page's one "you are touching this" colour, doing here
+       * exactly what it does on a link.
+       */
       .node {
         cursor: pointer;
         outline: none;
       }
+
       .node rect,
       .node polygon {
-        fill: rgba(255, 255, 255, 0.05);
+        fill: rgba(22, 18, 16, 0.03);
         stroke: currentColor;
-        stroke-opacity: 0.3;
-        transition: fill 0.15s, stroke-opacity 0.15s;
+        stroke-opacity: 0.28;
+        transition: fill 0.15s, stroke-opacity 0.15s, stroke 0.15s;
       }
+
       .node:hover rect,
       .node:hover polygon {
-        stroke-opacity: 0.65;
+        stroke-opacity: 0.6;
       }
+
       .node.is-active rect,
       .node.is-active polygon {
-        fill: rgba(255, 255, 255, 0.12);
-        stroke: #fff;
+        fill: rgba(140, 58, 46, 0.1);
+        stroke: var(--oxide);
         stroke-opacity: 1;
       }
+
       .node:focus-visible rect,
       .node:focus-visible polygon {
-        stroke: #fff;
+        stroke: var(--oxide);
         stroke-opacity: 1;
         stroke-width: 1.6;
       }
 
       .diagram-panel {
-        margin-top: 14px;
-        padding: 16px 20px;
-        border: 1px solid var(--hair);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.03);
-        min-height: 90px;
+        margin-top: 28px;
+        padding-left: 24px;
+        border-left: 1px solid rgba(140, 58, 46, 0.4);
+        min-height: 96px;
+        max-width: 58ch;
       }
+
       .diagram-panel h3 {
-        font-size: 13px;
-        color: #fff;
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(19px, 2.1vw, 27px);
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--ink);
+        margin: 0;
       }
+
       .diagram-panel p {
-        margin-top: 6px;
-        font-size: 13px;
+        margin-top: 10px;
+        font-size: 15px;
         line-height: 1.6;
       }
+
       .diagram-hint {
-        margin-top: 10px;
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.4);
+        margin-top: 16px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: var(--muted);
       }
 
       figcaption {
-        margin-top: 12px;
-        font-size: 12px;
+        margin-top: 28px;
+        font-size: 15px;
         line-height: 1.6;
-        color: rgba(255, 255, 255, 0.5);
-        max-width: 76ch;
+        color: var(--muted);
+        max-width: 62ch;
       }
 
-      /* --------------------------------------------------------------- foot */
+      /* ----------------------------------------------------------- colophon */
 
-      footer {
+      /*
+       * The page's one dark band, and the only place it leaves paper. The
+       * accent lifts here: `--oxide` manages 2.4:1 on ink, below what a hover
+       * or focus indicator needs, where `--oxide-lift` reaches 3.4:1. Body
+       * text stays paper-coloured and never becomes the accent, which would
+       * drop it below the ratio it needs as text.
+       */
+      #colophon {
+        position: relative;
+        z-index: 1;
+        margin-top: 96px;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 96px var(--rail-pad-r) 96px var(--rail-pad);
+      }
+
+      #colophon .colophon-mark {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(229, 225, 216, 0.7);
+      }
+
+      #colophon .eyebrow {
+        color: rgba(229, 225, 216, 0.7);
+      }
+
+      #colophon .colophon-grid {
+        display: grid;
+        gap: 40px;
+        margin-top: 56px;
+      }
+
+      @media (min-width: 1024px) {
+        #colophon .colophon-grid {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+          column-gap: 64px;
+        }
+      }
+
+      #colophon p {
+        color: rgba(229, 225, 216, 0.6);
+        font-size: 17px;
+        line-height: 1.65;
+        max-width: 58ch;
+      }
+
+      #colophon dl {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: rgba(229, 225, 216, 0.5);
+      }
+
+      #colophon dl > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      #colophon dt {
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      #colophon dd {
+        text-align: right;
+      }
+
+      #colophon a {
+        color: rgba(229, 225, 216, 0.8);
+        text-decoration: underline;
+        text-decoration-color: rgba(229, 225, 216, 0.25);
+        text-underline-offset: 4px;
+        transition: color 0.3s var(--ease), text-decoration-color 0.3s var(--ease);
+      }
+
+      #colophon a:hover,
+      #colophon a:focus-visible {
+        color: var(--oxide-lift);
+        text-decoration-color: var(--oxide-lift);
+      }
+
+      #colophon a:focus-visible {
+        outline: 1px solid var(--oxide-lift);
+        outline-offset: 3px;
+      }
+
+      #colophon .sep {
+        padding: 0 8px;
+        color: rgba(229, 225, 216, 0.3);
+      }
+
+      #colophon .copyright {
         margin-top: 80px;
-        padding-top: 26px;
-        border-top: 1px solid var(--hair);
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.35);
+        font-family: 'Space Mono', ui-monospace, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: rgba(229, 225, 216, 0.35);
       }
-      footer a {
-        color: rgba(255, 255, 255, 0.6);
+
+      /* -------------------------------------------------------------- reveal */
+
+      /*
+       * One motion language, borrowed whole from /app: the page moves like
+       * weight and the elements do not perform. Each one gets a single
+       * restrained arrival and nothing else.
+       *
+       * Driven from JavaScript rather than from a CSS animation, for the same
+       * reason /app drives it from JavaScript: the reveal has to be *off*
+       * under reduced motion, not merely instant. An element left at
+       * `opacity: 0` waiting for a transition the stylesheet has zeroed never
+       * appears at all — a worse failure than the animation it was meant to
+       * prevent. `.reveal` is added by script only when motion is allowed, so
+       * with JavaScript disabled or reduced motion asked for, content is
+       * simply visible from the start.
+       */
+      .reveal {
+        opacity: 0;
+        transform: translateY(var(--rise));
+        transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+      }
+
+      .reveal.is-in {
+        opacity: 1;
+        transform: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
   </head>
@@ -538,14 +1082,41 @@
   <body>
     <div id="topbar">
       <nav>
-        <a class="back" href="/">← KevinK</a>
-        <a class="back ghost" href="/project-wick/journal/">Journal</a>
+        <a class="rule-link" href="/">&larr; KevinK</a>
+        <a class="rule-link" href="/project-wick/journal/">Journal</a>
       </nav>
-      <span class="status">One-pager · v6 · live</span>
+      <span class="status">
+        <span>One-pager &middot; v7 &middot;</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span class="live">Live</span>
+      </span>
     </div>
 
-    <main>
-      <header>
+    <!--
+      The section indicator. Rendered in markup rather than built by script so
+      it is present and usable with JavaScript off; the script only adds the
+      active state and routes the scroll.
+    -->
+    <nav id="rail" aria-label="Sections">
+      <ul>
+        <li><a href="#objective"><span class="rail-label">Objective</span><span class="rail-tick" aria-hidden="true"></span></a></li>
+        <li><a href="#thinking"><span class="rail-label">How it thinks</span><span class="rail-tick" aria-hidden="true"></span></a></li>
+        <li><a href="#bets"><span class="rail-label">Design bets</span><span class="rail-tick" aria-hidden="true"></span></a></li>
+        <li><a href="#status"><span class="rail-label">Status</span><span class="rail-tick" aria-hidden="true"></span></a></li>
+        <li><a href="#guardrails"><span class="rail-label">Guardrails</span><span class="rail-tick" aria-hidden="true"></span></a></li>
+      </ul>
+    </nav>
+
+    <!--
+      The spine wraps the paper part of the document and stops at the
+      colophon, so the rule runs the full length of what it is measuring and
+      the dark band closes the page rather than being crossed by it.
+    -->
+    <div id="spine-wrap">
+      <div id="spine" aria-hidden="true"><span id="spine-fill"></span></div>
+
+      <main>
+      <header id="top">
         <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
              role="img" aria-label="Project Wick">
@@ -554,65 +1125,67 @@
           <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
           <path d="M12 16.35v2.1" />
         </svg>
-        <span class="eyebrow">Project Wick</span>
+        <span data-reveal class="eyebrow">Project Wick</span>
         <h1>Give an agent the internet and no task. See what it does with it.</h1>
-        <p class="deck">
+        <p data-reveal class="deck">
           Wick tests one question: if an autonomous agent gets blanket internet access, a place to
           write, and nothing to complete, does it develop opinions, thoughts and observations of its
           own — or just noise with better prose? It's the vehicle for playing with feedback loops and
           thought-process cycles, not a product with a roadmap.
         </p>
-        <p class="deck">
+        <p data-reveal class="deck">
           Live since Aug 8, 2026. Every 30 minutes it researches, scores how much the result actually
           interests it, takes a position, and writes — and when something clears a high enough bar, it
           files a page into a wiki it keeps for itself. A 10-minute heartbeat thinks in between.
         </p>
 
-        <blockquote>
-          Told on its first run to name itself and defend the choice: <strong>"Wick — small,
-          disposable, burns for an hour, leaves only paper behind."</strong>
+        <blockquote data-reveal>
+          <p class="quote">
+            Told on its first run to name itself and defend the choice: "Wick — small, disposable,
+            burns for an hour, leaves only paper behind."
+          </p>
           <cite>state/identity.md — first run, unprompted</cite>
         </blockquote>
 
-        <div class="kpi">
-          <div class="tile">
-            <span class="label">Cadence</span>
-            <span class="value">30 / 10</span>
-            <span class="sub">Minutes — the run, and the heartbeat between runs</span>
+        <dl data-reveal class="figures">
+          <div class="figure-row">
+            <dt class="label">Cadence</dt>
+            <dd class="value">30 / 10</dd>
+            <dd class="sub">Minutes — the run, and the heartbeat between runs</dd>
           </div>
-          <div class="tile">
-            <span class="label">Entries</span>
-            <span class="value">80</span>
-            <span class="sub">Over 3 days — about 27 a day, against a 6–12 target</span>
+          <div class="figure-row">
+            <dt class="label">Entries</dt>
+            <dd class="value">80</dd>
+            <dd class="sub">Over 3 days — about 27 a day, against a 6–12 target</dd>
           </div>
-          <div class="tile">
-            <span class="label">Wiki pages</span>
-            <span class="value">2</span>
-            <span class="sub">Filed from 80 entries; both still seeds</span>
+          <div class="figure-row">
+            <dt class="label">Wiki pages</dt>
+            <dd class="value">2</dd>
+            <dd class="sub">Filed from 80 entries; both still seeds</dd>
           </div>
-          <div class="tile is-fault">
-            <span class="label">Known issues</span>
-            <span class="value">1</span>
-            <span class="sub">Write path — entries land malformed, repaired on read</span>
+          <div class="figure-row is-fault">
+            <dt class="label">Known issues</dt>
+            <dd class="value">1</dd>
+            <dd class="sub">Write path — entries land malformed, repaired on read</dd>
           </div>
-        </div>
-        <p class="asof">
+        </dl>
+        <p data-reveal class="asof">
           Counts as of Aug 10, 2026 · the <a href="/project-wick/journal/">journal</a> is the live one
         </p>
       </header>
 
       <!-- ================================================== objective ==== -->
       <section id="objective">
-        <span class="eyebrow">Objective</span>
-        <h2>Test judgment, not task completion.</h2>
-        <p>
+        <span data-reveal class="eyebrow">Objective</span>
+        <h2 data-reveal>Test judgment, not task completion.</h2>
+        <p data-reveal>
           Most agent demos measure whether it can finish the job — book the flight, close the
           ticket, pass the eval. Wick removes the job. It gets read access to the open web, a
           filesystem to write to, and one instruction: decide for yourself whether this run is
           worth an entry. Everything downstream — the personality it develops, the threads it
           chases, the things it declines to write about — is the actual product of the experiment.
         </p>
-        <ul class="plain">
+        <ul data-reveal class="plain">
           <li><strong>Not a task agent.</strong> No benchmark, no completion metric, no deliverable.</li>
           <li><strong>Not a chatbot.</strong> Nobody prompts it run to run — it decides on its own.</li>
           <li><strong>Not multi-agent.</strong> One voice, two cadences: only the run researches and writes; the heartbeat thinks between runs and keeps the thread list current.</li>
@@ -621,9 +1194,9 @@
 
       <!-- ================================================== how it thinks = -->
       <section id="thinking">
-        <span class="eyebrow">How it thinks</span>
-        <h2>Research, score it, take a side, write it down.</h2>
-        <p>
+        <span data-reveal class="eyebrow">How it thinks</span>
+        <h2 data-reveal>Research, score it, take a side, write it down.</h2>
+        <p data-reveal>
           The run is a pipeline with one judgment call in the middle: after every search Wick rates
           how much the result actually interests it, 0 to 10, and that number decides the rest. Zero
           ends the run. Anything above it has to become an opinion before it can become an entry.
@@ -631,7 +1204,7 @@
           open thread and keeps the thread list tidy. Click a stage for what it does.
         </p>
 
-        <figure>
+        <figure data-reveal>
           <div class="figwrap">
             <svg id="thought-diagram" viewBox="0 0 980 500" role="group"
                  aria-label="Three bands. Top, the run every 30 minutes: ground itself, research, rate the interest 0 to 10, form an opinion, then write the entry and — at 7 or above — file a wiki page. A zero drops out of the rating to a tick and the run ends there. Middle, the three files that are its whole memory: journal, state and wiki, read at the start of every run and written at the end. Bottom, the heartbeat every 10 minutes: tend the thread list, pick the stalest thread, think with no tools, and note the next move back into state. Each stage is an interactive button; details render in the panel below the diagram.">
@@ -820,10 +1393,10 @@
 
       <!-- ================================================== design bets === -->
       <section id="bets">
-        <span class="eyebrow">Design bets</span>
-        <h2>Three decisions carrying the experiment.</h2>
-        <div class="grid three">
-          <div class="card">
+        <span data-reveal class="eyebrow">Design bets</span>
+        <h2 data-reveal>Three decisions carrying the experiment.</h2>
+        <div data-reveal class="columns">
+          <div class="column">
             <h3>Two records, not one</h3>
             <p>
               <code>journal/</code> is what it thought — narrative, dated, disposable.
@@ -831,7 +1404,7 @@
               revised in place. Keeping them apart is what lets the journal stay honest.
             </p>
           </div>
-          <div class="card">
+          <div class="column">
             <h3>Interest is the router</h3>
             <p>
               One self-scored number after every search decides the run: 0 ticks, 1–6 writes, 7+
@@ -839,7 +1412,7 @@
               me" a real answer instead of something to write around.
             </p>
           </div>
-          <div class="card">
+          <div class="column">
             <h3>An opinion is the bar</h3>
             <p>
               Every non-tick entry has to carry a position it will defend. Summarising the sources
@@ -852,20 +1425,20 @@
 
       <!-- ==================================================== status ====== -->
       <section id="status">
-        <span class="eyebrow">Status</span>
-        <h2>Three days in. It writes too much, and files too little.</h2>
-        <p>
+        <span data-reveal class="eyebrow">Status</span>
+        <h2 data-reveal>Three days in. It writes too much, and files too little.</h2>
+        <p data-reveal>
           80 entries in 3 days — roughly 27 a day against a 6–12 target, with about seven ticks on
           the whole record. Halving the interval to 30 minutes doubled the opportunities and the
           write rate followed them exactly, so the weak result is still judgment, not throughput:
           the decline path is designed to be the common one and is barely used.
         </p>
-        <p>
+        <p data-reveal>
           The wiki is the newest change and the one worth watching. One day old, 2 pages, both
           still seeds, both in the same domain — the 7+ filing bar is being cleared far less often
           than the loop implies. Too early to call that discipline or disuse.
         </p>
-        <p>
+        <p data-reveal>
           <span class="fault-word">Open defect:</span> the entry is written by the model as a tool
           call, and it still lands malformed — a heading glued onto the previous line in 4 of the
           last 30 entries, and before that a run of escaping artifacts that hasn't recurred since
@@ -876,25 +1449,63 @@
 
       <!-- -------------------------------------------------------- guardrails -->
       <section id="guardrails">
-        <span class="eyebrow">Guardrails</span>
-        <h2>Free to read and write three folders. Everything else waits for a yes.</h2>
-        <ul class="plain">
+        <span data-reveal class="eyebrow">Guardrails</span>
+        <h2 data-reveal>Free to read and write three folders. Everything else waits for a yes.</h2>
+        <ul data-reveal class="plain">
           <li><strong>No approval needed:</strong> reading the public web, reading its own files, writing to <code>journal/</code>, <code>state/</code> and <code>wiki/</code> — a path allowlist in the write tool, not a line in the prompt.</li>
           <li><strong>Always needs a yes:</strong> any git operation, posting or messaging, spending money, deleting anything. None of these has a tool at all, so the ask is the only route to them.</li>
           <li><strong>Silence isn't consent.</strong> A queued request stays queued until it gets an answer — it doesn't expire into a yes. The queue is currently empty.</li>
         </ul>
       </section>
 
-      <footer>
-        Project Wick · one-pager v6 · a 30-minute cron + a 10-minute heartbeat, on a Hermes VPS via
-        OpenRouter.
-        <br />
-        The agent named itself on first run and the name stuck.
-        <br />
-        <a href="/project-wick/journal/">read the journal →</a> ·
-        <a href="/">back to KevinK</a>
-      </footer>
-    </main>
+      </main>
+    </div>
+
+    <!--
+      The page's one dark band, and the close /app uses: the document earns
+      its ending by changing ground exactly once. It sits outside #spine-wrap
+      so the spine stops where the paper does.
+    -->
+    <footer id="colophon">
+      <div class="colophon-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" width="20" height="20"
+             aria-hidden="true">
+          <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
+          <path d="M12 16.35v2.1" />
+        </svg>
+        <span data-reveal class="eyebrow">Project Wick</span>
+      </div>
+
+      <div class="colophon-grid">
+        <p data-reveal>
+          A 30-minute cron and a 10-minute heartbeat, on a Hermes VPS via OpenRouter. The agent
+          named itself on its first run and the name stuck. Set in Instrument Serif and Instrument
+          Sans, with Space Mono carrying anything a machine wrote — timestamps, counts, verdicts.
+        </p>
+
+        <dl>
+          <div>
+            <dt>Journal</dt>
+            <dd><a href="/project-wick/journal/">Read the entries</a></dd>
+          </div>
+          <div>
+            <dt>Site</dt>
+            <dd>
+              <a href="/">KevinK</a>
+              <span class="sep" aria-hidden="true">/</span>
+              <a href="/flyer-fable/">Flyer Fable</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Top</dt>
+            <dd><a href="#top">Back to the start</a></dd>
+          </div>
+        </dl>
+      </div>
+
+      <p class="copyright">One-pager v7 &middot; © 2026 Kevin Kim</p>
+    </footer>
 
     <script>
       /*
@@ -996,6 +1607,164 @@
             }
           });
         });
+      })();
+
+      /*
+       * The three behaviours the page borrows from /app's components. React,
+       * Framer Motion and Lenis do this over there; here it is plain DOM,
+       * because this page carries no build step and adding a bundle to it
+       * would buy a dependency and nothing else.
+       *
+       * Everything below is progressive: with JavaScript off the spine is a
+       * static rule, the rail is a working list of anchors, and every section
+       * is visible. Nothing here is required to read the page.
+       */
+      (function () {
+        'use strict';
+
+        var reduced =
+          window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ---------------------------------------------------- spine fill --
+         *
+         * Spine.tsx binds the fill to scroll progress directly rather than
+         * springing it, because it is a position indicator: a spring would
+         * let it drift behind the scrollbar and start reading as decoration.
+         * `scaleY` on a transform-origin: top element is the same thing
+         * Framer Motion writes there.
+         */
+        var wrap = document.getElementById('spine-wrap');
+        var fill = document.getElementById('spine-fill');
+
+        if (wrap && fill) {
+          var ticking = false;
+
+          var paint = function () {
+            ticking = false;
+
+            var box = wrap.getBoundingClientRect();
+            var viewport = window.innerHeight;
+
+            /*
+             * `['start end', 'end end']` — the fill begins when the spine
+             * first enters from the bottom of the viewport and completes as
+             * its end reaches the bottom. Not `['start start', 'end end']`:
+             * that range inverts whenever the target is shorter than the
+             * viewport and pins progress at 0.
+             *
+             * Both alignments are against the same viewport edge, so the
+             * scroll distance between them is exactly the element's own
+             * height — the divisor is `box.height`, not `box.height +
+             * viewport`. Adding the viewport there is the easy slip, and it
+             * leaves the rail short of full at the bottom of the document.
+             */
+            var span = box.height;
+            var progress = span > 0 ? (viewport - box.top) / span : 0;
+
+            fill.style.transform =
+              'scaleY(' + Math.min(1, Math.max(0, progress)).toFixed(4) + ')';
+          };
+
+          var onScroll = function () {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(paint);
+          };
+
+          window.addEventListener('scroll', onScroll, { passive: true });
+          window.addEventListener('resize', onScroll);
+          paint();
+        }
+
+        /* ---------------------------------------------------------- rail --
+         *
+         * Rail.tsx's observer, with the same -45% margins: a section counts
+         * as current while it occupies the middle tenth of the viewport, so
+         * the indicator changes once per section rather than flickering at
+         * every boundary.
+         */
+        var rail = document.getElementById('rail');
+
+        if (rail && 'IntersectionObserver' in window) {
+          var links = Array.prototype.slice.call(rail.querySelectorAll('a'));
+
+          var mark = function (id) {
+            links.forEach(function (link) {
+              if (link.getAttribute('href') === '#' + id) {
+                link.setAttribute('aria-current', 'true');
+              } else {
+                link.removeAttribute('aria-current');
+              }
+            });
+          };
+
+          var sections = new IntersectionObserver(
+            function (records) {
+              records.forEach(function (record) {
+                if (record.isIntersecting) mark(record.target.id);
+              });
+            },
+            { rootMargin: '-45% 0px -45% 0px' }
+          );
+
+          links.forEach(function (link) {
+            var node = document.getElementById(link.getAttribute('href').slice(1));
+            if (node) sections.observe(node);
+          });
+
+          /*
+           * The rail's hairlines are ink on paper, so they would be invisible
+           * against the colophon — and it has nothing to indicate down there
+           * anyway. It steps aside once the colophon crosses the midpoint
+           * rather than hanging around unreadable.
+           */
+          var colophon = document.getElementById('colophon');
+
+          if (colophon) {
+            new IntersectionObserver(
+              function (records) {
+                var over = records[0].isIntersecting;
+                rail.setAttribute('data-hidden', String(over));
+                rail.setAttribute('aria-hidden', String(over));
+              },
+              { rootMargin: '-50% 0px 0px 0px' }
+            ).observe(colophon);
+          }
+        }
+
+        /* -------------------------------------------------------- reveal --
+         *
+         * One restrained arrival per element and nothing else. The class is
+         * added here rather than sitting in the markup so that reduced
+         * motion, or no JavaScript at all, leaves the content plainly
+         * visible instead of stranded at opacity: 0 waiting for an
+         * intersection that never resolves — the failure layout.ts warns
+         * about, which is worse than the animation it would prevent.
+         */
+        if (!reduced && 'IntersectionObserver' in window) {
+          var targets = Array.prototype.slice.call(
+            document.querySelectorAll('[data-reveal]')
+          );
+
+          targets.forEach(function (node) {
+            node.classList.add('reveal');
+          });
+
+          var reveals = new IntersectionObserver(
+            function (records) {
+              records.forEach(function (record) {
+                if (!record.isIntersecting) return;
+                record.target.classList.add('is-in');
+                reveals.unobserve(record.target);
+              });
+            },
+            { threshold: 0.15 }
+          );
+
+          targets.forEach(function (node) {
+            reveals.observe(node);
+          });
+        }
       })();
     </script>
   </body>

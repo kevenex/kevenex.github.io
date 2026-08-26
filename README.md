@@ -95,10 +95,28 @@ animated, or a reader who asked for no motion gets content that never appears.
 
 ## Project Wick (`/project-wick/`)
 
-A one-pager for an hourly journaling agent, plus a journal page at
+A one-pager for the journaling agent, plus a journal page at
 `/project-wick/journal/` rendering what the agent has actually written,
 mirrored at build time from [`kevenex/project-wick`](https://github.com/kevenex/project-wick)
 by `scripts/sync-wick-journal.mjs` (run by hand with `npm run sync:wick`).
+
+The one-pager is on the same design system as the rest of the site — paper
+ground, the three voices, the spine, the section rail, the one reveal, the dark
+colophon — but it is a static page in `public/`, so it never sees the bundle.
+Its tokens and rail geometry are **copied** from `tailwind.config.js` and
+`src/lib/layout.ts`, and its spine/rail/reveal are ~150 lines of plain DOM
+standing in for Framer Motion and Lenis. Change a token or a rail step in
+`src/` and that page does not follow — update the `:root` block at the top of
+`public/project-wick/index.html` in the same commit. That copy is the price of
+keeping a prose page out of React; the alternative was a bundle dependency for
+one document.
+
+Everything it borrows is progressive: with JavaScript off the spine is a static
+rule, the rail is a working list of anchors, and every section is visible. The
+reveal class is added from script for the reason `lib/layout.ts` gives — an
+element left at `opacity: 0` waiting for an intersection a stylesheet cannot
+influence never appears at all, which is worse than the motion it was meant to
+prevent.
 
 The home page spread prints that journal's real figures — entries, words, last
 run, source commit — via the `wick-summary` Vite plugin in `vite.config.ts`,
