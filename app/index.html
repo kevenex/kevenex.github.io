@@ -4,58 +4,50 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#E5E1D8" />
     <meta
       name="description"
-      content="KevinK — the personal site of Kevin Kim. Projects, experiments, and things built out of curiosity."
+      content="Kevin Kim — product manager. Two projects, a career, and a way of working."
     />
-    <title>Personal Site</title>
+    <title>Kevin Kim</title>
 
     <!--
-      Critical CSS, inlined so the first paint is already the dark theme
-      instead of a white flash while the bundled stylesheet is in flight.
-      Mirrors the html/body rules in src/index.css.
+      Critical CSS, inlined so the first paint is already on paper instead of
+      a white flash while the bundled stylesheet is in flight. Mirrors the
+      html/body rules in src/index.css.
     -->
     <style>
       html,
       body {
         margin: 0;
-        background: #000;
-        color: #fff;
-        font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: #e5e1d8;
+        color: #161210;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
       }
     </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
     <!--
       Loaded off the critical path: `media="print"` keeps the browser from
-      treating these as render-blocking, and the onload handler promotes them
-      to `all` once they arrive. Both webfont stacks are decorative — the
-      fallbacks above render immediately and `display=swap` swaps them in.
+      treating this as render-blocking, and the onload handler promotes it to
+      `all` once it arrives. The fallbacks above render immediately and
+      `display=swap` swaps the webfonts in.
+
+      Three faces, three jobs: Instrument Serif is the human voice, Instrument
+      Sans the working voice, Space Mono the machine's.
     -->
     <link
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Anton+SC&amp;display=swap"
-    />
-    <link
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Anton+SC&amp;display=swap"
-      />
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
       />
     </noscript>
   </head>

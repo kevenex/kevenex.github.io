@@ -1,34 +1,37 @@
-import { useEffect, useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import CinematicText from './components/CinematicText';
-import Projects from './components/Projects';
-import Technology from './components/Technology';
-import Architecture from './components/Architecture';
-import Footer from './components/Footer';
+import Arrival from './components/Arrival';
+import Colophon from './components/Colophon';
+import Contact from './components/Contact';
+import FlyerSpread from './components/FlyerSpread';
+import Position from './components/Position';
+import Practice from './components/Practice';
+import Rail from './components/Rail';
+import Spine from './components/Spine';
+import WickSpread from './components/WickSpread';
+import { LenisProvider } from './lib/lenis';
 
-const ENTRANCE_DELAY_MS = 800;
-
+/*
+ * One continuous canvas: paper throughout, with the spine running from the
+ * end of the hero to the start of the colophon so no movement inside it
+ * reads as a section boundary.
+ */
 export default function App() {
-  const [entranceComplete, setEntranceComplete] = useState(false);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setEntranceComplete(true), ENTRANCE_DELAY_MS);
-    return () => window.clearTimeout(timeout);
-  }, []);
-
   return (
-    <div
-      className="min-h-screen w-full bg-black text-white"
-      style={{ fontFamily: '"Space Mono", monospace' }}
-    >
-      <Navbar entranceComplete={entranceComplete} />
-      <Hero entranceComplete={entranceComplete} />
-      <CinematicText />
-      <Projects />
-      <Technology />
-      <Architecture />
-      <Footer />
-    </div>
+    <LenisProvider>
+      <Rail />
+
+      <main className="min-h-screen w-full bg-paper text-ink">
+        <Arrival />
+
+        <Spine>
+          <Position />
+          <WickSpread />
+          <FlyerSpread />
+          <Practice />
+          <Contact />
+        </Spine>
+
+        <Colophon />
+      </main>
+    </LenisProvider>
   );
 }

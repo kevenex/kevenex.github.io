@@ -1,23 +1,14 @@
 /*
- * The Google Fonts and Bootstrap Icons stylesheets are linked from index.html
- * rather than `@import`ed here. An `@import` inside the bundle turns them into
- * a render-blocking chain — the browser cannot discover them until it has
- * downloaded and parsed our own CSS — so they are loaded non-blockingly from
+ * The Google Fonts stylesheet is linked from index.html rather than
+ * `@import`ed here. An `@import` inside the bundle turns it into a
+ * render-blocking chain — the browser cannot discover it until it has
+ * downloaded and parsed our own CSS — so it is loaded non-blockingly from
  * the document head instead.
  */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --font-sans: 'Space Mono', monospace;
-  --font-serif: 'Space Mono', monospace;
-  --font-mono: 'Space Mono', monospace;
-  --font-display: 'Space Mono', monospace;
-  --font-body: 'Space Mono', monospace;
-  --font-heading: 'Space Mono', monospace;
-}
 
 * {
   margin: 0;
@@ -27,13 +18,35 @@
 
 html,
 body {
-  background: #000;
-  color: #fff;
-  overflow-x: hidden;
-  overflow-y: auto;
+  background: #e5e1d8;
+  color: #161210;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+}
+
+/*
+ * `clip`, never `hidden`. Both stop sideways scrolling, but `overflow:hidden`
+ * turns these elements into scroll containers, and every `position: sticky`
+ * descendant then binds to that container instead of the viewport and quietly
+ * stops sticking — which is exactly what happened to the timeline's year
+ * counter. `clip` creates no scroll container, so sticky keeps working.
+ */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Headings balance rather than orphan their last word. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Digits that sit in a column must not shift width as they change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 @layer utilities {
@@ -55,7 +68,12 @@ body {
   }
 }
 
-/* Lenis smooth scroll */
+/*
+ * Lenis smooth scroll. These class names are Lenis v1's own — the library
+ * applies them to <html>. Do not remove: without the `scroll-behavior: auto`
+ * override the browser's native smooth scrolling fights Lenis for control of
+ * the same scroll position.
+ */
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
@@ -66,4 +84,20 @@ body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/*
+ * One motion language for the whole page: the page moves like weight, the
+ * elements do not perform. Under reduced motion no Lenis instance is
+ * constructed at all (see useLenis), and every reveal collapses to a fade.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

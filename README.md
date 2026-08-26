@@ -1,101 +1,156 @@
 # KevinK
 
-Personal site for **Kevin Kim**. Black canvas, white type, full-viewport video
-backgrounds, and Space Mono throughout. The homepage is a single scrolling page;
-projects live as their own pages under `public/`.
+Personal site for **Kevin Kim**. Paper ground, three typographic voices, and one
+continuous scroll. The home page is a single page; projects live as their own
+static pages under `public/`.
+
+## The design, in one paragraph
+
+The page is paper-quiet — a greige ground, serif gravitas, generous space — and
+the content is machines: an agent that wakes hourly and writes, a flight engine
+over real terrain, enterprise data migrations. That tension is the identity.
+"Modern" is carried by register rather than by colour: mono data, live
+timestamps and a hard grid do that work while the palette stays warm and analog.
 
 ## Stack
 
 - React 18 + TypeScript
-- Vite 5
+- Vite 8
 - Tailwind CSS 3
 - Framer Motion 12
+- Lenis (smooth scroll)
 
 ## Structure
 
 ```
 public/
-  videos/                  Four background loops (1080p H.264, ~5.3 MB total)
   flyer-fable/             Standalone flight game — see below
-    index.html             The whole game: markup, styles, scene, flight loop
-    three.min.js           Three.js r0.160.0, self-hosted
-  project-wick/            Product one-pager — see below
-    index.html             The whole page: copy, styles, one interactive SVG diagram
-    wick.svg               The project mark, as the favicon for both Wick pages
-    journal.json           Generated: the agent's journal, mirrored at build time
-    journal/
-      index.html           Reader for journal.json — entries plus the state files
+  project-wick/            Product one-pager + the agent's journal — see below
+  chloe/                   Standalone pet game; reachable by URL, unlinked
   favicon.svg
 scripts/
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
+  sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
 src/
-  App.tsx                  Page composition + entrance timing
-  index.css                Fonts, Tailwind, global reset, Lenis classes
-  constants/videos.ts      Background video paths
+  App.tsx                  Page composition
+  index.css                Fonts, Tailwind, reset, Lenis classes
+  lib/
+    layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
+    lenis.tsx              The single Lenis instance
+    lenis-context.ts       Context + useScrollTo
+    contact.ts             Contact validation and delivery (see Contact, below)
   components/
-    Navbar.tsx             Fixed nav with expanding menu capsule
-    Hero.tsx               Mouse-scrubbed hero video + scramble headings
-    CinematicText.tsx      Scroll-driven 3D text section
-    Projects.tsx           Translucent project cards linking to sub-pages
-    Technology.tsx         Adaptive intelligence: an interactive career roadmap
-    Architecture.tsx       Three-layer breakdown (no video)
-    Footer.tsx             Split video/footer layout
-    ScrambleIn.tsx         Entrance reveal text animation
-    ScrambleText.tsx       Hover-driven scramble text
-    SquashHamburger.tsx    Animated hamburger/close icon
+    Arrival.tsx            Typographic hero
+    Position.tsx           The thesis
+    Spread.tsx             Shared layout for a featured project
+    WickSpread.tsx         Project Wick, with figures read at build time
+    FlyerSpread.tsx        Flyer Fable
+    Practice.tsx           Ascending career timeline
+    Contact.tsx            Name / email / message
+    Colophon.tsx           The closing dark band
+    Spine.tsx              The rule that runs the page
+    Rail.tsx               Fixed section indicator
+    ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
-    WickMark.tsx           Project Wick's mark, for the Projects card
+    WickMark.tsx           Project Wick's mark
 ```
 
-## Background video
+## Design system
 
-The four loops are served from `public/videos/` rather than the CloudFront URLs
-they originated from, so the site does not break if those generated-asset links
-expire. Each was re-encoded to 1080p H.264 CRF 26 with `+faststart`, taking the
-set to ~5.3 MB total (SSIM 0.975–0.987 against the sources) — the originals ran
-at 5–17 Mbps, far above what a muted background loop needs.
+**Three voices, each with a job.** Instrument Serif is the human (headlines,
+ideas). Instrument Sans is the working voice (body, UI). Space Mono is the
+machine's — timestamps, commit hashes, coordinates, counts, years. Anything a
+machine produced is mono; anything a person wrote is not.
 
-The Adaptive Intelligence section (`Technology.tsx`) dropped its loop entirely —
-an interactive career timeline reads better against a plain background than
-a video underneath it.
+**Colour** lives in `tailwind.config.js`, with the measured contrast ratio
+recorded beside each token. Every pairing used on the page clears its threshold;
+`amber` is darkened from Project Wick's brighter tone specifically so it holds
+4.5:1 as text, and `oxide-lift` exists because the base accent manages only
+2.4:1 against the dark colophon.
 
-To swap a clip, drop the replacement in `public/videos/` under the same name.
-Re-encode anything large first:
+**The spine** (`Spine.tsx`) is the continuity device: one rule running the
+length of the document's middle, which in `Practice.tsx` grows nodes and becomes
+the career timeline. Both use the `RAIL` constant in `lib/layout.ts`, so they
+share one axis rather than resembling each other. Change `RAIL` or `RAIL_PAD`
+and both follow.
 
-```bash
-ffmpeg -i input.mp4 -c:v libx264 -crf 26 -preset slow \
-       -pix_fmt yuv420p -movflags +faststart -an public/videos/hero.mp4
-```
+**Motion:** the page moves like weight; the elements do not perform. All the
+liquidity is in the scroll (Lenis) and the spine's scroll-linked fill. Elements
+get one restrained reveal and nothing else.
 
-## Flyer Fable (`/flyer-fable/`)
+## Two things that will bite if you forget them
 
-A stylized first-person flight over a low-poly South Korea, reachable from the
-nav menu. Vendored from [kevenex/korea-flyer](https://github.com/kevenex/korea-flyer)
-at commit `a53bfec`, with local additions — self-hosted Three.js, touch
-controls, a compact mobile layout — each marked with a `SITE:` comment so they
-survive a re-copy from upstream. Lives in `public/` as a self-contained static
-page, outside React and the SPA.
+**`overflow-x` must stay `clip`, never `hidden`.** Both stop sideways scrolling,
+but `hidden` turns `html`/`body` into scroll containers, and every
+`position: sticky` descendant then binds to that container instead of the
+viewport and silently stops sticking. This already cost the timeline's year
+counter once.
+
+**Reduced motion has to be handled in JavaScript, not CSS.** The stylesheet's
+`prefers-reduced-motion` block zeroes transition durations, which does nothing
+to Framer Motion — it animates opacity by writing inline styles, so an element
+sits at `opacity: 0` waiting for an intersection the CSS cannot influence. Use
+`useReveal()` and `usePrefersReducedMotion()` from `lib/layout.ts` for anything
+animated, or a reader who asked for no motion gets content that never appears.
 
 ## Project Wick (`/project-wick/`)
 
-A product one-pager for an hourly journaling agent, paired with a journal page
-at `/project-wick/journal/` that renders what the agent has actually written,
+A one-pager for an hourly journaling agent, plus a journal page at
+`/project-wick/journal/` rendering what the agent has actually written,
 mirrored at build time from [`kevenex/project-wick`](https://github.com/kevenex/project-wick)
-by `scripts/sync-wick-journal.mjs` into `public/project-wick/journal.json` (run
-by hand with `npm run sync:wick`). Both pages are static HTML in `public/`, no
-React, sharing a hand-drawn mark and a two-color system: amber for the human,
-red for an open defect.
+by `scripts/sync-wick-journal.mjs` (run by hand with `npm run sync:wick`).
+
+The home page spread prints that journal's real figures — entries, words, last
+run, source commit — via the `wick-summary` Vite plugin in `vite.config.ts`,
+which reads `journal.json` at build time and emits only the handful of values
+the spread shows. Importing the file directly would inline ~117KB to display
+five numbers. A missing or malformed journal costs the spread its figures, not
+the site its build.
+
+## Flyer Fable (`/flyer-fable/`)
+
+A stylized first-person flight over a low-poly South Korea. Vendored from
+[kevenex/korea-flyer](https://github.com/kevenex/korea-flyer) at commit
+`a53bfec`, with local additions each marked with a `SITE:` comment so they
+survive a re-copy from upstream. Self-contained static page in `public/`,
+outside React and the SPA.
+
+The figures on its spread come from that page's own source: `KM = 10` sets true
+horizontal scale, Jeju sits 451 km from the Seoul origin, and Hallasan's 1,947 m
+renders as 97 units — five times true scale.
+
+## Contact
+
+The form is complete; delivery is not. `submitContact` in `src/lib/contact.ts`
+reports whether a message was delivered and today always answers no, so the UI
+cannot claim otherwise. A notice above the form says so before anyone spends
+time writing.
+
+When wiring it up: the site is served by the Cloudflare Worker configured in
+`wrangler.jsonc`, so a `POST /api/contact` handler can hold the credential as a
+`wrangler secret`. **No credential can live in the bundle** — `dist/` is public.
+And submissions must not land in this repository, which is public; prefer issues
+in a private repo, which also gets you email notification for free.
+
+## Before the Coming Soon gate comes off
+
+`/` is a password gate (`ComingSoon.tsx`); the site itself is at `/app/`, which
+redirects back if `localStorage` has no access token. Deferred by decision, not
+forgotten:
+
+1. **Wire the contact form, or stop it claiming to send.** See above.
+2. **Fill the two plate slots** in the project spreads with captures of the
+   running work — the Flyer terrain, the Wick journal. The spreads are designed
+   to read as finished without them, which is why this is not urgent.
+3. Re-check contrast and focus states once real imagery is in.
 
 ## Notes
 
-- The hero video never autoplays. It sits paused at `0` and is scrubbed by horizontal
-  pointer movement; seeks are chained through the `seeked` event so frames are not
-  dropped mid-decode.
-- Every full-height section uses `h-screen h-[100dvh]` so mobile browser chrome does not
-  clip the layout.
-- Deployment is handled by `.github/workflows/deploy.yml`, which builds the site and
-  publishes `dist/` to GitHub Pages. It runs on pushes to `master`, once a day on a
-  schedule (to pick up the Project Wick journal), and can be started by hand from the
-  Actions tab (`workflow_dispatch`).
-- The custom domain lives in the repository's Pages settings. Because the site is
-  published from a workflow rather than a branch, no `CNAME` file is needed in the repo.
+- Every full-height section uses `h-screen-dvh` so mobile browser chrome does
+  not clip the layout.
+- Deployment is handled by `.github/workflows/deploy.yml`, which builds the site
+  and publishes `dist/` to GitHub Pages. It runs on pushes to `master`, once a
+  day on a schedule (to pick up the Project Wick journal and the Chloe build),
+  and can be started by hand from the Actions tab.
+- The custom domain lives in the repository's Pages settings. Because the site
+  is published from a workflow rather than a branch, no `CNAME` file is needed.
