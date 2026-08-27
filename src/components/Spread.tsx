@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
+import { useMagnetic } from '../lib/pointer';
 
 export interface SpreadDatum {
   label: string;
@@ -62,6 +63,13 @@ export default function Spread({
   mark,
 }: SpreadProps) {
   const reveal = useReveal();
+
+  /*
+   * The link leans toward the pointer and the cursor prints where it goes.
+   * Both are fine-pointer only and both no-op under reduced motion, so the
+   * anchor below is unchanged for anyone the hover layer does not reach.
+   */
+  const link = useMagnetic<HTMLAnchorElement>();
 
   return (
     <section
@@ -128,7 +136,9 @@ export default function Spread({
        */}
       <motion.div className="mt-14" {...reveal} transition={{ ...reveal.transition, delay: 0.25 }}>
         <a
+          ref={link}
           href={href}
+          data-cursor-label={href}
           className="group inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
         >
           <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">

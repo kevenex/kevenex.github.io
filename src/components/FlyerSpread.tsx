@@ -1,3 +1,4 @@
+import FlightPlate from './FlightPlate';
 import Spread, { type SpreadDatum } from './Spread';
 
 /*
@@ -30,6 +31,8 @@ export default function FlyerSpread() {
       data={DATA}
       href="/flyer-fable/"
       linkLabel="Open Flyer Fable"
-    />
+    >
+      <FlightPlate />
+    </Spread>
   );
 }

@@ -1,6 +1,7 @@
 import Arrival from './components/Arrival';
 import Colophon from './components/Colophon';
 import Contact from './components/Contact';
+import Cursor from './components/Cursor';
 import FlyerSpread from './components/FlyerSpread';
 import Position from './components/Position';
 import Practice from './components/Practice';
@@ -18,6 +19,7 @@ import { LenisProvider } from './lib/lenis';
 export default function App() {
   return (
     <LenisProvider>
+      <Cursor />
       <ThemeToggle />
       <Rail />
 

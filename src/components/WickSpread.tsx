@@ -1,4 +1,5 @@
 import wick from 'virtual:wick-summary';
+import JournalPlate from './JournalPlate';
 import Spread, { type SpreadDatum } from './Spread';
 import WickMark from './WickMark';
 
@@ -57,6 +58,14 @@ export default function WickSpread() {
       href="/project-wick/"
       linkLabel="Open Project Wick"
       mark={<WickMark className="text-oxide" width={28} height={28} />}
-    />
+    >
+      {/*
+       * Gated on there being entries rather than rendered empty: Spread only
+       * lays out a plate when it is given one, so an unreadable journal costs
+       * the spread its plate instead of leaving a labelled gap where the
+       * evidence should be.
+       */}
+      {wick.entries.length > 0 && <JournalPlate entries={wick.entries} />}
+    </Spread>
   );
 }

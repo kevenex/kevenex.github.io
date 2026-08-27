@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { RAIL } from '../lib/layout';
 
 /*
@@ -34,6 +34,8 @@ export default function Spine({ children }: { children: ReactNode }) {
     offset: ['start end', 'end end'],
   });
 
+  const head = useTransform(scrollYProgress, (value) => `${value * 100}%`);
+
   return (
     <div ref={ref} className="relative">
       <div
@@ -43,6 +45,22 @@ export default function Spine({ children }: { children: ReactNode }) {
         <motion.div
           className="h-full w-full origin-top bg-oxide/70"
           style={{ scaleY: scrollYProgress }}
+        />
+
+        {/*
+         * A short brightening at the fill's leading edge, so the reader can
+         * see where the page has got to without having to find the boundary
+         * between two close tones.
+         *
+         * A gradient rather than a dot, deliberately. The spine runs through
+         * Practice's timeline on exactly the same axis as its 9px nodes, and
+         * a dot travelling down that axis would read as a sixth node
+         * colliding with the five real ones. `-translate-y-full` hangs it
+         * back into the filled length so the tip is the bright end.
+         */}
+        <motion.div
+          className="absolute inset-x-0 h-12 -translate-y-full bg-gradient-to-b from-transparent to-oxide"
+          style={{ top: head }}
         />
       </div>
 
