@@ -46,9 +46,7 @@ src/
     Position.tsx           The thesis
     Spread.tsx             Shared layout for a featured project
     WickSpread.tsx         Project Wick, with figures read at build time
-    JournalPlate.tsx       Wick's plate — the agent's own entries, verbatim
     FlyerSpread.tsx        Flyer Fable
-    FlightPlate.tsx        Flyer's plate — the sim, embedded on request
     Practice.tsx           Ascending career timeline
     Contact.tsx            Name / email / message
     Colophon.tsx           The closing dark band
@@ -90,6 +88,12 @@ anywhere in the markup. Two things make it work:
 The colophon has its own `band` role rather than reusing `ink`, because in dark
 mode it goes *darker* than the page — inverting it into a pale slab would make
 the close shout when its job is to settle.
+
+**`Spread` has an empty plate slot.** Its `children` render under the data
+strip, and neither project currently passes anything — both spreads are a
+thesis, a figure strip and a link out. Two plates were built there and removed
+by decision, not by accident: the projects say more as an invitation to their
+own pages than as a preview embedded in this one.
 
 **The spine** (`Spine.tsx`) is the continuity device: one rule running the
 length of the document's middle, which in `Practice.tsx` grows nodes and becomes
@@ -189,20 +193,6 @@ the page shows. Importing the file directly would inline ~640KB to display six
 numbers. A missing or malformed journal costs the spread its figures, not the
 site its build.
 
-The same plugin also emits the twelve most recent entries, clipped to ~180
-characters each, which `JournalPlate.tsx` prints under the spread as rows a
-reader can open. Twelve excerpts cost about 2KB against that 640KB. They are
-the agent's own words, tag-stripped and otherwise untouched — including the
-six-word ticks near the end ("Tick: self-reflection entry required by
-counter"), which are evidence for the headline rather than an embarrassment to
-be filtered out. The plate is gated on there being entries at all, so an
-unreadable journal costs the spread its plate rather than leaving a labelled
-gap where the evidence should be.
-
-`JournalEntry` is declared in both `vite.config.ts` and `src/types/virtual.d.ts`
-— a virtual module cannot export a type to its own consumers. Change one,
-change the other.
-
 **The last-run stamp is not the last run.** `state/last-run.txt` says
 2026-08-17; the newest entry is from the 26th. The agent wrote that file itself
 and stopped maintaining it before it stopped writing. The journal page shows the
@@ -268,24 +258,16 @@ The figures on its spread come from that page's own source: `KM = 10` sets true
 horizontal scale, Jeju sits 451 km from the Seoul origin, and Hallasan's 1,947 m
 renders as 97 units — five times true scale.
 
-`FlightPlate.tsx` embeds the page itself under that spread, but only once the
-reader clicks. **Do not "improve" this into an autoload on intersection.** Three
-reasons, all of them in the embedded page's own source:
-
-- It binds `keydown` on the window and calls `preventDefault()` on the arrow
-  keys and Space. A frame holding focus swallows the reader's own scroll keys.
-- It calls `requestPointerLock()` when its canvas is clicked, which is why the
-  frame says `allow="pointer-lock"` — inside a frame that permission fails
-  silently rather than loudly.
-- It is an 89KB page plus a 670KB copy of Three.js plus a WebGL render loop.
-
-Exiting unmounts the frame rather than hiding it, because hiding it would leave
-that render loop running for the rest of the session. The exit control sits
-*above* the frame and never over it: under pointer lock the frame takes every
-click inside itself, so an overlaid control would be unreachable at exactly the
-moment it is needed. The frame is marked `data-cursor="hide"` for the same
-reason — pointer lock stops this document receiving `pointermove`, and the
-custom cursor would otherwise freeze mid-page.
+**It is deliberately not embedded in the home page.** A previous iteration put
+it in an iframe under its spread and that was removed; if you are tempted
+again, the page's own source argues against it. It binds `keydown` on the
+window and calls `preventDefault()` on the arrow keys and Space, so a frame
+holding focus swallows the reader's own scroll keys. It calls
+`requestPointerLock()` on canvas click, which needs an explicit
+`allow="pointer-lock"` inside a frame and fails silently without one — and
+under pointer lock the parent stops receiving `pointermove`, which freezes the
+custom cursor mid-page. And it is an 89KB page plus a 670KB copy of Three.js
+plus a WebGL render loop. It is a leaf page; let it be one.
 
 ## Contact
 

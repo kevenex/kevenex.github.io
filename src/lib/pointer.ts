@@ -16,8 +16,11 @@ const FINE = '(pointer: fine)';
  * Watched rather than read once, to match `usePrefersReducedMotion`: a laptop
  * with a touchscreen can switch between the two mid-session, and plugging in a
  * mouse should not require a reload to get the cursor back.
+ *
+ * Module-private: `useHoverLayer` is the gate everything else should ask, so
+ * that no caller can accidentally take half of the condition.
  */
-export function useFinePointer() {
+function useFinePointer() {
   const [fine, setFine] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(FINE).matches
   );

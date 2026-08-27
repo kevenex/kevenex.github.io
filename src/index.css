@@ -144,8 +144,9 @@ body {
  * fields directly, and an inherited `none` on <body> would not reach them.
  *
  * The exceptions below outrank it on specificity and hand the native cursor
- * back where its shape carries information the ring cannot: an I-beam over a
- * field, and any frame that takes pointer lock and stops reporting moves.
+ * back where its shape carries information the ring cannot — an I-beam over a
+ * field — plus an attribute escape hatch for anything that captures the
+ * pointer and stops reporting moves.
  */
 html.cursor-custom,
 html.cursor-custom * {

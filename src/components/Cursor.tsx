@@ -16,8 +16,10 @@ const INTERACTIVE = 'a, button, [data-cursor-label]';
 
 /*
  * Regions that keep the native cursor because its shape carries information
- * the ring cannot: an I-beam over a field says "you can type here", and a
- * frame that takes pointer lock stops sending us moves altogether.
+ * the ring cannot — an I-beam over a field says "you can type here". The
+ * attribute is the general escape hatch for anything else that needs the
+ * native cursor back, notably anything that captures the pointer and stops
+ * sending us moves.
  */
 const NATIVE = '[data-cursor="hide"], input, textarea, select';
 
