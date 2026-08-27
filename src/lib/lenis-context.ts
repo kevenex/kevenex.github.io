@@ -35,3 +35,30 @@ export function useScrollTo() {
     [lenis]
   );
 }
+
+/**
+ * Scrolls to an absolute document offset. The rail's scrubber needs this:
+ * `useScrollTo` can only name an element, and a pointer part-way down a track
+ * is a position with no element at it.
+ *
+ * `immediate` is what a drag wants — Lenis easing toward each new target while
+ * the pointer is still moving would leave the page permanently trailing the
+ * reader's hand. Without it the jump is eased like any other.
+ *
+ * The no-instance branch is the reduced-motion case, so it never asks for
+ * smooth behaviour regardless.
+ */
+export function useScrollToOffset() {
+  const lenis = useLenis();
+
+  return useCallback(
+    (offset: number, immediate = false) => {
+      if (lenis) {
+        lenis.scrollTo(offset, { immediate });
+        return;
+      }
+      window.scrollTo(0, offset);
+    },
+    [lenis]
+  );
+}

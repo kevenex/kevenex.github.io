@@ -8,12 +8,32 @@ import react from '@vitejs/plugin-react';
 const JOURNAL = fileURLToPath(new URL('./public/project-wick/journal.json', import.meta.url));
 
 /**
+ * The journal is stored as HTML fragments; the spread's strip wants plain text
+ * out of them. Named rather than inlined so the entity handling is stated once
+ * and is legible.
+ */
+const strip = (html: unknown) =>
+  String(html ?? '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const clip = (text: string, limit: number) =>
+  text.length > limit ? `${text.slice(0, limit).trimEnd()}\u2026` : text;
+
+/**
  * Exposes a handful of figures from the Project Wick journal as
  * `virtual:wick-summary`, read at build time.
  *
- * The journal itself is ~117KB and is already served as a static file, so
+ * The journal itself is ~640KB and is already served as a static file, so
  * importing it directly would inline all of it into the bundle to print five
- * numbers. This reads it on the server and emits only what the spread shows.
+ * numbers. This reads it on the server and emits only the handful of values
+ * the spread shows.
  *
  * The deploy workflow refreshes journal.json and rebuilds daily, so the
  * figures on the page stay within a day of the agent's actual output.
@@ -54,15 +74,7 @@ function wickSummary(): Plugin {
         const day = journal.days?.[0];
         const entry = day?.entries?.[day.entries.length - 1];
 
-        const text = String(entry?.html ?? '')
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&amp;/g, '&')
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .replace(/\s+/g, ' ')
-          .trim();
+        const text = strip(entry?.html);
 
         summary = {
           available: true,
@@ -74,7 +86,7 @@ function wickSummary(): Plugin {
           latest: {
             date: day?.date ?? '',
             time: entry?.time ?? '',
-            text: text.length > 260 ? `${text.slice(0, 260).trimEnd()}…` : text,
+            text: clip(text, 260),
           },
         };
       } catch {

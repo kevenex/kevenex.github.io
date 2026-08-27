@@ -135,10 +135,38 @@ body {
 }
 
 /*
- * One motion language for the whole page: the page moves like weight, the
- * elements do not perform. Under reduced motion no Lenis instance is
- * constructed at all (see lenis.tsx) and every reveal is switched off in
- * JavaScript (see useReveal) — this block only catches CSS transitions.
+ * The custom cursor's half of the bargain (see components/Cursor.tsx). The
+ * class is added to <html> only after a real pointermove has arrived, so a
+ * cursor that failed to render can never leave a reader with no cursor at
+ * all — the page without this class is the page as it always was.
+ *
+ * `*` is needed because the UA stylesheet sets `cursor` on links, buttons and
+ * fields directly, and an inherited `none` on <body> would not reach them.
+ *
+ * The exceptions below outrank it on specificity and hand the native cursor
+ * back where its shape carries information the ring cannot — an I-beam over a
+ * field — plus an attribute escape hatch for anything that captures the
+ * pointer and stops reporting moves.
+ */
+html.cursor-custom,
+html.cursor-custom * {
+  cursor: none;
+}
+
+html.cursor-custom input,
+html.cursor-custom textarea,
+html.cursor-custom select,
+html.cursor-custom [data-cursor='hide'],
+html.cursor-custom [data-cursor='hide'] * {
+  cursor: auto;
+}
+
+/*
+ * One motion language for the whole page: the page moves like weight, and
+ * hover is where it answers back. Under reduced motion no Lenis instance is
+ * constructed at all (see lenis.tsx), the whole hover layer is switched off
+ * (see lib/pointer.ts) and every reveal is disabled in JavaScript (see
+ * useReveal) — this block only catches CSS transitions.
  */
 @media (prefers-reduced-motion: reduce) {
   *,

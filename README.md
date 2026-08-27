@@ -37,7 +37,8 @@ src/
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
     lenis.tsx              The single Lenis instance
-    lenis-context.ts       Context + useScrollTo
+    lenis-context.ts       Context + useScrollTo / useScrollToOffset
+    pointer.ts             The hover layer's gate, and the magnetic hook
     theme.ts               Light/dark resolution and the stored preference
     contact.ts             Contact validation and delivery (see Contact, below)
   components/
@@ -50,7 +51,8 @@ src/
     Contact.tsx            Name / email / message
     Colophon.tsx           The closing dark band
     Spine.tsx              The rule that runs the page
-    Rail.tsx               Fixed section indicator
+    Rail.tsx               Scrubbable map of the page
+    Cursor.tsx             The page's own cursor
     ThemeToggle.tsx        Light/dark switch
     ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
@@ -87,21 +89,64 @@ The colophon has its own `band` role rather than reusing `ink`, because in dark
 mode it goes *darker* than the page — inverting it into a pale slab would make
 the close shout when its job is to settle.
 
+**`Spread` has an empty plate slot.** Its `children` render under the data
+strip, and neither project currently passes anything — both spreads are a
+thesis, a figure strip and a link out. Two plates were built there and removed
+by decision, not by accident: the projects say more as an invitation to their
+own pages than as a preview embedded in this one.
+
 **The spine** (`Spine.tsx`) is the continuity device: one rule running the
 length of the document's middle, which in `Practice.tsx` grows nodes and becomes
 the career timeline. Both use the `RAIL` constant in `lib/layout.ts`, so they
 share one axis rather than resembling each other. Change `RAIL` or `RAIL_PAD`
 and both follow.
 
-**Motion:** the page moves like weight; the elements do not perform. All the
-liquidity is in the scroll (Lenis) and the spine's scroll-linked fill. Elements
-get one restrained reveal and nothing else.
+**Motion:** the page moves like weight, and hover is where it answers back.
+Those are two separate rules and they do not trade against each other.
+
+*The scroll carries everything.* Lenis provides the weight; the spine's fill,
+the rail's fill, the hero's drift and its readout are all bound directly to
+scroll position and none of them are sprung. They report where the reader is,
+so a spring would let them drift behind the scrollbar and they would stop
+reading as position. Arriving elements still get one restrained reveal and
+nothing else — they do not perform on their own account.
+
+*Hover is a separate layer, and it is optional.* The custom cursor and the
+magnetic links exist only behind `useHoverLayer()` in `lib/pointer.ts`, which
+requires both a `(pointer: fine)` device and a reader who has not asked for
+reduced motion. Touch is excluded outright rather than degraded: a magnetic
+pull with no pointer to be magnetic toward is not a smaller version of the
+effect, it is an element that moves for no visible reason. Everything under
+this layer is an enhancement over a page that is already complete without it.
 
 **The rail owns the right gutter.** `RAIL_PAD_R` reserves 192px at `lg` because
 the fixed section rail occupies the last 166px of the viewport at its widest
 label. Narrow it and right-aligned content runs underneath the active label.
 
-## Three things that will bite if you forget them
+**The rail is a map, not a menu.** Each tick sits at its section's *measured*
+position in the document, so the gaps between them are the real distances the
+reader has to cross and the fill between them is where they actually are. That
+is what makes the track worth dragging: with evenly spaced ticks, half the page
+would live under one of five equal gaps. Three things are load-bearing there
+and none of them is obvious:
+
+- Offsets come from `getBoundingClientRect().top + scrollY`, never `offsetTop`.
+  Every section but the hero is nested inside `Spine`'s `relative` wrapper, so
+  `offsetTop` measures from *there* and puts every tick in the wrong place.
+- They are divided by the scrollable range (`scrollHeight - innerHeight`),
+  because that is the denominator `scrollYProgress` uses. Any other and the
+  ticks and the fill disagree about where the page is.
+- The `<ul>` holding the ticks is `absolute inset-0`, not `relative`. Its items
+  are positioned by percentage, and percentages resolve against it — which, with
+  every child taken out of flow, is a zero-pixel-tall box when it is `relative`.
+  Every tick then lands at 0% and the widest label blankets the whole track,
+  swallowing the drag along with it.
+
+The rail no longer steps aside over the colophon — it changes to the band's
+tokens and stays readable to 100%. A progress rail that disappears at 85% has
+stopped being one.
+
+## Four things that will bite if you forget them
 
 **`overflow-x` must stay `clip`, never `hidden`.** Both stop sideways scrolling,
 but `hidden` turns `html`/`body` into scroll containers, and every
@@ -109,12 +154,24 @@ but `hidden` turns `html`/`body` into scroll containers, and every
 viewport and silently stops sticking. This already cost the timeline's year
 counter once.
 
+**Never hide the native cursor before the custom one has proven it renders.**
+`Cursor.tsx` adds the `cursor-custom` class to `<html>` only after a real
+`pointermove` has arrived, and drops it again the moment the hover layer is
+switched off. Applying it on mount would mean that anything failing in that
+component leaves a reader with no cursor at all on a page that otherwise works
+— the enhancement must never leave the page worse off than not having it. The
+CSS side needs `html.cursor-custom *` rather than a rule on `<body>`, because
+the UA stylesheet sets `cursor` directly on links, buttons and fields and an
+inherited value never reaches them.
+
 **Reduced motion has to be handled in JavaScript, not CSS.** The stylesheet's
 `prefers-reduced-motion` block zeroes transition durations, which does nothing
 to Framer Motion — it animates opacity by writing inline styles, so an element
 sits at `opacity: 0` waiting for an intersection the CSS cannot influence. Use
 `useReveal()` and `usePrefersReducedMotion()` from `lib/layout.ts` for anything
-animated, or a reader who asked for no motion gets content that never appears.
+animated, and `useHoverLayer()` from `lib/pointer.ts` for anything that responds
+to a pointer, or a reader who asked for no motion gets content that never
+appears.
 
 ## Project Wick (`/project-wick/`)
 
@@ -131,10 +188,10 @@ the finding, not a caveat on it.
 
 The home page spread prints that journal's real figures — entries, words, days,
 wiki pages, newest entry, source commit — via the `wick-summary` Vite plugin in
-`vite.config.ts`, which reads `journal.json` at build time and emits only the
-handful of values the spread shows. Importing the file directly would inline
-~640KB to display six numbers. A missing or malformed journal costs the spread
-its figures, not the site its build.
+`vite.config.ts`, which reads `journal.json` at build time and emits only what
+the page shows. Importing the file directly would inline ~640KB to display six
+numbers. A missing or malformed journal costs the spread its figures, not the
+site its build.
 
 **The last-run stamp is not the last run.** `state/last-run.txt` says
 2026-08-17; the newest entry is from the 26th. The agent wrote that file itself
@@ -200,6 +257,17 @@ outside React and the SPA.
 The figures on its spread come from that page's own source: `KM = 10` sets true
 horizontal scale, Jeju sits 451 km from the Seoul origin, and Hallasan's 1,947 m
 renders as 97 units — five times true scale.
+
+**It is deliberately not embedded in the home page.** A previous iteration put
+it in an iframe under its spread and that was removed; if you are tempted
+again, the page's own source argues against it. It binds `keydown` on the
+window and calls `preventDefault()` on the arrow keys and Space, so a frame
+holding focus swallows the reader's own scroll keys. It calls
+`requestPointerLock()` on canvas click, which needs an explicit
+`allow="pointer-lock"` inside a frame and fails silently without one — and
+under pointer lock the parent stops receiving `pointermove`, which freezes the
+custom cursor mid-page. And it is an 89KB page plus a 670KB copy of Three.js
+plus a WebGL render loop. It is a leaf page; let it be one.
 
 ## Contact
 
