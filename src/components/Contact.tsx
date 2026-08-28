@@ -24,7 +24,7 @@ export default function Contact() {
   const [values, setValues] = useState<ContactMessage>(EMPTY);
   const [errors, setErrors] = useState<ContactErrors>({});
   const [sending, setSending] = useState(false);
-  const [outcome, setOutcome] = useState<'idle' | 'received'>('idle');
+  const [outcome, setOutcome] = useState<'idle' | 'sent' | 'rate-limited' | 'failed'>('idle');
 
   /*
    * Bots fill every input they find. This one is off-screen rather than
@@ -43,16 +43,17 @@ export default function Contact() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (honeypot.current?.value) return;
-
     const found = validateContact(values);
     setErrors(found);
     if (Object.values(found).some(Boolean)) return;
 
     setSending(true);
-    await submitContact();
+    // Clear any previous failure: the notice below belongs to this attempt.
+    setOutcome('idle');
+    const result = await submitContact(values, honeypot.current?.value ?? '');
     setSending(false);
-    setOutcome('received');
+
+    setOutcome(result.delivered ? 'sent' : (result.reason ?? 'failed'));
   };
 
   return (
@@ -77,9 +78,10 @@ export default function Contact() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.15 }}
       >
-        {outcome === 'received' ? (
+        {outcome === 'sent' ? (
           <p className="max-w-measure font-serif text-lead text-ink" role="status">
-            Thanks — your message has not been delivered anywhere yet.
+            Sent. I read everything that arrives, and I&rsquo;ll reply to the address you
+            gave.
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
@@ -115,6 +117,23 @@ export default function Contact() {
               <label htmlFor={`${ids}-company`}>Company</label>
               <input id={`${ids}-company`} ref={honeypot} type="text" tabIndex={-1} autoComplete="off" />
             </div>
+
+            {(outcome === 'failed' || outcome === 'rate-limited') && (
+              <p className="max-w-measure font-mono text-data text-oxide" role="alert">
+                {outcome === 'rate-limited' ? (
+                  'That is a few messages in quick succession — wait a minute and send again.'
+                ) : (
+                  <>
+                    Something went wrong on the way out and the message did not send. Try
+                    again, or write to{' '}
+                    <a href="mailto:form@kevink.im" className="underline underline-offset-4">
+                      form@kevink.im
+                    </a>{' '}
+                    directly.
+                  </>
+                )}
+              </p>
+            )}
 
             <button
               type="submit"

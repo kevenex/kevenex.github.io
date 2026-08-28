@@ -3,6 +3,9 @@ dist
 dist-ssr
 *.local
 
+# `tsc -b` leaves one of these per project referenced from tsconfig.json.
+*.tsbuildinfo
+
 # Wrangler's local state for `wrangler dev` / `wrangler deploy` runs.
 .wrangler
 

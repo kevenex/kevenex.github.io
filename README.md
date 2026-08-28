@@ -31,6 +31,8 @@ public/
 scripts/
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
+worker/
+  index.ts                 POST /api/contact — the form's delivery route (see Contact)
 src/
   App.tsx                  Page composition
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
@@ -271,17 +273,45 @@ plus a WebGL render loop. It is a leaf page; let it be one.
 
 ## Contact
 
-The form is complete; delivery is not. `submitContact` in `src/lib/contact.ts`
-reports whether a message was delivered and today always answers no, so the UI
-cannot claim otherwise — the confirmation says the message has not been
-delivered anywhere rather than thanking the sender for something that did not
-happen.
+The form posts to `POST /api/contact`, a route on the same Cloudflare Worker
+that serves the site (`worker/index.ts`), which hands the message to Email
+Routing for delivery to a verified destination address. No mailbox exists on
+this domain and none is needed: `send_email` sends *as* a routing address, and
+the free plan allows any destination the account has verified — those messages
+do not count against a sending quota.
 
-When wiring it up: the site is served by the Cloudflare Worker configured in
-`wrangler.jsonc`, so a `POST /api/contact` handler can hold the credential as a
-`wrangler secret`. **No credential can live in the bundle** — `dist/` is public.
-And submissions must not land in this repository, which is public; prefer issues
-in a private repo, which also gets you email notification for free.
+`submitContact` in `src/lib/contact.ts` still reports whether the message was
+delivered rather than assuming it, and the form has three endings instead of
+one: sent, failed (the typed message is kept, with `form@kevink.im` offered as
+a fallback), and rate-limited. A form that says "sent" when the request failed
+misleads the person who wrote it.
+
+**The recipient is a secret, not a var.** This repository is public, and a
+personal address in a committed config is an address handed to every scraper
+that reads it:
+
+```sh
+npx wrangler secret put CONTACT_TO
+```
+
+The three things that must exist in the Cloudflare dashboard, none of which
+require a mailbox:
+
+1. **Email Routing enabled** on the zone — it adds its own MX and SPF records.
+2. **The destination address verified** — the same address `CONTACT_TO` holds.
+   Until the verification link Cloudflare emails is clicked, every send fails.
+3. **`form@kevink.im`** as a routing address, forwarding to that destination.
+   The binding will only send as an address Email Routing knows.
+
+Validation lives in `src/lib/contact.ts` and runs on both ends — the client for
+fast, specific errors, the Worker because the endpoint is public and the gate on
+`/` is client-side. The Worker also drops honeypot submissions silently, caps
+the body, and rate-limits per IP (3/minute, per colo).
+
+Locally, `npm run dev:worker` serves `dist/` and the route together on :8787;
+the binding writes the composed message to `.wrangler/tmp/email/` instead of
+sending it, which is enough to prove the headers and body are right. Delivery
+itself can only be tested from a deploy.
 
 ## Before the Coming Soon gate comes off
 
@@ -289,10 +319,9 @@ in a private repo, which also gets you email notification for free.
 redirects back if `localStorage` has no access token. Deferred by decision, not
 forgotten:
 
-1. **Wire the contact form, or stop it claiming to send.** See above.
-2. **Resolve the Project Wick sync** (see Known stale above), so the spread's
+1. **Resolve the Project Wick sync** (see Known stale above), so the spread's
    figures are current rather than a snapshot.
-3. Re-check contrast and focus states if imagery is ever added to the spreads.
+2. Re-check contrast and focus states if imagery is ever added to the spreads.
 
 ## Notes
 

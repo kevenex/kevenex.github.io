@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    // No DOM: the Worker's globals come from here, and leaving DOM in would
+    // let a browser-only API typecheck and then fail at the edge.
+    "types": ["@cloudflare/workers-types"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  // src/lib/contact.ts is shared with the client — one definition of what a
+  // valid message is — so it is checked against the Worker's globals too.
+  "include": ["worker", "src/lib/contact.ts"]
+}

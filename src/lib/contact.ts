@@ -1,17 +1,17 @@
 /*
  * Delivery for the contact form — the only module that knows where a message
  * goes. The form component owns every visible state and never learns how
- * sending works, so wiring a real backend later is a change to this file and
- * nothing else.
+ * sending works, so where a message goes is a change to this file and nothing
+ * else.
  *
- * Right now a message goes nowhere. That is a decision, not an oversight, and
- * `submitContact` is typed so it cannot pretend otherwise: it reports whether
- * the message was delivered, and today the answer is always no. A form that
- * says "sent" while discarding what someone wrote misleads the person who
- * wrote it, so the page tells the truth instead.
+ * It goes to `POST /api/contact`, a Cloudflare Worker route on this site's own
+ * origin (`worker/index.ts`), which hands the message to Email Routing. The
+ * recipient address lives in that Worker as a secret and never reaches the
+ * browser bundle, which is public.
  *
- * When a backend exists — a Worker route holding its credential server-side —
- * only the body of `submitContact` changes.
+ * `submitContact` reports whether the message was delivered rather than
+ * assuming it was. A form that says "sent" while the request failed misleads
+ * the person who wrote it, so the page waits to be told.
  */
 
 export interface ContactMessage {
@@ -25,8 +25,10 @@ export type ContactField = keyof ContactMessage;
 export type ContactErrors = Partial<Record<ContactField, string>>;
 
 export interface ContactOutcome {
-  /** False while no backend is wired. The UI must not claim otherwise. */
+  /** The endpoint accepted the message. The UI must not claim more than this. */
   delivered: boolean;
+  /** Why it did not, when it did not — the UI says something different for each. */
+  reason?: 'rate-limited' | 'failed';
 }
 
 const LIMITS = { name: 120, email: 200, message: 4000 } as const;
@@ -70,8 +72,44 @@ export function validateContact(values: ContactMessage): ContactErrors {
   return errors;
 }
 
-export function submitContact(): Promise<ContactOutcome> {
-  return Promise.resolve({ delivered: false });
+const ENDPOINT = '/api/contact';
+
+/*
+ * Long enough to survive a slow phone on a train, short enough that a dead
+ * endpoint does not leave someone watching "Sending…" indefinitely.
+ */
+const TIMEOUT = 15_000;
+
+/*
+ * `honeypot` is the value of the off-screen field the form keeps for bots. It
+ * is sent rather than checked here so the server decides too: the endpoint is
+ * public, and anything posted straight to it skips this function entirely.
+ */
+export async function submitContact(
+  values: ContactMessage,
+  honeypot: string,
+): Promise<ContactOutcome> {
+  try {
+    const response = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        message: values.message.trim(),
+        company: honeypot,
+      }),
+      signal: AbortSignal.timeout(TIMEOUT),
+    });
+
+    if (response.ok) return { delivered: true };
+    if (response.status === 429) return { delivered: false, reason: 'rate-limited' };
+    return { delivered: false, reason: 'failed' };
+  } catch {
+    // A timeout, an offline browser, a blocked request — all the same to the
+    // person waiting, and none of them mean the message arrived.
+    return { delivered: false, reason: 'failed' };
+  }
 }
 
 export { LIMITS as CONTACT_LIMITS };
