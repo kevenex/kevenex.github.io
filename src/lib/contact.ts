@@ -1,17 +1,17 @@
 /*
  * Delivery for the contact form — the only module that knows where a message
  * goes. The form component owns every visible state and never learns how
- * sending works, so wiring a real backend later is a change to this file and
- * nothing else.
+ * sending works, which is why wiring the backend was a change to this file and
+ * the component's wording, and nothing else.
  *
- * Right now a message goes nowhere. That is a decision, not an oversight, and
- * `submitContact` is typed so it cannot pretend otherwise: it reports whether
- * the message was delivered, and today the answer is always no. A form that
- * says "sent" while discarding what someone wrote misleads the person who
- * wrote it, so the page tells the truth instead.
+ * Messages now reach a real inbox: `POST /api/contact` on the Worker in
+ * `worker/index.ts`, which mails them through Cloudflare's send binding.
+ * `submitContact` still reports whether that happened rather than assuming it,
+ * because the form's rule has not changed — it must never say "sent" about a
+ * message it discarded.
  *
- * When a backend exists — a Worker route holding its credential server-side —
- * only the body of `submitContact` changes.
+ * `validateContact` below is shared with that Worker, so the rules the reader
+ * sees and the rules the server enforces are the same rules.
  */
 
 export interface ContactMessage {
@@ -25,7 +25,7 @@ export type ContactField = keyof ContactMessage;
 export type ContactErrors = Partial<Record<ContactField, string>>;
 
 export interface ContactOutcome {
-  /** False while no backend is wired. The UI must not claim otherwise. */
+  /** Only ever true when the route confirmed it. The UI must not claim otherwise. */
   delivered: boolean;
 }
 
@@ -70,8 +70,41 @@ export function validateContact(values: ContactMessage): ContactErrors {
   return errors;
 }
 
-export function submitContact(): Promise<ContactOutcome> {
-  return Promise.resolve({ delivered: false });
+/**
+ * Posts a validated message to the Worker route.
+ *
+ * `company` is the honeypot's value, forwarded so the server can reject a bot
+ * that skipped the form and posted here directly.
+ */
+export async function submitContact(
+  values: ContactMessage,
+  company = ''
+): Promise<ContactOutcome> {
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...values, company }),
+    });
+
+    /*
+     * The body has to say so — `response.ok` alone is not enough. This site is
+     * also published to GitHub Pages, where /api/contact does not exist and the
+     * single-page fallback answers 200 with the app shell. Trusting the status
+     * would make the form claim success on a host that delivered nothing.
+     */
+    const body: unknown = await response.json().catch(() => null);
+    const delivered =
+      response.ok &&
+      typeof body === 'object' &&
+      body !== null &&
+      (body as { delivered?: unknown }).delivered === true;
+
+    return { delivered };
+  } catch {
+    // Offline, blocked, DNS — all the same to the reader, and all not sent.
+    return { delivered: false };
+  }
 }
 
 export { LIMITS as CONTACT_LIMITS };

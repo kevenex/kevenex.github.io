@@ -31,6 +31,8 @@ public/
 scripts/
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
+worker/
+  index.ts                 POST /api/contact — the only server (see Contact, below)
 src/
   App.tsx                  Page composition
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
@@ -40,7 +42,7 @@ src/
     lenis-context.ts       Context + useScrollTo / useScrollToOffset
     pointer.ts             The hover layer's gate, and the magnetic hook
     theme.ts               Light/dark resolution and the stored preference
-    contact.ts             Contact validation and delivery (see Contact, below)
+    contact.ts             Contact validation, shared with the Worker, and delivery
   components/
     Arrival.tsx            Typographic hero
     Position.tsx           The thesis
@@ -271,17 +273,57 @@ plus a WebGL render loop. It is a leaf page; let it be one.
 
 ## Contact
 
-The form is complete; delivery is not. `submitContact` in `src/lib/contact.ts`
-reports whether a message was delivered and today always answers no, so the UI
-cannot claim otherwise — the confirmation says the message has not been
-delivered anywhere rather than thanking the sender for something that did not
-happen.
+The form delivers. `Contact.tsx` posts to `POST /api/contact` on the Worker in
+`worker/index.ts`, which mails the message through Cloudflare's `send_email`
+binding; `submitContact` in `src/lib/contact.ts` still *reports* whether that
+happened rather than assuming it, because the form's rule has not changed — it
+must never say "sent" about a message it discarded.
 
-When wiring it up: the site is served by the Cloudflare Worker configured in
-`wrangler.jsonc`, so a `POST /api/contact` handler can hold the credential as a
-`wrangler secret`. **No credential can live in the bundle** — `dist/` is public.
-And submissions must not land in this repository, which is public; prefer issues
-in a private repo, which also gets you email notification for free.
+**There is no credential anywhere.** Not in the bundle, not in a secret. The
+binding may only reach destination addresses already verified on the Cloudflare
+account, which is what makes it both free on every plan and impossible to
+redirect by tampering with a request. Sending to an *arbitrary* recipient — an
+auto-reply to whoever wrote in, say — is the thing that would need the Workers
+Paid plan and an onboarded sending domain, so the form deliberately does not.
+
+Three things are load-bearing and none of them is obvious:
+
+- **`run_worker_first` in `wrangler.jsonc` is what makes the route exist.**
+  `not_found_handling: "single-page-application"` answers *every* unmatched path
+  from the asset server, so without the override a POST to `/api/contact` comes
+  back as the app shell with a 200 and the Worker never runs at all.
+- **`submitContact` requires `{"delivered": true}` in the body, not just
+  `response.ok`.** This repo also publishes to GitHub Pages, where the route does
+  not exist and that same SPA fallback answers 200 with HTML. Trusting the status
+  would make the form claim success on a host that delivered nothing.
+- **The recipient is a secret, and not because it is a credential.** This
+  repository is public, and a personal address committed to `wrangler.jsonc` is a
+  personal address handed to scrapers. It arrives as `CONTACT_TO`.
+
+The honeypot is checked in the form *and* on the route: a bot that posts straight
+to the endpoint never renders the field the page hides, so the client-side check
+alone would only catch the polite ones.
+
+Setting it up on a fresh account is four steps, none of them in code:
+
+1. Email Routing → Destination addresses → add the inbox and **verify** it. Email
+   Routing itself is inbound-only and cannot send; verifying an address here is
+   what licenses the Worker to send *to* it.
+2. Enable Email Routing on `send.kevink.im`, so `form@send.kevink.im` is a valid
+   sender identity. Machine mail gets its own subdomain to keep the apex's
+   reputation for real correspondence, and so any future SPF/DKIM/DMARC records
+   land there instead.
+3. `npx wrangler secret put CONTACT_TO` → the verified address.
+4. Optional: enable **subaddressing** under Email Routing → Settings, and publish
+   `hello+wick@kevink.im`, `hello+flyer@kevink.im` and so on. One routing rule for
+   `hello@` matches every tag and the tag survives into the message, so each
+   surface gets a filterable address without a rule of its own. Verifying a
+   plus-addressed *destination* and pointing `CONTACT_TO` at it does the same for
+   the form's own mail.
+
+If spam ever arrives, the next steps in order are a WAF rate-limiting rule on
+`/api/contact` (no code) and then Turnstile — which does put a visible widget in a
+form that is deliberately austere, so it is a last resort rather than a default.
 
 ## Before the Coming Soon gate comes off
 
@@ -289,10 +331,12 @@ in a private repo, which also gets you email notification for free.
 redirects back if `localStorage` has no access token. Deferred by decision, not
 forgotten:
 
-1. **Wire the contact form, or stop it claiming to send.** See above.
-2. **Resolve the Project Wick sync** (see Known stale above), so the spread's
+1. **Resolve the Project Wick sync** (see Known stale above), so the spread's
    figures are current rather than a snapshot.
-3. Re-check contrast and focus states if imagery is ever added to the spreads.
+2. Re-check contrast and focus states if imagery is ever added to the spreads.
+
+The contact form used to head this list. It now delivers — see Contact above —
+though the Cloudflare console steps there have to be done once before it can.
 
 ## Notes
 
@@ -302,5 +346,14 @@ forgotten:
   and publishes `dist/` to GitHub Pages. It runs on pushes to `master`, once a
   day on a schedule (to pick up the Project Wick journal and the Chloe build),
   and can be started by hand from the Actions tab.
+- **Only the Cloudflare Worker deploy carries `/api/contact`.** The Pages copy is
+  static, so the contact form there will always report a failed send. That is the
+  honest outcome rather than a bug, but it is a reason to decide whether that copy
+  is still wanted.
+- `npm run typecheck` runs the app and worker projects explicitly. It used to be
+  plain `tsc`, which — with a solution-style root `tsconfig.json` whose `files` is
+  empty — silently checked *nothing*; a real type error in `src/` passed clean.
+  `tsconfig.node.json` (`vite.config.ts`) is still outside it and needs
+  `@types/node` before it can join.
 - The custom domain lives in the repository's Pages settings. Because the site
   is published from a workflow rather than a branch, no `CNAME` file is needed.

@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kevink-im",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-08-09",
   "observability": {
     "enabled": true
@@ -11,6 +12,19 @@
     // a single-page app. Committed explicitly rather than left to Wrangler's
     // setup wizard, which otherwise regenerates this file (and reruns the
     // build a second time) from scratch on every single deploy.
-    "not_found_handling": "single-page-application"
-  }
+    "not_found_handling": "single-page-application",
+    // Load-bearing, and the failure is silent without it. The line above
+    // answers *every* unmatched path from the asset server, so a POST to
+    // /api/contact would come back as the app shell with a 200 — the Worker
+    // would never run, and a form checking only response.ok would report a
+    // message delivered that was never sent. This routes /api/* to the Worker
+    // before assets get a look. Needs Wrangler >= 4.20.0.
+    "run_worker_first": ["/api/*"]
+  },
+  // Unrestricted by choice: the binding can only reach destination addresses
+  // already verified on the account, and naming the recipient here would
+  // publish a personal address in a public repository. It arrives instead as
+  // the CONTACT_TO secret. Sending to a verified destination is free on every
+  // plan, so this route costs nothing to run.
+  "send_email": [{ "name": "SEND_EMAIL" }]
 }

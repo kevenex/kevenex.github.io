@@ -24,7 +24,7 @@ export default function Contact() {
   const [values, setValues] = useState<ContactMessage>(EMPTY);
   const [errors, setErrors] = useState<ContactErrors>({});
   const [sending, setSending] = useState(false);
-  const [outcome, setOutcome] = useState<'idle' | 'received'>('idle');
+  const [outcome, setOutcome] = useState<'idle' | 'sent' | 'failed'>('idle');
 
   /*
    * Bots fill every input they find. This one is off-screen rather than
@@ -50,9 +50,11 @@ export default function Contact() {
     if (Object.values(found).some(Boolean)) return;
 
     setSending(true);
-    await submitContact();
+    // The honeypot rides along so the route can reject a bot that skipped the
+    // form entirely; the check above only catches one that filled it in.
+    const { delivered } = await submitContact(values, honeypot.current?.value ?? '');
     setSending(false);
-    setOutcome('received');
+    setOutcome(delivered ? 'sent' : 'failed');
   };
 
   return (
@@ -69,7 +71,7 @@ export default function Contact() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.05 }}
       >
-        If something here is worth a reply, write it down.
+        Want to chat? Reach out and I’ll get back to you.
       </motion.h2>
 
       <motion.div
@@ -77,9 +79,9 @@ export default function Contact() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.15 }}
       >
-        {outcome === 'received' ? (
+        {outcome === 'sent' ? (
           <p className="max-w-measure font-serif text-lead text-ink" role="status">
-            Thanks — your message has not been delivered anywhere yet.
+            Thanks — that’s in my inbox. I’ll get back to you.
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
@@ -116,19 +118,33 @@ export default function Contact() {
               <input id={`${ids}-company`} ref={honeypot} type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
-            <button
-              type="submit"
-              disabled={sending}
-              className="group mt-2 inline-flex w-fit flex-col gap-2 font-mono text-label uppercase text-ink outline-none disabled:text-muted"
-            >
-              <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
-                {sending ? 'Sending…' : 'Send'} &rarr;
-              </span>
-              <span
-                aria-hidden="true"
-                className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
-              />
-            </button>
+            {/*
+             * A failure leaves the form standing rather than replacing it, so
+             * a retry costs nothing — swapping in a failure screen would throw
+             * away everything the reader had typed.
+             */}
+            <div className="mt-2 flex flex-col items-start gap-5">
+              <button
+                type="submit"
+                disabled={sending}
+                className="group inline-flex w-fit flex-col gap-2 font-mono text-label uppercase text-ink outline-none disabled:text-muted"
+              >
+                <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+                  {sending ? 'Sending…' : 'Send'} &rarr;
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                />
+              </button>
+
+              {outcome === 'failed' && (
+                <p className="max-w-measure font-mono text-data text-oxide" role="alert">
+                  That did not send, and nothing was delivered. Try again — if it
+                  keeps failing, the fault is at my end rather than yours.
+                </p>
+              )}
+            </div>
           </form>
         )}
       </motion.div>
