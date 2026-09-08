@@ -310,7 +310,8 @@ Setting it up on a fresh account is three steps, none of them in code:
    Routing itself is inbound-only and cannot send; verifying an address here is
    what licenses the Worker to send *to* it. Until that link is clicked the send
    is rejected, and any routing rule pointing at the address stays disabled.
-2. `npx wrangler secret put CONTACT_TO` → the verified address.
+2. Set `CONTACT_TO` to that address — see **Deploying** below, because which
+   command works depends on whether the newest version is the deployed one.
 3. Optional: enable **subaddressing** under Email Routing → Settings, and publish
    `hello+wick@kevink.im`, `hello+flyer@kevink.im` and so on. One routing rule for
    `hello@` matches every tag and the tag survives into the message, so each
@@ -321,6 +322,53 @@ Setting it up on a fresh account is three steps, none of them in code:
 If spam ever arrives, the next steps in order are a WAF rate-limiting rule on
 `/api/contact` (no code) and then Turnstile — which does put a visible widget in a
 form that is deliberately austere, so it is a last resort rather than a default.
+
+### Deploying
+
+**The GitHub Pages workflow does not deploy this.** It publishes `dist/` to Pages
+and never touches the Worker, so `/api/contact` does not exist on that copy. The
+Worker is deployed with `wrangler`, from a clone:
+
+```sh
+npm run build                          # dist/ is gitignored — a fresh clone has none
+npx wrangler versions upload           # prints a preview URL; shifts no traffic
+npx wrangler versions secret put CONTACT_TO
+npx wrangler versions deploy           # promote, once the preview checks out
+```
+
+Five things that bite, in the order they bite:
+
+- **Run it from the repository.** Outside a clone every command fails on config
+  resolution — `Required Worker name missing`, then `ENOENT package.json` — which
+  looks like four unrelated problems and is one.
+- **Build first, always.** `assets.directory` points at `dist/`, which is
+  gitignored, so a fresh clone has nothing to upload.
+- **Prefer `versions upload` to `deploy`.** This configuration defines no separate
+  environment, so a plain `wrangler deploy` from *any* branch goes straight to the
+  Worker serving the live site.
+- **`versions secret put`, not `secret put`.** Once a version is uploaded but not
+  deployed, plain `secret put` refuses — "the latest version of your Worker isn't
+  currently deployed" — because writing the secret would implicitly deploy it. The
+  `versions` form writes the secret into a new version carrying the uploaded code
+  forward, so it *replaces* a second upload rather than following one. (`.dev.vars`
+  is local-only and never read by deploy; secrets survive later deploys.)
+- **Merge to `master` after promoting.** `versions deploy` puts whichever branch
+  you ran it from into production while `master` still holds the old code. If a
+  Cloudflare Workers Build is wired to `master`, its next run silently reverts
+  production to a version with no `/api/contact`.
+
+Test the preview URL with `curl` rather than a browser — it is a different origin,
+so `localStorage` is empty and the password gate bounces you back to `/`:
+
+```sh
+curl -i -X POST https://<version>-kevink-im.<subdomain>.workers.dev/api/contact \
+  -H 'content-type: application/json' \
+  -d '{"name":"Ada","email":"ada@example.com","message":"Test."}'
+```
+
+Use a sender address that is *not* the destination inbox, or `replyTo` points at
+you and the reply behaviour cannot be checked. The real test is hitting Reply on
+the mail that arrives: the draft must address the sender, not `form@kevink.im`.
 
 ## Before the Coming Soon gate comes off
 
