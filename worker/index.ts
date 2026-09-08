@@ -21,11 +21,14 @@ export interface Env {
 }
 
 /*
- * Machine mail sends from its own subdomain, so the apex keeps its reputation
- * for real correspondence and any future SPF/DKIM/DMARC records land here
- * instead of on the domain a human writes from.
+ * The sender is the apex because a sending address has to belong to a domain
+ * onboarded to Email Service, and the apex is the zone that is. A `send.`
+ * subdomain would be the nicer answer — machine mail kept off the apex's
+ * reputation, and any future SPF/DKIM/DMARC records landing there instead of
+ * on the domain a human writes from — but it has to be onboarded in its own
+ * right first, and an address on a domain that is not gets rejected outright.
  */
-const FROM = { name: 'kevink.im', email: 'form@send.kevink.im' };
+const FROM = { name: 'kevink.im', email: 'form@kevink.im' };
 
 function json(body: unknown, status = 200, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {

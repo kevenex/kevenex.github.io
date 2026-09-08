@@ -304,17 +304,14 @@ The honeypot is checked in the form *and* on the route: a bot that posts straigh
 to the endpoint never renders the field the page hides, so the client-side check
 alone would only catch the polite ones.
 
-Setting it up on a fresh account is four steps, none of them in code:
+Setting it up on a fresh account is three steps, none of them in code:
 
 1. Email Routing → Destination addresses → add the inbox and **verify** it. Email
    Routing itself is inbound-only and cannot send; verifying an address here is
-   what licenses the Worker to send *to* it.
-2. Enable Email Routing on `send.kevink.im`, so `form@send.kevink.im` is a valid
-   sender identity. Machine mail gets its own subdomain to keep the apex's
-   reputation for real correspondence, and so any future SPF/DKIM/DMARC records
-   land there instead.
-3. `npx wrangler secret put CONTACT_TO` → the verified address.
-4. Optional: enable **subaddressing** under Email Routing → Settings, and publish
+   what licenses the Worker to send *to* it. Until that link is clicked the send
+   is rejected, and any routing rule pointing at the address stays disabled.
+2. `npx wrangler secret put CONTACT_TO` → the verified address.
+3. Optional: enable **subaddressing** under Email Routing → Settings, and publish
    `hello+wick@kevink.im`, `hello+flyer@kevink.im` and so on. One routing rule for
    `hello@` matches every tag and the tag survives into the message, so each
    surface gets a filterable address without a rule of its own. Verifying a
