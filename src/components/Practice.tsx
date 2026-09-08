@@ -61,7 +61,8 @@ const TIMELINE: Role[] = [
   },
   {
     start: '2024',
-    span: '2024 — Present',
+    // The end stays open: the row prints its own PRESENT, in the live colour.
+    span: '2024 —',
     role: 'Product Manager',
     company: 'Plusgrade',
     notes: ['Data migration', 'M&A'],
@@ -89,11 +90,12 @@ const NODE_REACH = '-ml-10 md:-ml-16 lg:-ml-20';
 /* No percentages. A self-assessed "95%" encodes nothing a peer can use. */
 const PRACTICE_AREAS = [
   'Product strategy',
-  'Roadmap planning',
   'Discovery & user research',
+  'Data-driven outcomes',
+  'Rapid prototyping',
+  'Agentic workflows',
+  'Roadmap planning',
   'Data migration',
-  'Agile delivery',
-  'Stakeholder management',
 ];
 
 export default function Practice() {
@@ -139,7 +141,7 @@ export default function Practice() {
           {...reveal}
           transition={{ ...reveal.transition, delay: 0.05 }}
         >
-          Six years of shipping product, mostly in financial services.
+          Six years of building products and helping companies grow.
         </motion.h2>
       </div>
 
@@ -235,8 +237,32 @@ export default function Practice() {
                       viewport={{ once: true, amount: 0.6 }}
                       transition={{ duration: still ? 0 : 0.7, ease: EASE, delay: still ? 0 : 0.06 }}
                     >
-                      <span className="tabular font-mono text-data uppercase text-muted">
-                        {entry.span}
+                      {/*
+                       * The years and the live marker are one phrase, so they
+                       * sit in their own group at a tighter gap than the
+                       * gap-x-4 separating them from the notes. Amber is the
+                       * system's live-state colour: the word takes `amber`
+                       * (measured as text in both themes) and the pip takes
+                       * `amber-dot`, which is a mark and never text. The pip
+                       * does not pulse — the node out on the spine already
+                       * does, and one live pulse in a row is enough.
+                       */}
+                      <span className="flex items-center gap-2">
+                        <span className="tabular font-mono text-data uppercase text-muted">
+                          {entry.span}
+                        </span>
+
+                        {isNow && (
+                          <>
+                            <span
+                              aria-hidden="true"
+                              className="h-[6px] w-[6px] shrink-0 rounded-full bg-amber-dot"
+                            />
+                            <span className="font-mono text-data uppercase text-amber">
+                              Present
+                            </span>
+                          </>
+                        )}
                       </span>
 
                       {entry.notes?.map((note) => (

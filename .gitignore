@@ -3,8 +3,10 @@ dist
 dist-ssr
 *.local
 
-# Wrangler's local state for `wrangler dev` / `wrangler deploy` runs.
+# Wrangler's local state for `wrangler dev` / `wrangler deploy` runs, and the
+# local stand-in for the CONTACT_TO secret. Neither belongs in a public repo.
 .wrangler
+.dev.vars
 
 logs
 *.log
