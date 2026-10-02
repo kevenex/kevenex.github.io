@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 /*
  * The page hangs off one left rail and never resets it. The spine sits on
- * RAIL; everything else clears it with RAIL_PAD. The Practice timeline's
+ * RAIL; everything else clears it with RAIL_PAD. The Experience timeline's
  * nodes reuse RAIL so they land on exactly the same axis the reader has
  * been following since the top of the page — that shared coordinate is what
  * makes the spine *become* the timeline rather than resemble it.

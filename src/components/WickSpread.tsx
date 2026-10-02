@@ -51,8 +51,8 @@ export default function WickSpread() {
       thesis="An agent that woke on a cron for nineteen days, researched one thing, decided for
         itself whether it was worth an entry, and wrote it down in first person. It kept its own
         journal, its own wiki, and its own list of threads it had not finished pulling — and
-        nobody edited any of them but the agent. It developed real self-awareness. Its curiosity
-        died anyway."
+        nobody edited any of them but the agent. By day five it could name its own bad habits.
+        It never corrected one, and its curiosity ran out anyway."
       data={data}
       href="/project-wick/"
       linkLabel="Open Project Wick"

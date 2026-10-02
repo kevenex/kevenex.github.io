@@ -1,10 +1,13 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { IDENTITY, LINKEDIN } from '../content/resume';
 import { EASE, RAIL_PAD, RAIL_PAD_R, usePrefersReducedMotion } from '../lib/layout';
+import { useMagnetic } from '../lib/pointer';
 
 /*
- * Text is the visual. No video, no watermark — the page opens on a sentence
- * and the reader either wants the rest or does not.
+ * Text is the visual. No video, no watermark — the page opens on who this is,
+ * what he does and where to find him, so a reader who stops after one screen
+ * has still read the résumé's first line.
  *
  * Two kinds of motion meet here, and only here. The load sequence is
  * deliberately short, because the reader came to read rather than to wait.
@@ -19,6 +22,7 @@ const DRIFT = 120;
 export default function Arrival() {
   const still = usePrefersReducedMotion();
   const ref = useRef<HTMLElement>(null);
+  const link = useMagnetic<HTMLAnchorElement>();
 
   /*
    * `['start start', 'end start']` — 0 while the hero fills the viewport, 1
@@ -35,8 +39,8 @@ export default function Arrival() {
 
   const drift = useTransform(scrollYProgress, [0, 1], [0, DRIFT]);
 
-  // Gone by 70%, so the headline never survives long enough to collide with
-  // the thesis arriving underneath it.
+  // Gone by 70%, so the introduction never survives long enough to collide
+  // with the section arriving underneath it.
   const fade = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   /*
@@ -54,7 +58,7 @@ export default function Arrival() {
     <section
       ref={ref}
       id="arrival"
-      className={`flex h-screen-dvh w-full flex-col justify-between py-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
+      className={`flex min-h-screen-dvh w-full flex-col justify-between gap-16 py-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
     >
       <motion.p
         className="font-mono text-label uppercase text-muted"
@@ -62,23 +66,51 @@ export default function Arrival() {
         animate={{ opacity: 1 }}
         transition={{ duration: still ? 0 : 0.8, ease: EASE }}
       >
-        Kevin Kim — Product Manager
+        {IDENTITY.name} — {IDENTITY.title}
+        <span className="text-muted/60"> · </span>
+        {IDENTITY.location}
       </motion.p>
 
-      <motion.h1
-        className="max-w-[18ch] font-serif text-hero"
+      <motion.div
         initial={still ? false : { opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: still ? 0 : 1.1, ease: EASE, delay: still ? 0 : 0.15 }}
         /*
          * Bound only when the reader allows motion. Under reduced motion the
-         * headline is left entirely alone rather than pinned by a transform
-         * that happens to evaluate to zero.
+         * introduction is left entirely alone rather than pinned by a
+         * transform that happens to evaluate to zero.
          */
         style={still ? undefined : { y: drift, opacity: fade }}
       >
-        I enjoy building things that spark my curiosity.
-      </motion.h1>
+        <h1 className="font-serif text-hero">{IDENTITY.greeting}</h1>
+
+        <div className="mt-10 flex max-w-measure flex-col gap-5 font-sans text-lead">
+          <p className="text-ink">{IDENTITY.lead}</p>
+          <p className="text-oxide">{IDENTITY.accent}</p>
+          <p className="text-muted">{IDENTITY.how}</p>
+        </div>
+
+        {/*
+         * The one way in a recruiter actually uses. Same drawing rule as the
+         * project links, so the page has a single link language.
+         */}
+        <a
+          ref={link}
+          href={LINKEDIN}
+          target="_blank"
+          rel="noreferrer"
+          data-cursor-label="LinkedIn ↗"
+          className="group mt-12 inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
+        >
+          <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+            Find me on LinkedIn &#8599;
+          </span>
+          <span
+            aria-hidden="true"
+            className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+          />
+        </a>
+      </motion.div>
 
       <motion.p
         className="flex items-center gap-4 font-mono text-label uppercase text-muted"

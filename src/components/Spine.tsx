@@ -4,7 +4,7 @@ import { RAIL } from '../lib/layout';
 
 /*
  * One rule, running the full length of the document's middle. Every movement
- * hangs off it, and in Practice it grows nodes and becomes the career
+ * hangs off it, and in Experience it grows nodes and becomes the career
  * timeline — the same element throughout, not a motif repeated per section.
  *
  * That is what makes the page provably one canvas: nothing reads as a section
@@ -53,9 +53,9 @@ export default function Spine({ children }: { children: ReactNode }) {
          * between two close tones.
          *
          * A gradient rather than a dot, deliberately. The spine runs through
-         * Practice's timeline on exactly the same axis as its 9px nodes, and
+         * Experience's timeline on exactly the same axis as its 9px nodes, and
          * a dot travelling down that axis would read as a sixth node
-         * colliding with the five real ones. `-translate-y-full` hangs it
+         * colliding with the real ones. `-translate-y-full` hangs it
          * back into the filled length so the tip is the bright end.
          */}
         <motion.div

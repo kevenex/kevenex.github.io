@@ -79,7 +79,7 @@ export default function Spread({
     >
       <motion.div className="flex items-center gap-4" {...reveal}>
         {mark}
-        <p className="font-mono text-label uppercase text-muted">Featured work</p>
+        <p className="font-mono text-label uppercase text-muted">A project I built</p>
       </motion.div>
 
       <motion.h2

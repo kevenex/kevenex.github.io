@@ -1,6 +1,7 @@
 import { type MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import KevinKLogo from './KevinKLogo';
+import { LINKEDIN } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 import { useScrollTo } from '../lib/lenis-context';
 import { useMagnetic } from '../lib/pointer';
@@ -29,6 +30,7 @@ export default function Colophon() {
 
   const scrollTo = useScrollTo();
 
+  const linkedin = useMagnetic<HTMLAnchorElement>();
   const wick = useMagnetic<HTMLAnchorElement>();
   const flyer = useMagnetic<HTMLAnchorElement>();
   const top = useMagnetic<HTMLAnchorElement>();
@@ -51,11 +53,50 @@ export default function Colophon() {
         </div>
 
         <div className="mt-14 grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)]">
-          <p className="max-w-measure font-sans text-body text-band-text/60">
-            Built with Claude.
-          </p>
+          {/*
+           * A native disclosure rather than a page of its own: it works with
+           * no JavaScript, opens from the keyboard, and keeps the note at the
+           * foot of the page it describes.
+           */}
+          <details className="group max-w-measure font-sans text-body text-band-text/60">
+            <summary className="w-fit cursor-pointer list-none font-mono text-label uppercase text-band-text/70 outline-none transition-colors hover:text-oxide-lift focus-visible:text-oxide-lift focus-visible:ring-1 focus-visible:ring-oxide-lift focus-visible:ring-offset-2 focus-visible:ring-offset-band [&::-webkit-details-marker]:hidden">
+              How I built this
+              <span aria-hidden="true" className="ml-2 inline-block transition-transform group-open:rotate-45">
+                +
+              </span>
+            </summary>
+
+            <div className="mt-6 flex flex-col gap-4">
+              <p>
+                Built with Claude Code, in conversation: React, TypeScript, Vite and Tailwind,
+                with Framer Motion and Lenis for the scroll. A small Cloudflare Worker delivers the
+                contact form.
+              </p>
+              <p>
+                Three typefaces, each with a job. Instrument Serif is the human voice, Instrument
+                Sans the working one, and Space Mono the machine&rsquo;s &mdash; anything a machine
+                produced, from years to commit hashes, is set in mono.
+              </p>
+            </div>
+          </details>
 
           <dl className="flex flex-col gap-3 font-mono text-data text-band-text/50">
+            <div className="flex justify-between gap-6">
+              <dt className="uppercase tracking-[0.1em]">Elsewhere</dt>
+              <dd className="text-right">
+                <a
+                  ref={linkedin}
+                  href={LINKEDIN}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor-label="LinkedIn ↗"
+                  className={LINK}
+                >
+                  LinkedIn
+                </a>
+              </dd>
+            </div>
+
             <div className="flex justify-between gap-6">
               <dt className="uppercase tracking-[0.1em]">Projects</dt>
               <dd className="text-right">
