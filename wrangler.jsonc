@@ -6,6 +6,16 @@
   "observability": {
     "enabled": true
   },
+  // Both hostnames, as Custom Domains: on deploy Cloudflare creates the DNS
+  // record and certificate for each. The apex is the one that matters — it is
+  // what people type off a résumé, and until this it had no record at all
+  // (only www resolved). A deploy fails if either host already has a DNS record
+  // or route of its own in the dashboard; delete that first. See README →
+  // Deploying.
+  "routes": [
+    { "pattern": "kevink.im", "custom_domain": true },
+    { "pattern": "www.kevink.im", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./dist",
     // A missing path serves the app shell instead of a 404 — appropriate for
