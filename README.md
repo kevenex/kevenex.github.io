@@ -1,8 +1,28 @@
 # KevinK
 
-Personal site for **Kevin Kim**. Three typographic voices, one continuous
-scroll, and a warm palette in both light and dark. The home page is a single
-page; projects live as their own static pages under `public/`.
+Personal site for **Kevin Kim**, written to be read by recruiters and hiring
+managers. Three typographic voices, one continuous scroll, and a warm palette in
+both light and dark. The home page is a single page; projects live as their own
+static pages under `public/`.
+
+## The page, in reading order
+
+Résumé first, evidence after — the structure is modelled on how a recruiter
+reads, and on tariquekhan.ca's plain-spoken version of it:
+
+1. **Arrival** — name, title, location, three lines on what he does, LinkedIn.
+2. **Experience** — newest first. The current role is a framed card; every role
+   before it is a headline, what happened, and *What I took from it*.
+3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
+4. **How I work** — one principle, and three things a team can hand over.
+5. **Curiosity** — Project Wick and Flyer Fable, framed as things built on his own time.
+6. **Credentials** — education, certifications, skills.
+7. **Contact** — LinkedIn first; the form underneath.
+
+**All career copy lives in `src/content/resume.ts`.** Components lay it out and
+carry none of their own. It is deliberately anonymized — outcomes without vendor
+names or exact figures — so check any new line against that before adding it.
+`OFF_THE_CLOCK` is empty on purpose: Contact prints the line only once it exists.
 
 ## The design, in one paragraph
 
@@ -35,6 +55,8 @@ worker/
   index.ts                 POST /api/contact — the only server (see Contact, below)
 src/
   App.tsx                  Page composition
+  content/
+    resume.ts              Every word of career copy — the one place to edit it
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
@@ -44,14 +66,17 @@ src/
     theme.ts               Light/dark resolution and the stored preference
     contact.ts             Contact validation, shared with the Worker, and delivery
   components/
-    Arrival.tsx            Typographic hero
-    Position.tsx           The thesis
-    Spread.tsx             Shared layout for a featured project
+    Arrival.tsx            Who, what, where, and LinkedIn
+    Experience.tsx         Featured current role, then the timeline on the spine
+    Fit.tsx                Where I fit
+    HowIWork.tsx           Principle and three ways to help
+    Curiosity.tsx          The hinge into the projects
+    Spread.tsx             Shared layout for a project
     WickSpread.tsx         Project Wick, with figures read at build time
     FlyerSpread.tsx        Flyer Fable
-    Practice.tsx           Ascending career timeline
-    Contact.tsx            Name / email / message
-    Colophon.tsx           The closing dark band
+    Credentials.tsx        Education, certifications, skills
+    Contact.tsx            LinkedIn, then name / email / message
+    Colophon.tsx           The closing dark band, with How I built this
     Spine.tsx              The rule that runs the page
     Rail.tsx               Scrubbable map of the page
     Cursor.tsx             The page's own cursor
@@ -98,7 +123,7 @@ by decision, not by accident: the projects say more as an invitation to their
 own pages than as a preview embedded in this one.
 
 **The spine** (`Spine.tsx`) is the continuity device: one rule running the
-length of the document's middle, which in `Practice.tsx` grows nodes and becomes
+length of the document's middle, which in `Experience.tsx` grows nodes and becomes
 the career timeline. Both use the `RAIL` constant in `lib/layout.ts`, so they
 share one axis rather than resembling each other. Change `RAIL` or `RAIL_PAD`
 and both follow.
@@ -129,7 +154,7 @@ label. Narrow it and right-aligned content runs underneath the active label.
 position in the document, so the gaps between them are the real distances the
 reader has to cross and the fill between them is where they actually are. That
 is what makes the track worth dragging: with evenly spaced ticks, half the page
-would live under one of five equal gaps. Three things are load-bearing there
+would live under one of a handful of equal gaps. Three things are load-bearing there
 and none of them is obvious:
 
 - Offsets come from `getBoundingClientRect().top + scrollY`, never `offsetTop`.
@@ -369,6 +394,19 @@ curl -i -X POST https://<version>-kevink-im.<subdomain>.workers.dev/api/contact 
 Use a sender address that is *not* the destination inbox, or `replyTo` points at
 you and the reply behaviour cannot be checked. The real test is hitting Reply on
 the mail that arrives: the draft must address the sender, not `form@kevink.im`.
+
+#### The bare domain
+
+`kevink.im` without `www` used to have no DNS record at all, so the address
+people type off a résumé failed to resolve. `routes` in `wrangler.jsonc` now
+attaches both hostnames to the Worker as Custom Domains, and Cloudflare creates
+the record and certificate for each on the next `versions deploy`.
+
+That deploy fails if either hostname already has a DNS record, or a route of its
+own, in the dashboard — which `www` very likely does, since it already resolves.
+Delete the existing record for that host (DNS → Records) first, then deploy.
+If you would rather not touch `www`, drop it from `routes` and the apex is still
+added. Check afterwards with `dig +short kevink.im`.
 
 ## Before the Coming Soon gate comes off
 
