@@ -425,11 +425,13 @@ people type off a résumé failed to resolve. `routes` in `wrangler.jsonc` now
 attaches both hostnames to the Worker as Custom Domains, and Cloudflare creates
 the record and certificate for each on the next `versions deploy`.
 
-That deploy fails if either hostname already has a DNS record, or a route of its
-own, in the dashboard — which `www` very likely does, since it already resolves.
-Delete the existing record for that host (DNS → Records) first, then deploy.
-If you would rather not touch `www`, drop it from `routes` and the apex is still
-added. Check afterwards with `dig +short kevink.im`.
+`www.kevink.im` was already a Custom Domain on this Worker (it shows in DNS as a
+locked record of type *Worker*), so listing it changes nothing. The apex only
+carried MX and TXT records for Email Routing, and those coexist with a Custom
+Domain. What would block a deploy is a hostname with its own A, AAAA or CNAME
+record; delete that one first. The same attachment can be made by hand at
+Workers & Pages → kevink-im → Settings → Domains & Routes → Add → Custom
+domain. Check afterwards with `dig +short kevink.im`.
 
 ## Before the Coming Soon gate comes off
 
