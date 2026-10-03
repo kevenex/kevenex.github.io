@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { IDENTITY, LINKEDIN } from '../content/resume';
 import { EASE, RAIL_PAD, RAIL_PAD_R, usePrefersReducedMotion } from '../lib/layout';
 import { useMagnetic } from '../lib/pointer';
+import Memoji from './Memoji';
 
 /*
  * Text is the visual. No video, no watermark — the page opens on who this is,
@@ -83,34 +84,44 @@ export default function Arrival() {
          * transform that happens to evaluate to zero.
          */
         style={still ? undefined : { y: drift, opacity: fade }}
+        className="grid items-center gap-y-8 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-x-16"
       >
-        <h1 className="font-serif text-hero">{IDENTITY.greeting}</h1>
-
-        <div className="mt-10 flex max-w-measure flex-col gap-5 font-sans text-lead">
-          <p className="text-ink">{IDENTITY.lead}</p>
-          <p className="text-muted">{IDENTITY.how}</p>
-        </div>
-
         {/*
-         * The one way in a recruiter actually uses. Same drawing rule as the
-         * project links, so the page has a single link language.
+         * First in the source so that, stacked, it sits above the greeting;
+         * from xl it moves to the second column, beside the text. It rides
+         * the same drift and fade, so the hero leaves as one piece.
          */}
-        <a
-          ref={link}
-          href={LINKEDIN}
-          target="_blank"
-          rel="noreferrer"
-          data-cursor-label="LinkedIn ↗"
-          className="group mt-12 inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
-        >
-          <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
-            Find me on LinkedIn &#8599;
-          </span>
-          <span
-            aria-hidden="true"
-            className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
-          />
-        </a>
+        <Memoji className="w-24 sm:w-28 xl:order-last xl:w-[280px]" />
+
+        <div>
+          <h1 className="font-serif text-hero">{IDENTITY.greeting}</h1>
+
+          <div className="mt-10 flex max-w-measure flex-col gap-5 font-sans text-lead">
+            <p className="text-ink">{IDENTITY.lead}</p>
+            <p className="text-muted">{IDENTITY.how}</p>
+          </div>
+
+          {/*
+           * The one way in a recruiter actually uses. Same drawing rule as the
+           * project links, so the page has a single link language.
+           */}
+          <a
+            ref={link}
+            href={LINKEDIN}
+            target="_blank"
+            rel="noreferrer"
+            data-cursor-label="LinkedIn ↗"
+            className="group mt-12 inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
+          >
+            <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+              Find me on LinkedIn &#8599;
+            </span>
+            <span
+              aria-hidden="true"
+              className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+            />
+          </a>
+        </div>
       </motion.div>
 
       <motion.p
