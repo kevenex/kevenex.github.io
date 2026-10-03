@@ -11,7 +11,7 @@ Résumé first, evidence after — the structure is modelled on how a recruiter
 reads, and on tariquekhan.ca's plain-spoken version of it:
 
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
-   his Memoji turning to follow the cursor.
+   his Memoji.
 2. **Experience** — newest first. The current role is a framed card; every role
    before it is a headline, what happened, and *What I took from it*.
 3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
@@ -48,10 +48,10 @@ public/
   flyer-fable/             Standalone flight game — see below
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
-  memoji/kevin.webp        24-frame sprite of one head turn — see Memoji, below
+  memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
   favicon.svg
 scripts/
-  build-memoji.mjs         Cuts the Memoji sprite out of a recording
+  build-memoji.mjs         Cuts the Memoji still out of a recording
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
 worker/
@@ -70,7 +70,7 @@ src/
     contact.ts             Contact validation, shared with the Worker, and delivery
   components/
     Arrival.tsx            Who, what, where, and LinkedIn
-    Memoji.tsx             The head that follows the cursor
+    Memoji.tsx             The still Memoji beside the introduction
     Experience.tsx         Featured current role, then the timeline on the spine
     Fit.tsx                Where I fit
     HowIWork.tsx           Principle and three ways to help
@@ -206,14 +206,13 @@ appears.
 
 ## Memoji
 
-`Memoji.tsx` turns Kevin's head toward the cursor by scrubbing through 24 real
-frames of one recorded head turn (facing the reader's right at frame 0, their
-left at 23, front-on at 13), with a small 3D tilt for up and down. It follows
-the page's motion rules: the cursor-follow lives behind `useHoverLayer()`, touch
-gets a slow look from side to side, and reduced motion holds the front frame.
-Nothing animates while the hero is off screen or the tab is hidden.
+The hero's Memoji is a single still frame. It used to turn toward the cursor by
+scrubbing 24 frames of a recorded head turn; that was taken out because the
+motion never read cleanly at this size. If it comes back, regenerate a sprite
+rather than reviving the old component from history blind — the frame choice
+and the cut-out are where the work was.
 
-The sprite is generated, not drawn. The recording is on pure black and the hair
+The image is generated, not drawn. The recording is on pure black and the hair
 is near-black, so a colour key would take the hair with it;
 `scripts/build-memoji.mjs` floods the background in from the edges instead and
 softens the rim into alpha. The `.mov` files are not committed (large, and they

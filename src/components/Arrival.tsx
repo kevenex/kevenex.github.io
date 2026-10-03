@@ -12,9 +12,9 @@ import Memoji from './Memoji';
  *
  * Two kinds of motion meet here, and only here. The load sequence is
  * deliberately short, because the reader came to read rather than to wait.
- * Everything after it is bound to the scroll: the headline drifts and fades
- * on the way out, and the scroll cue turns into an instrument reporting how
- * far through that exit the reader is.
+ * Everything after it is bound to the scroll: the introduction drifts and
+ * fades on the way out. There is no scroll cue — the rail already says the
+ * page goes on, and the first screen is better spent on the résumé.
  */
 
 /** How far the headline lags the page on its way out, in pixels. */
@@ -27,11 +27,8 @@ export default function Arrival() {
 
   /*
    * `['start start', 'end start']` — 0 while the hero fills the viewport, 1
-   * exactly as its last pixel leaves the top. For a full-height first section
-   * that is the first screen of scrolling and nothing beyond it, so the
-   * readout below measures the hero's own exit rather than the document's
-   * progress. The rail owns the document (see Rail.tsx); printing the same
-   * number in two places would make both of them mean less.
+   * exactly as its last pixel leaves the top — the hero's own exit, which is
+   * what the drift and fade are timed against.
    */
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -44,22 +41,11 @@ export default function Arrival() {
   // with the section arriving underneath it.
   const fade = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  /*
-   * Rendered by passing the MotionValue straight to `motion.span` as a child.
-   * Framer Motion subscribes to it and writes the text node itself — reading
-   * it into `useState` would re-render the hero on every frame of the scroll.
-   */
-  const readout = useTransform(scrollYProgress, (value) =>
-    Math.round(value * 100)
-      .toString()
-      .padStart(3, '0')
-  );
-
   return (
     <section
       ref={ref}
       id="arrival"
-      className={`flex min-h-screen-dvh w-full flex-col justify-between gap-16 py-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
+      className={`flex min-h-screen-dvh w-full flex-col gap-16 py-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
     >
       <motion.p
         className="font-mono text-label uppercase text-muted"
@@ -84,7 +70,7 @@ export default function Arrival() {
          * transform that happens to evaluate to zero.
          */
         style={still ? undefined : { y: drift, opacity: fade }}
-        className="grid items-center gap-y-8 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-x-16"
+        className="my-auto grid items-center gap-y-8 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-x-16"
       >
         {/*
          * First in the source so that, stacked, it sits above the greeting;
@@ -123,38 +109,6 @@ export default function Arrival() {
           </a>
         </div>
       </motion.div>
-
-      <motion.p
-        className="flex items-center gap-4 font-mono text-label uppercase text-muted"
-        initial={still ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: still ? 0 : 0.8, ease: EASE, delay: still ? 0 : 0.6 }}
-      >
-        Scroll
-        {/*
-         * The instrument half is hidden from assistive tech outright. A figure
-         * that changes on every frame of a scroll is nothing a screen reader
-         * can usefully announce, and "Scroll" above already carries the whole
-         * meaning for anyone not watching it move.
-         */}
-        {!still && (
-          <>
-            <span
-              aria-hidden="true"
-              className="relative h-px w-20 overflow-hidden bg-ink/20"
-            >
-              <motion.span
-                className="absolute inset-0 origin-left bg-oxide"
-                style={{ scaleX: scrollYProgress }}
-              />
-            </span>
-
-            <motion.span aria-hidden="true" className="tabular text-oxide">
-              {readout}
-            </motion.span>
-          </>
-        )}
-      </motion.p>
     </section>
   );
 }
