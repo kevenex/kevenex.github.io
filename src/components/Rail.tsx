@@ -3,10 +3,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useScrollTo, useScrollToOffset } from '../lib/lenis-context';
 
 const SECTIONS = [
-  { id: 'position', label: 'Position' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'fit', label: 'Where I fit' },
+  { id: 'how', label: 'How I work' },
   { id: 'wick', label: 'Project Wick' },
   { id: 'flyer', label: 'Flyer Fable' },
-  { id: 'practice', label: 'Practice' },
+  { id: 'credentials', label: 'Credentials' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -18,13 +20,13 @@ const SECTIONS = [
  *
  * Evenly spaced ticks would say which section you are in and nothing about
  * where; they would also make the track a lie to drag along, since half the
- * page would live under one of five equal gaps.
+ * page would live under one of the equal gaps.
  *
  * Real anchors, not buttons: they work without JavaScript, they can be opened
  * or copied like any link, and the click handler only takes over to route the
  * scroll through Lenis instead of letting the browser jump. The fill and the
  * drag surface are `aria-hidden` enhancements laid over them — keyboard
- * readers get the five links, which lose nothing.
+ * readers get the links, which lose nothing.
  */
 
 /** Even spacing, held only until the first measurement lands a frame later. */

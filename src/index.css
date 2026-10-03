@@ -102,6 +102,21 @@ h3 {
       height: 100dvh;
     }
   }
+
+  /*
+   * The same, as a floor rather than a fixed height — for a section whose
+   * content can outgrow a short viewport (the hero on a phone in landscape)
+   * and must push the page down rather than be clipped by it.
+   */
+  .min-h-screen-dvh {
+    min-height: 100vh;
+  }
+
+  @supports (min-height: 100dvh) {
+    .min-h-screen-dvh {
+      min-height: 100dvh;
+    }
+  }
 }
 
 /*

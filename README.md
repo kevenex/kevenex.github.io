@@ -1,8 +1,29 @@
 # KevinK
 
-Personal site for **Kevin Kim**. Three typographic voices, one continuous
-scroll, and a warm palette in both light and dark. The home page is a single
-page; projects live as their own static pages under `public/`.
+Personal site for **Kevin Kim**, written to be read by recruiters and hiring
+managers. Three typographic voices, one continuous scroll, and a warm palette in
+both light and dark. The home page is a single page; projects live as their own
+static pages under `public/`.
+
+## The page, in reading order
+
+Résumé first, evidence after — the structure is modelled on how a recruiter
+reads, and on tariquekhan.ca's plain-spoken version of it:
+
+1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
+   his Memoji turning to follow the cursor.
+2. **Experience** — newest first. The current role is a framed card; every role
+   before it is a headline, what happened, and *What I took from it*.
+3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
+4. **How I work** — one principle, and the things a team can hand over.
+5. **Curiosity** — Project Wick and Flyer Fable, framed as things built on his own time.
+6. **Credentials** — education, certifications, skills.
+7. **Contact** — LinkedIn first; the form underneath.
+
+**All career copy lives in `src/content/resume.ts`.** Components lay it out and
+carry none of their own. It is deliberately anonymized — outcomes without vendor
+names or exact figures — so check any new line against that before adding it.
+`OFF_THE_CLOCK` is empty on purpose: Contact prints the line only once it exists.
 
 ## The design, in one paragraph
 
@@ -27,14 +48,18 @@ public/
   flyer-fable/             Standalone flight game — see below
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
+  memoji/kevin.webp        24-frame sprite of one head turn — see Memoji, below
   favicon.svg
 scripts/
+  build-memoji.mjs         Cuts the Memoji sprite out of a recording
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
 worker/
   index.ts                 POST /api/contact — the only server (see Contact, below)
 src/
   App.tsx                  Page composition
+  content/
+    resume.ts              Every word of career copy — the one place to edit it
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
@@ -44,14 +69,18 @@ src/
     theme.ts               Light/dark resolution and the stored preference
     contact.ts             Contact validation, shared with the Worker, and delivery
   components/
-    Arrival.tsx            Typographic hero
-    Position.tsx           The thesis
-    Spread.tsx             Shared layout for a featured project
+    Arrival.tsx            Who, what, where, and LinkedIn
+    Memoji.tsx             The head that follows the cursor
+    Experience.tsx         Featured current role, then the timeline on the spine
+    Fit.tsx                Where I fit
+    HowIWork.tsx           Principle and three ways to help
+    Curiosity.tsx          The hinge into the projects
+    Spread.tsx             Shared layout for a project
     WickSpread.tsx         Project Wick, with figures read at build time
     FlyerSpread.tsx        Flyer Fable
-    Practice.tsx           Ascending career timeline
-    Contact.tsx            Name / email / message
-    Colophon.tsx           The closing dark band
+    Credentials.tsx        Education, certifications, skills
+    Contact.tsx            LinkedIn, then name / email / message
+    Colophon.tsx           The closing dark band, with How I built this
     Spine.tsx              The rule that runs the page
     Rail.tsx               Scrubbable map of the page
     Cursor.tsx             The page's own cursor
@@ -98,7 +127,7 @@ by decision, not by accident: the projects say more as an invitation to their
 own pages than as a preview embedded in this one.
 
 **The spine** (`Spine.tsx`) is the continuity device: one rule running the
-length of the document's middle, which in `Practice.tsx` grows nodes and becomes
+length of the document's middle, which in `Experience.tsx` grows nodes and becomes
 the career timeline. Both use the `RAIL` constant in `lib/layout.ts`, so they
 share one axis rather than resembling each other. Change `RAIL` or `RAIL_PAD`
 and both follow.
@@ -129,7 +158,7 @@ label. Narrow it and right-aligned content runs underneath the active label.
 position in the document, so the gaps between them are the real distances the
 reader has to cross and the fill between them is where they actually are. That
 is what makes the track worth dragging: with evenly spaced ticks, half the page
-would live under one of five equal gaps. Three things are load-bearing there
+would live under one of a handful of equal gaps. Three things are load-bearing there
 and none of them is obvious:
 
 - Offsets come from `getBoundingClientRect().top + scrollY`, never `offsetTop`.
@@ -174,6 +203,25 @@ sits at `opacity: 0` waiting for an intersection the CSS cannot influence. Use
 animated, and `useHoverLayer()` from `lib/pointer.ts` for anything that responds
 to a pointer, or a reader who asked for no motion gets content that never
 appears.
+
+## Memoji
+
+`Memoji.tsx` turns Kevin's head toward the cursor by scrubbing through 24 real
+frames of one recorded head turn (facing the reader's right at frame 0, their
+left at 23, front-on at 13), with a small 3D tilt for up and down. It follows
+the page's motion rules: the cursor-follow lives behind `useHoverLayer()`, touch
+gets a slow look from side to side, and reduced motion holds the front frame.
+Nothing animates while the hero is off screen or the tab is hidden.
+
+The sprite is generated, not drawn. The recording is on pure black and the hair
+is near-black, so a colour key would take the hair with it;
+`scripts/build-memoji.mjs` floods the background in from the edges instead and
+softens the rim into alpha. The `.mov` files are not committed (large, and they
+carry audio). To rebuild, with an ffmpeg that decodes H.264 and encodes WebP:
+
+```sh
+FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs EmojiMovie812735549.mov
+```
 
 ## Project Wick (`/project-wick/`)
 
@@ -369,6 +417,21 @@ curl -i -X POST https://<version>-kevink-im.<subdomain>.workers.dev/api/contact 
 Use a sender address that is *not* the destination inbox, or `replyTo` points at
 you and the reply behaviour cannot be checked. The real test is hitting Reply on
 the mail that arrives: the draft must address the sender, not `form@kevink.im`.
+
+#### The bare domain
+
+`kevink.im` without `www` used to have no DNS record at all, so the address
+people type off a résumé failed to resolve. `routes` in `wrangler.jsonc` now
+attaches both hostnames to the Worker as Custom Domains, and Cloudflare creates
+the record and certificate for each on the next `versions deploy`.
+
+`www.kevink.im` was already a Custom Domain on this Worker (it shows in DNS as a
+locked record of type *Worker*), so listing it changes nothing. The apex only
+carried MX and TXT records for Email Routing, and those coexist with a Custom
+Domain. What would block a deploy is a hostname with its own A, AAAA or CNAME
+record; delete that one first. The same attachment can be made by hand at
+Workers & Pages → kevink-im → Settings → Domains & Routes → Add → Custom
+domain. Check afterwards with `dig +short kevink.im`.
 
 ## Before the Coming Soon gate comes off
 

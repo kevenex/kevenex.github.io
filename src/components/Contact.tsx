@@ -1,6 +1,8 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
+import { LINKEDIN, OFF_THE_CLOCK } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
+import { useMagnetic } from '../lib/pointer';
 import {
   submitContact,
   validateContact,
@@ -11,7 +13,10 @@ import {
 const EMPTY: ContactMessage = { name: '', email: '', message: '' };
 
 /*
- * The page's one interactive moment, and it stays in the same register as
+ * LinkedIn first, because that is how a recruiter actually gets in touch; the
+ * form stays underneath for anyone who would rather leave a note.
+ *
+ * The form is the page's one interactive moment, and it stays in the same register as
  * everything above it: a form that looks like a printed document rather than
  * an app. Fields are underlined rules, labels take the machine voice, and
  * submit is the same drawing rule the project links use — no filled buttons,
@@ -19,6 +24,7 @@ const EMPTY: ContactMessage = { name: '', email: '', message: '' };
  */
 export default function Contact() {
   const reveal = useReveal();
+  const linkedin = useMagnetic<HTMLAnchorElement>();
 
   const ids = useId();
   const [values, setValues] = useState<ContactMessage>(EMPTY);
@@ -66,22 +72,55 @@ export default function Contact() {
         Contact
       </motion.p>
 
-      <motion.h2
-        className="mt-8 max-w-[20ch] font-serif text-section"
+      <motion.div
+        className="mt-8"
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.05 }}
       >
-        Want to chat? Reach out and I’ll get back to you.
-      </motion.h2>
+        <a
+          ref={linkedin}
+          href={LINKEDIN}
+          target="_blank"
+          rel="noreferrer"
+          data-cursor-label="LinkedIn ↗"
+          className="group inline-block font-serif text-section text-ink outline-none"
+        >
+          <span className="underline decoration-ink/25 decoration-1 underline-offset-[0.18em] transition-colors group-hover:text-oxide group-hover:decoration-oxide group-focus-visible:text-oxide group-focus-visible:decoration-oxide">
+            Find me on LinkedIn
+          </span>
+          <span aria-hidden="true" className="ml-2 text-oxide">
+            &#8599;
+          </span>
+        </a>
+
+        <p className="mt-6 max-w-measure font-sans text-lead text-muted">
+          Happy to talk about product, fintech, or anything I&rsquo;ve built here.
+        </p>
+
+        {/* Renders nothing until there is a real line to print. */}
+        {OFF_THE_CLOCK && (
+          <p className="mt-8 max-w-measure font-sans text-body text-muted">
+            <span className="font-medium text-ink">Off the clock.</span> {OFF_THE_CLOCK}
+          </p>
+        )}
+      </motion.div>
+
+      <motion.p
+        className="mt-20 border-t border-ink/15 pt-8 font-mono text-label uppercase text-muted"
+        {...reveal}
+        transition={{ ...reveal.transition, delay: 0.1 }}
+      >
+        Or leave a note
+      </motion.p>
 
       <motion.div
-        className="mt-16 max-w-2xl"
+        className="mt-10 max-w-2xl"
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.15 }}
       >
         {outcome === 'sent' ? (
           <p className="max-w-measure font-serif text-lead text-ink" role="status">
-            Thanks — that’s in my inbox. I’ll get back to you.
+            Thanks, that’s in my inbox. I’ll get back to you.
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
@@ -140,8 +179,8 @@ export default function Contact() {
 
               {outcome === 'failed' && (
                 <p className="max-w-measure font-mono text-data text-oxide" role="alert">
-                  That did not send, and nothing was delivered. Try again — if it
-                  keeps failing, the fault is at my end rather than yours.
+                  That didn&rsquo;t send, and nothing was delivered. Try again. If it
+                  keeps failing, the problem is on my end, not yours.
                 </p>
               )}
             </div>

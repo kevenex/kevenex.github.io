@@ -24,9 +24,9 @@ export default function FlyerSpread() {
     <Spread
       id="flyer"
       title="Flyer Fable"
-      thesis="A first-person flight the length of South Korea, over terrain built at true
-        geographic scale rather than to taste. Everything renders in the browser from a
-        single static page — no build step, no bundler, one self-hosted copy of Three.js."
+      thesis="A first-person flight down the length of South Korea, over terrain built to real
+        geographic scale. It all runs in the browser from one static page, with a single
+        self-hosted copy of Three.js and no build step."
       data={DATA}
       href="/flyer-fable/"
       linkLabel="Open Flyer Fable"
