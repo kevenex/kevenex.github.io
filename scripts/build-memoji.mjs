@@ -1,12 +1,13 @@
 /**
- * Builds public/memoji/kevin.webp from a Memoji recording.
+ * Builds public/memoji/kevin.webp — one still, transparent frame — from a
+ * Memoji recording.
  *
- *   FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs path/to/EmojiMovie.mov [start] [frames]
+ *   FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs path/to/EmojiMovie.mov [start] [frame]
  *
- * Defaults match the shipped sprite: EmojiMovie812735549.mov, 20.55s in, the
- * first 24 of 36 frames sampled over 1.6s — one continuous head turn from
- * facing the reader's right to their left. The recordings themselves are not
- * committed (they are large and carry audio).
+ * Defaults match the shipped image: EmojiMovie812735549.mov, sampled from
+ * 20.55s at 36 frames over 1.6s, keeping frame 13 — the most front-on point of
+ * a head turn. The recordings themselves are not committed (they are large and
+ * carry audio).
  *
  * Needs an ffmpeg that decodes H.264 and encodes libwebp. Playwright's bundled
  * one does neither; `npx @ffmpeg-installer/ffmpeg` in a scratch directory does.
@@ -22,16 +23,16 @@ import { writeFileSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const [input, start = '20.55', keep = '24'] = process.argv.slice(2);
+const [input, start = '20.55', pick = '13'] = process.argv.slice(2);
 const ffmpeg = process.env.FFMPEG ?? 'ffmpeg';
 if (!input) {
-  console.error('usage: FFMPEG=… node scripts/build-memoji.mjs <movie.mov> [start] [frames]');
+  console.error('usage: FFMPEG=… node scripts/build-memoji.mjs <movie.mov> [start] [frame]');
   process.exit(1);
 }
 
-const W = 640, H = 480, SAMPLED = 36, SPAN = 1.6, COLS = 6;
+const W = 640, H = 480, SAMPLED = 36, SPAN = 1.6;
 const BG = 8, EDGE = 40, PAD = 6;
-const KEEP = Number(keep);
+const FRAME = Number(pick);
 
 const raw = execFileSync(ffmpeg, [
   '-hide_banner', '-loglevel', 'error', '-ss', start, '-t', String(SPAN), '-i', input,
@@ -40,12 +41,12 @@ const raw = execFileSync(ffmpeg, [
 ], { maxBuffer: 1 << 30 });
 
 const FS = W * H * 3;
-const n = Math.min(KEEP, raw.length / FS);
+if (FRAME < 0 || FRAME >= raw.length / FS) throw new Error(`frame ${FRAME} is outside the ${raw.length / FS} sampled`);
 let minx = W, maxx = 0, miny = H, maxy = 0;
 const frames = [];
 
-for (let f = 0; f < n; f++) {
-  const o = f * FS;
+{
+  const o = FRAME * FS;
   const mx = (i) => Math.max(raw[o + i * 3], raw[o + i * 3 + 1], raw[o + i * 3 + 2]);
   const bg = new Uint8Array(W * H);
   const queue = [];
@@ -94,22 +95,19 @@ for (let f = 0; f < n; f++) {
   frames.push(rgba);
 }
 
-// One square crop shared by every frame, so the head never jumps between them.
+// A square crop around the head, with a little room on every side.
 const S = Math.min(Math.max(maxx - minx, maxy - miny) + PAD * 2, W, H);
 const x0 = Math.max(0, Math.min(W - S, ((minx + maxx) >> 1) - (S >> 1)));
 const y0 = Math.max(0, Math.min(H - S, ((miny + maxy) >> 1) - (S >> 1)));
-const cropped = Buffer.alloc(n * S * S * 4);
-frames.forEach((frame, f) => {
-  for (let y = 0; y < S; y++) frame.copy(cropped, (f * S * S + y * S) * 4, ((y0 + y) * W + x0) * 4, ((y0 + y) * W + x0 + S) * 4);
-});
+const [frame] = frames;
+const cropped = Buffer.alloc(S * S * 4);
+for (let y = 0; y < S; y++) frame.copy(cropped, y * S * 4, ((y0 + y) * W + x0) * 4, ((y0 + y) * W + x0 + S) * 4);
 
 const dir = mkdtempSync(join(tmpdir(), 'memoji-'));
-const rawPath = join(dir, 'frames.rgba');
+const rawPath = join(dir, 'frame.rgba');
 writeFileSync(rawPath, cropped);
-const rows = Math.ceil(n / COLS);
 execFileSync(ffmpeg, [
   '-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${S}x${S}`,
-  '-i', rawPath, '-vf', `tile=${COLS}x${rows}`, '-frames:v', '1', '-c:v', 'libwebp', '-q:v', '82',
-  'public/memoji/kevin.webp',
+  '-i', rawPath, '-frames:v', '1', '-c:v', 'libwebp', '-q:v', '85', 'public/memoji/kevin.webp',
 ]);
-console.log(`public/memoji/kevin.webp — ${n} frames of ${S}px, ${COLS}×${rows}, ${readFileSync('public/memoji/kevin.webp').length} bytes`);
+console.log(`public/memoji/kevin.webp — frame ${FRAME}, ${S}px, ${readFileSync('public/memoji/kevin.webp').length} bytes`);
