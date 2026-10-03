@@ -125,9 +125,9 @@ export default function Experience() {
           {...reveal}
           transition={{ ...reveal.transition, delay: 0.1 }}
         >
-          Six companies across fintech, banking and retail. The products change; the thread
-          is taking a messy problem — a launch with a bank, a platform after an acquisition — and
-          getting it shipped and measured.
+          I&rsquo;ve worked at six companies, mostly in fintech and banking, with a year in
+          retail. The products have been very different. My part in them has mostly been the
+          same, which is working out what the problem is and getting it shipped.
         </motion.p>
 
         {/*
@@ -205,7 +205,7 @@ export default function Experience() {
             <div className="mt-6 border border-ink/15 p-6 sm:p-10 lg:p-12">
               <p className="font-sans text-[24px] leading-snug text-ink">
                 {FEATURED.company}
-                <span className="text-muted"> — {FEATURED.title}</span>
+                <span className="text-muted"> · {FEATURED.title}</span>
               </p>
 
               <dl className="mt-4 flex flex-col gap-1 font-sans text-small text-muted">
@@ -276,7 +276,7 @@ export default function Experience() {
                   </div>
                   <p className="font-sans text-[21px] leading-snug text-ink">
                     {role.company}
-                    <span className="text-muted"> — {role.title}</span>
+                    <span className="text-muted"> · {role.title}</span>
                   </p>
 
                   <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-data uppercase text-muted">

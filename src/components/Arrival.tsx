@@ -66,7 +66,9 @@ export default function Arrival() {
         animate={{ opacity: 1 }}
         transition={{ duration: still ? 0 : 0.8, ease: EASE }}
       >
-        {IDENTITY.name} — {IDENTITY.title}
+        {IDENTITY.name}
+        <span className="text-muted/60"> · </span>
+        {IDENTITY.title}
         <span className="text-muted/60"> · </span>
         {IDENTITY.location}
       </motion.p>
@@ -86,7 +88,6 @@ export default function Arrival() {
 
         <div className="mt-10 flex max-w-measure flex-col gap-5 font-sans text-lead">
           <p className="text-ink">{IDENTITY.lead}</p>
-          <p className="text-oxide">{IDENTITY.accent}</p>
           <p className="text-muted">{IDENTITY.how}</p>
         </div>
 

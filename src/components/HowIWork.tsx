@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion';
-import { Rocket, Search, Users } from 'lucide-react';
+import { Rocket, Search, Users, Wrench } from 'lucide-react';
 import { HOW, type WorkItem } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 
 const ICONS: Record<WorkItem['icon'], typeof Search> = {
   search: Search,
   people: Users,
+  build: Wrench,
   ship: Rocket,
 };
 
 /*
  * A way of working, stated once and then made concrete: one sentence of
- * principle, one paragraph of how it plays out, and three things a team can
+ * principle, one paragraph of how it plays out, and the things a team can
  * hand over. Icons are line-drawn in the accent at the stroke weight of the
  * page's hairlines, so they read as marks in the margin rather than as UI.
  */

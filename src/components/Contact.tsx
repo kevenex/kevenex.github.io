@@ -94,7 +94,7 @@ export default function Contact() {
         </a>
 
         <p className="mt-6 max-w-measure font-sans text-lead text-muted">
-          Product, fintech, and whatever I&rsquo;m building on the side.
+          Happy to talk about product, fintech, or anything I&rsquo;ve built here.
         </p>
 
         {/* Renders nothing until there is a real line to print. */}
@@ -120,7 +120,7 @@ export default function Contact() {
       >
         {outcome === 'sent' ? (
           <p className="max-w-measure font-serif text-lead text-ink" role="status">
-            Thanks — that’s in my inbox. I’ll get back to you.
+            Thanks, that’s in my inbox. I’ll get back to you.
           </p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
@@ -179,8 +179,8 @@ export default function Contact() {
 
               {outcome === 'failed' && (
                 <p className="max-w-measure font-mono text-data text-oxide" role="alert">
-                  That did not send, and nothing was delivered. Try again — if it
-                  keeps failing, the fault is at my end rather than yours.
+                  That didn&rsquo;t send, and nothing was delivered. Try again. If it
+                  keeps failing, the problem is on my end, not yours.
                 </p>
               )}
             </div>

@@ -14,7 +14,7 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 2. **Experience** — newest first. The current role is a framed card; every role
    before it is a headline, what happened, and *What I took from it*.
 3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
-4. **How I work** — one principle, and three things a team can hand over.
+4. **How I work** — one principle, and the things a team can hand over.
 5. **Curiosity** — Project Wick and Flyer Fable, framed as things built on his own time.
 6. **Credentials** — education, certifications, skills.
 7. **Contact** — LinkedIn first; the form underneath.

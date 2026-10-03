@@ -14,9 +14,8 @@ export const IDENTITY = {
   title: 'Product Manager',
   location: 'Toronto, ON',
   greeting: 'Hi. I’m Kevin.',
-  lead: 'I build fintech and data products: card platforms, payments, and the data underneath them.',
-  accent: 'Six companies, eight years, and products that move money and data.',
-  how: 'I turn ambiguous problems into shipped product — and lately, I build with AI agents.',
+  lead: 'I’m a product manager in fintech. Most of my work has been card platforms, payments, and the data behind them.',
+  how: 'I’m good at taking a problem nobody has pinned down yet and getting it to launch.',
 };
 
 export interface Role {
@@ -46,26 +45,30 @@ export const FEATURED = {
   company: 'Plusgrade',
   title: 'Product Manager',
   start: '2024',
-  span: '2024 —',
+  span: '2024–',
   city: 'Toronto',
   domain: 'Travel commerce & payments',
-  gist: 'Consolidating data after acquisitions',
+  gist: 'Bringing acquired data onto one platform',
   team: 'Data, engineering, finance and leadership',
-  headline: 'Untangling what an acquisition leaves behind.',
-  body: 'I lead product work on the systems underneath the business: bringing the data that arrived with acquisitions onto one platform, adding payment providers, and finding the infrastructure gaps that stand between the company and its AI/ML roadmap.',
-  scale: { label: 'Scale of the work', value: 'Multi-business-unit', note: 'post-acquisition data platform' },
+  headline: 'Bringing acquired companies onto one data platform.',
+  body: 'Plusgrade has grown by buying other companies, and each one came with its own systems. I lead the product work underneath all of that. I ran the project to move their data onto one platform, added new payment providers, and made the case for the infrastructure the company needs before its AI and ML plans can go anywhere.',
+  scale: {
+    label: 'Scale of the work',
+    value: 'Several business units',
+    note: 'data from acquired companies, now in one place',
+  },
   closer: [
     {
       icon: 'data',
-      text: 'Led a multi-month migration that consolidated post-acquisition data sources onto one cloud data platform.',
+      text: 'Ran a migration over several months that moved data from acquired companies onto one cloud platform.',
     },
     {
       icon: 'payments',
-      text: 'Integrated new payment providers, improving authorization rates and enabling local-currency processing.',
+      text: 'Added new payment providers, which raised authorization rates and let us process payments in local currencies.',
     },
     {
       icon: 'compass',
-      text: 'Ran discovery on the infrastructure gaps blocking the AI/ML roadmap and turned them into a funded initiative.',
+      text: 'Looked into what was holding back the AI and ML roadmap, and got the fix funded.',
     },
   ] satisfies Closer[],
 };
@@ -76,37 +79,37 @@ export const ROLES: Role[] = [
     company: 'ATB Financial',
     title: 'Product Manager',
     start: '2023',
-    span: '2023 — 2024',
+    span: '2023–2024',
     city: 'Toronto',
     domain: 'Banking',
-    gist: 'Measuring what matters',
-    headline: 'Metrics before features.',
-    body: 'I owned an identity-verification service. The first job was agreeing on what good looked like: success metrics and tracking, defined with data and engineering, which measurably improved the service’s accuracy and performance. I also standardized how the team wrote requirements and go-to-market plans.',
-    takeaway: 'if a team can’t agree on how to measure a product, it can’t agree on what to build next.',
+    gist: 'Agreeing on how to measure a product',
+    headline: 'First, agree on what good looks like.',
+    body: 'I owned an identity verification service. Before changing anything, I sat down with data and engineering to decide how we’d measure it, and we set up the tracking together. Accuracy and performance both went up after that. I also got the team writing requirements and launch plans the same way.',
+    takeaway: 'half the arguments about what to build next went away once everyone could see the same numbers.',
   },
   {
     company: 'Brim Financial',
     title: 'Senior Product Manager',
     start: '2021',
-    span: '2021 — 2023',
+    span: '2021–2023',
     city: 'Toronto',
     domain: 'Card issuing & payments',
-    gist: 'Launching card platforms with banks',
-    headline: 'Card platforms, launched with banks.',
-    body: 'I took credit card platforms from discovery to deployment with several Canadian banks, moving their cardholders and payments onto the platform. Partner institutions were in the room through pilot and early launch, and what they told us fed a roadmap I reported on to the VP of Product. Partner acquisition grew several-fold over that time.',
-    takeaway: 'a launch is only done when the partner can run it without you.',
+    gist: 'Credit card launches with banks',
+    headline: 'Launching credit cards with Canadian banks.',
+    body: 'I took card platforms from the first discovery calls to launch with several banks, which meant moving their cardholders and payments over to us. The banks were involved through the pilot and early launch, and what they told us went into the roadmap I reported on to the VP of Product. We signed a lot more partners over those two years.',
+    takeaway: 'I learned to plan the handover to the bank’s team from the first week, not the last.',
   },
   {
     company: 'Canadian Tire',
     title: 'Category Business Analyst',
     start: '2020',
-    span: '2020 — 2021',
+    span: '2020–2021',
     city: 'Toronto',
     domain: 'Retail',
-    gist: 'Turning retail data into decisions',
-    headline: 'Data from the shop floor.',
-    body: 'I supported a store-in-store rollout across hundreds of locations and helped bring an acquired business’s systems into the enterprise data warehouse. Analyzing inventory workflows led to recommendations that cut excess inventory.',
-    takeaway: 'the useful analysis is the one someone can act on by Monday.',
+    gist: 'Inventory and a store-in-store rollout',
+    headline: 'My first job out of school.',
+    body: 'I worked on a store-in-store rollout across hundreds of Canadian Tire locations and helped move an acquired company’s systems into the main data warehouse. My inventory analysis turned into recommendations the category team used, and excess stock went down.',
+    takeaway: 'I started building every analysis around the one decision it was supposed to help someone make.',
   },
   {
     company: 'IBM',
@@ -115,68 +118,73 @@ export const ROLES: Role[] = [
     span: '2019',
     city: 'Ottawa',
     domain: 'Enterprise software',
-    gist: 'Taking a prototype to production',
-    headline: 'A prototype that earned production.',
-    body: 'With engineering, I defined and evaluated a JVM optimization prototype. It validated a meaningful startup-performance gain and the feature was greenlit for production. I pitched it at the program’s final Dragon’s Den showcase in New York.',
-    takeaway: 'a prototype’s job is to make a decision easy.',
+    gist: 'A prototype that shipped',
+    headline: 'An internship that ended up in production.',
+    body: 'I worked with engineers on a prototype that made Java applications start faster. Our testing showed a real improvement, and the feature was approved for production. At the end of the program I pitched it in New York at IBM’s Dragon’s Den showcase.',
+    takeaway: 'a working prototype settled questions that weeks of slides wouldn’t have.',
   },
   {
     company: 'Intrepid Ventures',
     title: 'Business Analyst',
     start: '2018',
-    span: '2018 — 2019',
+    span: '2018–2019',
     city: 'Seoul',
     domain: 'Early-stage startup',
-    gist: 'Raising a first round',
-    headline: 'Close to the founders, first round.',
-    body: 'I worked directly with the founders and advisors on the company’s first funding round, kept relationships with investors, partners and customers, and helped take new products to market.',
-    takeaway: 'every stakeholder is answering a different question; find out which one.',
+    gist: 'A first funding round',
+    headline: 'Working next to the founders in Seoul.',
+    body: 'I worked directly with the founders and their advisors on the company’s first funding round. I also looked after relationships with investors and partners, and helped get new products to market.',
+    takeaway: 'sitting in on investor meetings taught me to answer the question someone actually asked.',
   },
 ];
 
 export const FIT = {
-  open: 'Open to product roles in fintech and data platforms.',
-  scope: 'Product management, with the discovery, data and delivery work around it.',
+  open: 'I’m looking for product roles in fintech and data platforms.',
+  scope: 'Product management, including the discovery and data work that comes with it.',
   cases: [
     {
-      title: 'You’re launching a regulated financial product.',
-      body: 'Banks, partners and compliance all shape the roadmap. I’ve taken card platforms from discovery to launch with the institutions in the room.',
+      title: 'You’re launching a financial product with bank partners.',
+      body: 'Banks and compliance teams will shape your roadmap as much as you do. I’ve launched card platforms with banks involved from the start.',
     },
     {
-      title: 'You’re consolidating systems after an acquisition.',
-      body: 'Several sources of truth and one business that needs a single answer. I’ve led that migration and know where it stalls.',
+      title: 'You bought a company and now have two of everything.',
+      body: 'Two sets of systems, and nobody is sure which numbers are right. I’ve led that kind of migration and I know where it usually gets stuck.',
     },
     {
-      title: 'You want a PM who builds before asking.',
-      body: 'I prototype with AI agents to test an idea before engineering commits to it. The two projects further down are examples.',
+      title: 'You want a PM who tries things before writing the spec.',
+      body: 'I build quick prototypes with AI tools to see if an idea holds up before engineering spends time on it. The two projects further down are things I built on my own.',
     },
   ],
 };
 
 export interface WorkItem {
-  icon: 'search' | 'people' | 'ship';
+  icon: 'search' | 'people' | 'build' | 'ship';
   title: string;
   body: string;
 }
 
 export const HOW = {
-  headline: 'Understand the decision, then build.',
-  body: 'Most product problems arrive as a feature request. I start with the decision behind it — who has to make it, and what they would need to believe — and work back to the smallest thing that answers it.',
+  headline: 'Start with who has to decide.',
+  body: 'Most requests show up as a feature someone wants. I try to find out who actually has to make the call and what they’d need to see, then build the least we can get away with to show them.',
   help: [
     {
       icon: 'search',
-      title: 'Find the real problem',
-      body: 'Discovery with customers and stakeholders until the problem is specific enough to measure.',
+      title: 'Figure out the real problem',
+      body: 'Talk to customers and stakeholders until the problem is specific enough that we’d know if we fixed it.',
     },
     {
       icon: 'people',
-      title: 'Bring the people together',
-      body: 'Product, engineering, data and partners agreeing on one roadmap and the reasons behind it.',
+      title: 'Get people to agree',
+      body: 'Product, engineering, data and partners working from the same roadmap, and knowing why it’s in that order.',
+    },
+    {
+      icon: 'build',
+      title: 'Prototype before committing',
+      body: 'A rough version built with AI tools, so we can react to something real before engineering starts.',
     },
     {
       icon: 'ship',
-      title: 'Ship it, then measure it',
-      body: 'Requirements, delivery and success metrics defined before launch, not after.',
+      title: 'Ship it and check it worked',
+      body: 'Decide how we’ll measure success before launch, then actually look at the numbers afterward.',
     },
   ] satisfies WorkItem[],
 };

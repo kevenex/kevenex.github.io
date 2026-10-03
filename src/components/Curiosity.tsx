@@ -20,7 +20,7 @@ export default function Curiosity() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.05 }}
       >
-        What I build when nobody asked.
+        Things I build on my own time.
       </motion.h2>
 
       <motion.p
@@ -28,9 +28,10 @@ export default function Curiosity() {
         {...reveal}
         transition={{ ...reveal.transition, delay: 0.1 }}
       >
-        Two projects, both made with Claude Code: an agent that woke on a cron for nineteen
-        days and wrote about what it found, and a flight over real terrain that runs in the
-        browser. They are how I keep my hands on what AI can actually do.
+        Both of these were made with Claude Code. One is an agent that woke up on a schedule
+        for nineteen days and wrote about whatever it was researching. The other is a flight
+        over South Korea that runs in the browser. Building them is how I keep up with what AI
+        tools can actually do.
       </motion.p>
     </section>
   );
