@@ -25,19 +25,24 @@ import { useMagnetic } from '../lib/pointer';
 const LINK =
   'text-band-text/80 underline decoration-band-text/25 underline-offset-4 transition-colors hover:text-oxide-lift hover:decoration-oxide-lift focus-visible:text-oxide-lift focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-oxide-lift focus-visible:ring-offset-2 focus-visible:ring-offset-band inline-block';
 
-export default function Colophon() {
+/**
+ * `top` is where "Back to the start" goes: the hero on the home page, the
+ * header on a sub-page that has no hero of that name.
+ */
+export default function Colophon({ top = '#arrival' }: { top?: string }) {
   const reveal = useReveal();
 
   const scrollTo = useScrollTo();
 
   const linkedin = useMagnetic<HTMLAnchorElement>();
+  const ai = useMagnetic<HTMLAnchorElement>();
   const wick = useMagnetic<HTMLAnchorElement>();
   const flyer = useMagnetic<HTMLAnchorElement>();
-  const top = useMagnetic<HTMLAnchorElement>();
+  const topLink = useMagnetic<HTMLAnchorElement>();
 
   const toTop = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    scrollTo('#arrival');
+    scrollTo(top);
   };
 
   return (
@@ -118,13 +123,27 @@ export default function Colophon() {
             </div>
 
             <div className="flex justify-between gap-6">
+              <dt className="uppercase tracking-[0.1em]">AI</dt>
+              <dd className="text-right">
+                <a
+                  ref={ai}
+                  href="/how-i-use-ai/"
+                  data-cursor-label="/how-i-use-ai/"
+                  className={LINK}
+                >
+                  How I use AI
+                </a>
+              </dd>
+            </div>
+
+            <div className="flex justify-between gap-6">
               <dt className="uppercase tracking-[0.1em]">Top</dt>
               <dd className="text-right">
                 <a
-                  ref={top}
-                  href="#arrival"
+                  ref={topLink}
+                  href={top}
                   onClick={toTop}
-                  data-cursor-label="#arrival"
+                  data-cursor-label={top}
                   className={LINK}
                 >
                   Back to the start

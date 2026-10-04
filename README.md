@@ -55,6 +55,9 @@ public/
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
   memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
+  memoji/thinking.webp     …and two more expressions for How I use AI
+  memoji/grin.webp
+  ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
   logos/                   Company and school marks, 160px tiles shown at 40px
   favicon.svg
 scripts/
@@ -65,8 +68,12 @@ worker/
   index.ts                 POST /api/contact — the only server (see Contact, below)
 src/
   App.tsx                  Page composition
+  pages/
+    HowIUseAI.tsx          The /how-i-use-ai/ page
+  main-ai.tsx              Its entry, behind the same gate as /app/
   content/
     resume.ts              Every word of career copy — the one place to edit it
+    ai.ts                  Every word on How I use AI
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
@@ -86,6 +93,7 @@ src/
     WickSpread.tsx         Project Wick, with figures read at build time (not mounted)
     FlyerSpread.tsx        Flyer Fable (not mounted)
     CompanyMark.tsx        A company's logo tile, or its monogram until there is one
+    DrawnLink.tsx          The mono link whose rule draws in on hover
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -119,8 +127,8 @@ anywhere in the markup. Two things make it work:
 - The theme is resolved by a **blocking inline script in the document head**,
   before first paint. React mounts long after the browser paints, so deciding
   in the bundle would flash the wrong theme on every load. It is duplicated in
-  `index.html` and `app/index.html` because the gate and the site share an
-  origin and a stored preference.
+  `index.html`, `app/index.html` and `how-i-use-ai/index.html` because the
+  gate and the pages share an origin and a stored preference.
 - A stored choice outranks the OS. With nothing stored the page follows
   `prefers-color-scheme` live; once someone picks a side, changing the system
   theme no longer overrides them (`src/lib/theme.ts`).
@@ -240,7 +248,36 @@ carry audio). To rebuild, with an ffmpeg that decodes H.264 and encodes WebP:
 
 ```sh
 FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs EmojiMovie812735549.mov
+
+# How I use AI's two expressions: [start] [frame] [out]
+node scripts/build-memoji.mjs EmojiMovie812735599.mov 11.2 1 public/memoji/thinking.webp
+node scripts/build-memoji.mjs EmojiMovie812735414.mov 9.45 1 public/memoji/grin.webp
 ```
+
+## How I use AI (`/how-i-use-ai/`)
+
+A sub-page modelled on the structure of tariquekhan.ca/how-i-use-ai: what
+Kevin uses AI for, three things built with it (Project Wick, Flyer Fable,
+this site), how he keeps an assistant in context, the tools he reaches for,
+and a way to get in touch. It is a third Vite entry (`how-i-use-ai/index.html`
+→ `src/main-ai.tsx` → `src/pages/HowIUseAI.tsx`), registered in
+`vite.config.ts`, and every word is in `src/content/ai.ts`.
+
+- **Same gate as `/app/`.** No stored access sends a reader back to `/`.
+- **The URL won't move at launch, but its back links will.** "Back to the
+  site" and "Get in touch" point at `/app/` and `/app/#contact`; change them
+  in `ai.ts` when the site moves to `/`.
+- **The home page's grammar, minus the instruments.** Paper, the left rail
+  inset, the three voices, hairlines and `DrawnLink`; no spine, rail or year
+  counter, because it is read top to bottom rather than scrubbed. The
+  colophon is the shared one, with `top="#top"` so *Back to the start* lands
+  on this page's header.
+- **The screenshots are static.** `public/ai/` holds frames of
+  `/project-wick/` and `/flyer-fable/` taken with Playwright at 1600×1000
+  (Flyer Fable mid-flight, after *Start Flying*). Retake them if either page
+  changes noticeably.
+
+The home page links to it from under How I work and from the colophon.
 
 ## Project Wick (`/project-wick/`)
 

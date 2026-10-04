@@ -220,6 +220,8 @@ export const HOW = {
       body: 'Decide how we’ll measure success before launch, then actually look at the numbers afterward.',
     },
   ] satisfies WorkItem[],
+  /** Where the prototyping above is shown, not just claimed. */
+  more: { href: '/how-i-use-ai/', label: 'How I use AI' },
 };
 
 export interface Credential {
