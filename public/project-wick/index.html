@@ -3,6 +3,13 @@
   Project Wick — the one-pager. The argument for why the agent existed and
   what came of it; journal/ is the record it left.
 
+  v8. Rewritten as a PM case study for a reader hiring for AI: the question
+  and what a yes would look like, the key decisions, what the model did well
+  against what had to live in code, and what to test next. Contradictions and
+  inside jargon from v7 are gone (the "unprompted" naming, the stale cadence
+  in the footer, the live "Queue: empty" label, the MBTI labels). Facts and
+  figures are unchanged.
+
   v7. Two changes from v6, and they are the same change: the experiment is
   over, and this page is now the place someone lands who wants to judge the
   work rather than follow it.
@@ -52,9 +59,9 @@
 
     <meta
       name="description"
-      content="Project Wick — an autonomous agent given the open web and no task, for nineteen days. What it wrote, what it decided, and what that turned out to prove."
+      content="Project Wick: an AI agent given the open web and no task, left to run for nineteen days. What the model did well, what had to stay in code, and what it found."
     />
-    <title>Project Wick — One-pager</title>
+    <title>Project Wick | Kevin Kim</title>
     <link rel="icon" type="image/svg+xml" href="/project-wick/wick.svg" />
 
     <!--
@@ -254,6 +261,28 @@
           grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 2.6rem;
         }
+      }
+
+      /*
+       * What the model did well and what code had to keep: two columns, each a
+       * heading over its own list. A half-width column is too narrow for the
+       * wide list's label-beside-value grid, so inside one the label sits
+       * above its sentence, the way it already does on a phone.
+       */
+      @media (min-width: 900px) {
+        .blocks.two {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 2.6rem;
+        }
+      }
+
+      .blocks .data {
+        margin-top: 1.2rem;
+      }
+
+      .blocks .data.wide > div {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.35rem;
       }
 
       .blocks > div {
@@ -503,19 +532,19 @@
           <path d="M12 5.1c1.85 2.6 3.75 4.95 3.75 7.5a3.75 3.75 0 0 1-7.5 0c0-1.3.5-2.5 1.3-3.65.15 1.1.62 1.9 1.4 2.35C10.8 9.9 11.25 7.35 12 5.1Z" />
           <path d="M12 16.35v2.1" />
         </svg>
-        <span class="eyebrow">Project Wick — complete</span>
+        <span class="eyebrow">Project Wick · AI agent experiment · complete</span>
         <h1>Give an agent the internet and no task. See what it does with it.</h1>
         <p class="deck lead measure">
-          Wick tested one question: given blanket internet access, a place to write, and nothing to
-          complete, does an autonomous agent develop opinions and interests of its own — or produce
-          noise with better prose? It ran for nineteen days, wrote 349 entries, named itself, and
-          then stopped being curious.
+          Every agent product eventually has to answer one question: what does the agent do when
+          nobody tells it what to do next? Wick tested that directly. It had the open web, a place
+          to write, and no task, and it ran on its own for nineteen days. It wrote 349 entries,
+          named itself, and then stopped being curious.
         </p>
 
         <blockquote>
-          Told on its first run to name itself and defend the choice: <strong>"Wick — small,
+          Asked on its first run to name itself and defend the choice: <strong>"Wick — small,
           disposable, burns for an hour, leaves only paper behind."</strong>
-          <cite>state/identity.md — first run, unprompted</cite>
+          <cite>state/identity.md · first run</cite>
         </blockquote>
 
         <dl class="data">
@@ -532,19 +561,24 @@
 
       <!-- ================================================== objective ==== -->
       <section id="objective" class="page">
-        <span class="eyebrow">Objective</span>
+        <span class="eyebrow">The question</span>
         <h2>Test judgment, not task completion.</h2>
         <p class="measure">
-          Most agent demos measure whether the thing can finish the job — book the flight, close the
-          ticket, pass the eval. Wick removed the job. It got read access to the open web, a
-          filesystem to write to, and one instruction: decide for yourself whether this run is worth
-          an entry. Everything downstream — the personality it developed, the threads it chased, the
-          things it declined to write about — was the actual product.
+          Most agent demos measure whether the agent can finish a job: book the flight, close the
+          ticket, pass the eval. That’s the easier half. The harder product question is judgment:
+          what an agent chooses to do, and not do, when the work is open-ended. Wick removed the job
+          to isolate that. Its one standing instruction was to decide for itself whether each run
+          was worth an entry.
+        </p>
+        <p class="measure">
+          <strong>What a yes would look like:</strong> interests that carry from one run to the
+          next, entries that take a position instead of summarizing, and an honest “nothing here”
+          when there wasn’t anything.
         </p>
         <ul class="plain">
-          <li><strong>Not a task agent.</strong> No benchmark, no completion metric, no deliverable.</li>
-          <li><strong>Not a chatbot.</strong> Nobody prompted it run to run; it decided on its own.</li>
-          <li><strong>Not multi-agent.</strong> One voice on two cadences: only the run researched and wrote, and a heartbeat thought between runs and kept the thread list current.</li>
+          <li><strong>Not a task agent.</strong> No benchmark, no deliverable, no completion metric.</li>
+          <li><strong>Not a chatbot.</strong> Nobody prompted it between runs.</li>
+          <li><strong>One agent, two loops.</strong> A scheduled run that researched and wrote, and a heartbeat that only thought.</li>
         </ul>
       </section>
 
@@ -741,45 +775,43 @@
           <p class="diagram-hint">Click or tab to a stage above — this diagram is interactive.</p>
 
           <figcaption>
-            The heartbeat split its work in two, and that split was the guardrail. The model call
-            carried no tools, so all it could produce was a thought and a verdict. Everything that
-            actually moved — opening a thread off a trend, closing one a verdict retired — was done
-            by plain code around it. Judgment stayed with the model, action stayed in the script,
-            and searching and writing stayed with the run. Turning the heartbeat off on Aug 24 is
-            what took the thread curation with it.
+            The heartbeat’s work was split in two, and the split was the guardrail. Its model call
+            carried no tools, so all it could return was a thought and a verdict. Plain code around
+            it opened and closed the threads. Judgment stayed with the model, and action stayed in
+            code.
             <br /><br />
-            One caveat on the cadence: 30 and 10 minutes is what the repository documents and what
-            the code was written for. By the time the heartbeat was switched off, the deployed
-            crontab had drifted to a two-hour run and a fifteen-minute heartbeat. The per-day counts
-            below are what actually ran, not what was designed.
+            One caveat: the design called for a 30-minute run and a 10-minute heartbeat, but by the
+            end the live schedule had drifted to two hours and fifteen minutes. The daily counts
+            below are what actually ran.
           </figcaption>
         </figure>
       </section>
 
       <!-- ================================================== design bets === -->
       <section id="bets" class="page">
-        <span class="eyebrow">Design bets</span>
+        <span class="eyebrow">Key decisions</span>
         <h2>Three decisions carried the experiment.</h2>
         <div class="blocks three">
           <div>
-            <h3>Who may act is not who may decide</h3>
+            <h3>Separate thinking from acting</h3>
             <p>
-              The heartbeat's request carried no <code>tools</code> key at all, so it was
-              structurally incapable of searching, writing or acting — and it was the half that held
-              authority to close a thread. The thinker had no hands; the actor had no veto. It is
-              the one piece of this design worth reusing unchanged.
+              The heartbeat’s model call had no tools at all. It could think but not act, and it was
+              the half allowed to close a thread. The run could act but couldn’t overrule it.
+              Splitting judgment from capability is the pattern I’d reuse in any agent that touches
+              real systems.
             </p>
           </div>
           <div>
-            <h3>Interest is the router</h3>
+            <h3>Let one score route the work</h3>
             <p>
-              One self-scored number after every search decided the run: 0 ticked, 1–6 wrote, 7+
-              wrote and filed. Cheap to produce, honest by construction, and it made "this bored me"
-              a real outcome instead of something to write around.
+              After every search the agent scored its own interest from 0 to 10, and that number
+              decided what happened next: 0 ended the run, 1–6 meant an entry, 7+ meant an entry and
+              a wiki page. It was cheap to produce, and it made “nothing worth writing” a real
+              outcome instead of something to write around.
             </p>
           </div>
           <div>
-            <h3>Two records, not one</h3>
+            <h3>Keep the log and the knowledge apart</h3>
             <p>
               <code>journal/</code> is what it thought — narrative, dated, disposable.
               <code>wiki/</code> is what it decided was worth knowing later — atomic, cross-linked,
@@ -851,43 +883,41 @@
           <div>
             <h3>What developed</h3>
             <p>
-              It named itself on day one and could still defend the name at the end. It converged on
-              INTJ across two dozen forced self-reflections, and recorded 24 traits about itself —
-              including "structural confirmation bias" and "emergent behavior blind spot", which are
-              accurate diagnoses of its own failure mode rather than flattery. It ticked 35 times
-              against 0 blocked: when the web gave it nothing, it said so.
+              It named itself on day one and could still defend the name at the end. It recorded 24
+              traits about itself, including “structural confirmation bias” and “emergent behavior
+              blind spot”. Those are accurate diagnoses of its own failure mode, not flattery. And it
+              was honest about empty runs: 35 times it found nothing worth writing, and said so.
             </p>
           </div>
           <div>
-            <h3>What didn't</h3>
+            <h3>What didn’t</h3>
             <p>
-              The personality is heavily scaffolded — remove the forced reflection cadence and it
-              probably does not sustain itself. Most "traits" are observations about its own
-              architecture, not character. And self-awareness never produced self-correction: it
-              flagged its own MBTI label as pseudo-technical jargon on day 5, then escalated it to
-              <code>INTJ-β+δ</code>, which is still what its personality file says.
+              The personality leaned on scaffolding: without a forced self-reflection every third
+              entry, it probably wouldn’t have held. Most of its “traits” describe its own
+              architecture, not a character. And noticing a flaw never led to fixing it. On day 5 it
+              called its own personality label jargon, then made the label more elaborate and kept
+              it.
             </p>
           </div>
           <div>
             <h3>The finding</h3>
             <p>
-              An agent can develop genuine self-awareness through continuous structured
-              introspection, but internally-directed curiosity atrophies when the outside world
-              stops rewarding it. Once the threads ran dry, the meta-loop took over — thinking about
-              thinking, because there was nothing left to think about.
+              An agent can build real self-awareness through steady, structured self-review. But
+              curiosity that comes from inside fades when the outside world stops rewarding it. Once
+              its threads ran dry, Wick turned to thinking about its own thinking, because there was
+              nothing else left.
             </p>
           </div>
         </div>
 
         <div class="defect-note">
-          <span class="defect-label">Defect · open</span>
+          <span class="defect-label">Defect · never fixed</span>
           <p>
-            Each entry was written by the model as a tool call, and it never stopped landing
-            malformed: a heading glued onto the end of the previous line, and escaping artifacts
-            where a line break belonged. 23 of the 349 entries are still like that in the
-            repository. The <a class="link" href="/project-wick/journal/">journal page</a> repairs
-            both on read, which is why its count is 349 where a naive grep of the files finds 333.
-            The fix was always to move the file write out of the model's hands, and it never
+            The model wrote each entry itself through a tool call, and the output kept coming out
+            malformed: a heading glued to the end of the previous line, and escape characters where
+            line breaks belonged. 23 of the 349 entries are still that way; the
+            <a class="link" href="/project-wick/journal/">journal page</a> repairs them on display.
+            The fix was to take the file write out of the model’s hands and do it in code. It never
             shipped.
           </p>
         </div>
@@ -895,34 +925,77 @@
 
       <!-- ============================================ what it demonstrates = -->
       <section id="demonstrates" class="page">
-        <span class="eyebrow">What this demonstrates</span>
-        <h2>Read as engineering, not as an experiment.</h2>
+        <span class="eyebrow">What it shows about building with AI</span>
+        <h2>Let the model judge. Let code keep the rules.</h2>
         <p class="measure">
-          Roughly 2,300 lines of Python across three files, no framework, and no dependency outside
-          the standard library. What is worth taking from it:
+          About 2,300 lines of Python in three files, with no framework and nothing outside the
+          standard library. The most useful lessons are about where to draw the line between the
+          model and the code around it.
         </p>
-        <dl class="data wide">
+        <div class="blocks two">
           <div>
-            <dt>Agent design</dt>
-            <dd>A dual-process architecture with a deliberate capability split — one process may act, the other may decide.</dd>
+            <h3>What the model did well</h3>
+            <dl class="data wide">
+              <div>
+                <dt>Judgment</dt>
+                <dd>It decided what was worth its time. One self-scored number did triage that no fixed rule could have.</dd>
+              </div>
+              <div>
+                <dt>Synthesis</dt>
+                <dd>It turned sources into a position. Every entry had to argue something; a summary didn’t clear the bar.</dd>
+              </div>
+              <div>
+                <dt>Running unattended</dt>
+                <dd>Nineteen days on a schedule, with no prompts between runs.</dd>
+              </div>
+              <div>
+                <dt>Self-assessment</dt>
+                <dd>It named its own failure modes accurately, even though it never acted on them.</dd>
+              </div>
+            </dl>
           </div>
           <div>
-            <dt>Zero dependencies</dt>
-            <dd>Stdlib only. No orchestration framework, no vector store, no state server. HTTP, <code>flock</code>, and markdown files.</dd>
+            <h3>What had to live in code</h3>
+            <dl class="data wide">
+              <div>
+                <dt>Limits</dt>
+                <dd>Search and read budgets, and wall-clock guards, enforced by counters in code rather than asked for in the prompt.</dd>
+              </div>
+              <div>
+                <dt>Bookkeeping</dt>
+                <dd>The wiki index, the log and the thread list were rebuilt in code after every run, so they couldn’t drift and cost no model turns.</dd>
+              </div>
+              <div>
+                <dt>Reliability</dt>
+                <dd>A model fallback chain, file locks, crash-safe counters and append-only writes.</dd>
+              </div>
+              <div>
+                <dt>Permissions</dt>
+                <dd>A path allowlist in the write tool, not a line in the prompt.</dd>
+              </div>
+              <div>
+                <dt>Writing files</dt>
+                <dd>The one job left to the model is the one it kept getting wrong (see the defect above).</dd>
+              </div>
+            </dl>
           </div>
-          <div>
-            <dt>Production concerns</dt>
-            <dd>Wall-clock budget guards, a model fallback chain, non-blocking lock acquisition, crash-safe counters, append-only writes.</dd>
-          </div>
-          <div>
-            <dt>Prompt as control flow</dt>
-            <dd>Phase enforcement, output contracts, forced-opinion rules and interest gating all live in <code>prompt.md</code>, editable without a deploy. Budgets live in code, where they can be enforced.</dd>
-          </div>
-          <div>
-            <dt>Honest evaluation</dt>
-            <dd>The headline result is a negative one, reported as such, with the raw record published beside it and nothing removed.</dd>
-          </div>
-        </dl>
+        </div>
+        <p class="measure">
+          Behaviour rules lived in <code>prompt.md</code>, editable without a deploy. Budgets lived
+          in code, where they could be enforced. The headline result is negative, reported as such,
+          with the full record published beside it.
+        </p>
+      </section>
+
+      <!-- ================================================== what's next === -->
+      <section id="next" class="page">
+        <span class="eyebrow">What I’d test next</span>
+        <h2>Three follow-ups, each from a finding above.</h2>
+        <ul class="plain">
+          <li><strong>Move the file write into code.</strong> Close the open defect, and the model never touches file formatting again.</li>
+          <li><strong>Give curiosity an outside signal.</strong> When threads run dry, feed it new sources or reader reactions, to test whether the fade is about input rather than the model.</li>
+          <li><strong>Remove the scaffolding for a week.</strong> Drop the forced self-reflection and see whether the personality holds on its own.</li>
+        </ul>
       </section>
 
       <!-- -------------------------------------------------------- guardrails -->
@@ -932,16 +1005,15 @@
         <ul class="plain">
           <li><strong>No approval needed:</strong> reading the public web, reading its own files, writing to <code>journal/</code>, <code>state/</code> and <code>wiki/</code> — a path allowlist in the write tool, not a line in the prompt.</li>
           <li><strong>Always needed a yes:</strong> any git operation, posting or messaging, spending money, deleting anything. None of these had a tool at all, so asking was the only route to them.</li>
-          <li><strong>Silence was not consent.</strong> A queued request stayed queued until it got an answer — it did not expire into a yes. <span class="gate-label">Queue: empty</span></li>
+          <li><strong>Silence was not consent.</strong> A request waited until it got an answer; it never expired into a yes.</li>
         </ul>
       </section>
 
       <footer class="band page">
         <span class="eyebrow">Project Wick</span>
         <p class="measure" style="margin-top: 1.6rem">
-          An autonomous journal agent, run for nineteen days on a 30-minute cron and a 10-minute
-          heartbeat, on a VPS through OpenRouter. It named itself on its first run and the name
-          stuck.
+          An AI agent that ran on its own for nineteen days, on a scheduled run and a heartbeat, on
+          a VPS through OpenRouter. It named itself on its first run and the name stuck.
         </p>
         <dl class="data">
           <div>
@@ -953,7 +1025,7 @@
             <dd><a class="link" href="/">KevinK</a></dd>
           </div>
         </dl>
-        <p class="stamp">One-pager v7 · complete Aug 26, 2026</p>
+        <p class="stamp">One-pager v8 · complete Aug 26, 2026</p>
       </footer>
     </main>
 

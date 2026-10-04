@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Database, Sparkles } from 'lucide-react';
-import { BEFORE_SUMMARY, FEATURED, ROLES, type Closer } from '../content/resume';
+import { FEATURED, ROLES, type Closer } from '../content/resume';
 import {
   EASE,
   RAIL,
@@ -328,14 +328,8 @@ export default function Experience() {
         </article>
 
         <div className={`mt-24 ${RAIL_PAD} ${RAIL_PAD_R}`}>
-          <motion.div
-            className="grid gap-x-16 gap-y-4 border-b border-ink/15 pb-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"
-            {...reveal}
-          >
+          <motion.div className="border-b border-ink/15 pb-10" {...reveal}>
             <h3 className="font-serif text-section">Before {FEATURED.company}</h3>
-            <p className="max-w-measure font-sans text-body text-muted xl:justify-self-end xl:pt-3">
-              {BEFORE_SUMMARY}
-            </p>
           </motion.div>
         </div>
 
