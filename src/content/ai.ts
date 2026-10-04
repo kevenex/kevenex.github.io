@@ -12,7 +12,7 @@ export const AI_BACK = { href: '/app/', label: 'Back to the site' };
 export const AI_HERO = {
   title: 'How I use AI.',
   intro: [
-    'I’m a product manager in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into a game, an agent, or this website.',
+    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into a game, an agent, or this website.',
     'It does a lot of the typing. I decide what the problem is, what holds up, and what goes out under my name.',
   ],
   jump: 'A few things I’ve been working on',

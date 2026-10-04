@@ -12,12 +12,15 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
    his Memoji.
-2. **Experience** — newest first. The current role is a framed card; every role
-   before it sits under *Before Plusgrade* and splits in two at xl: a narrow
-   column of facts (logo, company, title, years, domain, city) under a short
-   heavy rule, and a wide one for the story (headline, two flow chips, what
-   happened, *What I took from it*).
-3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
+2. **Experience** — newest first. The current role is a framed card whose
+   *Built on it* drawing shows the teams that depend on the data foundation
+   as chips on one base, AI products in the accent. Every role before it sits
+   under *Before Plusgrade* and splits in two at xl: a narrow column of facts
+   (logo, company, title, years, domain, city, and an optional worded figure
+   for scale) under a short heavy rule, and a wide one for the story
+   (headline, two flow chips, what happened, *What I took from it*).
+3. **Where I fit** — open to roles, then four "You're…" cases written to the
+   reader, two by two, AI first.
 4. **How I work** — one principle, and the things a team can hand over.
 5. **Credentials** — education, certifications, skills.
 6. **Contact** — LinkedIn first; the form underneath.
@@ -29,6 +32,9 @@ colophon links to them. Their spreads and the Curiosity hinge are still in
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
 carry none of their own. It is deliberately anonymized — outcomes without vendor
 names or exact figures — so check any new line against that before adding it.
+Regions are named ("North America and Europe"); counts, partner banks and
+acquired companies are not, which is why a role's `figure` is worded ("Hundreds
+of stores") rather than counted.
 `OFF_THE_CLOCK` is empty on purpose: Contact prints the line only once it exists.
 
 ## The design, in one paragraph

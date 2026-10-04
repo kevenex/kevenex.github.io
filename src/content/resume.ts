@@ -4,7 +4,9 @@
  * here and every section that mentions it follows.
  *
  * Deliberately anonymized: outcomes without vendor names or exact figures.
- * The PDF carries the numbers; the page carries the judgment behind them.
+ * Regions are fine ("North America and Europe"); counts, partner names and
+ * acquired companies' names are not. The PDF carries the numbers; the page
+ * carries the judgment behind them.
  */
 
 export const LINKEDIN = 'https://www.linkedin.com/in/kevinsunkim';
@@ -14,7 +16,7 @@ export const IDENTITY = {
   title: 'Product Manager',
   location: 'Toronto, ON',
   greeting: 'Hi. I’m Kevin.',
-  lead: 'I’m a product manager in fintech. Most of my work has been card platforms, payments, and the data behind them.',
+  lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m the product manager for the data that finance, risk and AI products depend on.',
   how: 'I’m good at taking a problem nobody has pinned down yet and getting it to launch.',
 };
 
@@ -47,10 +49,19 @@ export interface Role extends Mark {
   flow: [string, string];
   body: string;
   takeaway: string;
+  /** One sense of scale in the facts column. Optional: not every role has one worth printing. */
+  figure?: Figure;
+}
+
+/** A sense of scale, worded rather than counted — see the note at the top. */
+export interface Figure {
+  label: string;
+  value: string;
+  note: string;
 }
 
 export interface Closer {
-  icon: 'data' | 'payments' | 'compass';
+  icon: 'data' | 'ai' | 'compass';
   text: string;
 }
 
@@ -64,34 +75,38 @@ export const FEATURED = {
   span: '2024–',
   city: 'Toronto',
   domain: 'Travel commerce & payments',
-  gist: 'Bringing acquired data onto one platform',
-  team: 'Data, engineering, finance and leadership',
-  headline: 'Bringing acquired companies onto one data platform.',
-  body: 'Plusgrade has grown by buying other companies, and each one came with its own systems. I lead the product work underneath all of that. I ran the project to move their data onto one platform, added new payment providers, and made the case for the infrastructure the company needs before its AI and ML plans can go anywhere.',
-  scale: {
-    label: 'Scale of the work',
-    value: 'Several business units',
-    note: 'data from acquired companies, now in one place',
+  gist: 'The data foundation for finance, risk and AI',
+  team: 'Data engineering, finance, risk, analytics and partner operations',
+  headline: 'Making the company’s data reliable enough to build on.',
+  body: 'I’m the main product manager for data at Plusgrade. I decide what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and partner operations run on that data, and so do the AI products the company is building. Plusgrade has grown by buying other companies, so a lot of the work is getting each one onto the same foundation, reliably and at global scale.',
+  /** Drawn as the teams' chips standing on one base: who depends on the work, and what it is. */
+  foundation: {
+    label: 'Built on it',
+    on: ['Finance', 'Risk', 'Analytics', 'Partner operations'],
+    /** Set apart in the accent: the one the rest of the roadmap is heading toward. */
+    accent: 'AI products',
+    base: 'Data foundation',
+    note: 'Plusgrade and the companies it bought, on one platform',
   },
   closer: [
     {
-      icon: 'data',
-      text: 'Ran a migration over several months that moved data from acquired companies onto one cloud platform.',
-    },
-    {
-      icon: 'payments',
-      text: 'Added new payment providers, which raised authorization rates and let us process payments in local currencies.',
-    },
-    {
       icon: 'compass',
-      text: 'Looked into what was holding back the AI and ML roadmap, and got the fix funded.',
+      text: 'Set what Data Engineering works on: the capability each piece adds, the business outcome behind it, and who owns it.',
+    },
+    {
+      icon: 'data',
+      text: 'Ran a migration over several months that moved data from acquired companies onto one cloud platform, so other teams’ products could depend on it.',
+    },
+    {
+      icon: 'ai',
+      text: 'Looked into what was holding back the AI and ML roadmap, and got the data foundation it needed funded.',
     },
   ] satisfies Closer[],
 };
 
 /** The line beside "Before Plusgrade": every earlier role in one breath. */
 export const BEFORE_SUMMARY =
-  'Launching cards with banks, retail data, a prototype that shipped, and a startup’s first round.';
+  'Card platforms with banks on two continents, retail data through a nationwide rollout, a greenlit prototype, and a startup’s first round.';
 
 /** Newest first — a recruiter reads down from the present. */
 export const ROLES: Role[] = [
@@ -104,11 +119,16 @@ export const ROLES: Role[] = [
     span: '2021–2023',
     city: 'Toronto',
     domain: 'Card issuing & payments',
-    gist: 'Credit card launches with banks',
-    headline: 'Launching credit cards with Canadian banks.',
-    flow: ['Bank discovery', 'Card launch'],
-    body: 'I took card platforms from the first discovery calls to launch with several banks, which meant moving their cardholders and payments over to us. The banks were involved through the pilot and early launch, and what they told us went into the roadmap I reported on to the VP of Product. We signed a lot more partners over those two years.',
+    gist: 'Card platform launches with banks',
+    headline: 'Moving traditional banks onto a modern card platform.',
+    flow: ['Traditional banking', 'Modular card issuing'],
+    body: 'Brim sells a card issuing platform to banks, and the banks offer the cards to their own customers. I led major integrations with banks in North America and Europe from 0 to 1: discovery, partner communications, delivery, and stabilizing things after launch. I ran a team of PMs and QA analysts, turned loose ideas into decisions engineering could act on, and worked directly with the executive team, directors and SVPs on each rollout.',
     takeaway: 'I learned to plan the handover to the bank’s team from the first week, not the last.',
+    figure: {
+      label: 'Scale of the work',
+      value: 'Two continents',
+      note: 'major bank integrations across North America and Europe',
+    },
   },
   {
     company: 'Canadian Tire',
@@ -119,11 +139,16 @@ export const ROLES: Role[] = [
     span: '2020–2021',
     city: 'Toronto',
     domain: 'Retail',
-    gist: 'Inventory and a store-in-store rollout',
-    headline: 'My first job out of school.',
-    flow: ['Inventory analysis', 'Less excess stock'],
-    body: 'I worked on a store-in-store rollout across hundreds of Canadian Tire locations and helped move an acquired company’s systems into the main data warehouse. My inventory analysis turned into recommendations the category team used, and excess stock went down.',
+    gist: 'Inventory data for a store-in-store rollout',
+    headline: 'Keeping inventory data straight after an acquisition.',
+    flow: ['Acquired inventory', 'Nationwide rollout'],
+    body: 'My first job out of school. Canadian Tire had bought another retailer and was opening it as a store-in-store across the country. I tracked its inventory across several ERP systems and kept the data consistent and accurate as the rollout reached hundreds of locations. My analysis turned into recommendations the category team used, and excess stock went down.',
     takeaway: 'I started building every analysis around the one decision it was supposed to help someone make.',
+    figure: {
+      label: 'Scale of the work',
+      value: 'Hundreds of stores',
+      note: 'inventory kept consistent through a nationwide rollout',
+    },
   },
   {
     company: 'IBM',
@@ -134,10 +159,10 @@ export const ROLES: Role[] = [
     span: '2019',
     city: 'Ottawa',
     domain: 'Enterprise software',
-    gist: 'A prototype that shipped',
-    headline: 'An internship that ended up in production.',
-    flow: ['Prototype', 'Production'],
-    body: 'I worked with engineers on a prototype that made Java applications start faster. Our testing showed a real improvement, and the feature was approved for production. At the end of the program I pitched it in New York at IBM’s Dragon’s Den showcase.',
+    gist: 'A prototype greenlit by senior management',
+    headline: 'From a problem statement to a greenlit prototype.',
+    flow: ['Problem statement', 'Greenlit prototype'],
+    body: 'IBM ran the program like Dragon’s Den: three months to take a problem statement, find the pain points and the opening in it, and build something that works. I worked with three engineers and set what we built first, and we made a proof of concept that helped Java applications start faster. I pitched it to IBM’s senior management in New York, and it was greenlit for further development after the internship ended.',
     takeaway: 'a working prototype settled questions that weeks of slides wouldn’t have.',
   },
   {
@@ -158,12 +183,16 @@ export const ROLES: Role[] = [
 ];
 
 export const FIT = {
-  open: 'I’m looking for product roles in fintech and data platforms.',
-  scope: 'Product management, including the discovery and data work that comes with it.',
+  open: 'I’m looking for product roles in AI, data platforms and fintech.',
+  scope: 'Product management, especially where AI is being built on payments or financial data and someone has to get that data ready for it.',
   cases: [
     {
+      title: 'You’re building AI products and the data isn’t ready for them.',
+      body: 'An AI product is only as good as the data under it. I own that layer today: what gets built, which outcome it supports, who owns it, and what comes first.',
+    },
+    {
       title: 'You’re launching a financial product with bank partners.',
-      body: 'Banks and compliance teams will shape your roadmap as much as you do. I’ve launched card platforms with banks involved from the start.',
+      body: 'Banks and compliance teams will shape your roadmap as much as you do. I’ve led card platform integrations with major banks in North America and Europe, from discovery through to after launch.',
     },
     {
       title: 'You bought a company and now have two of everything.',
@@ -235,10 +264,13 @@ export const CERTIFICATIONS: Credential[] = [
 ];
 
 export const SKILLS = [
-  { group: 'Discovery', items: ['Customer & stakeholder interviews', 'Hypothesis validation', 'Market analysis'] },
+  { group: 'AI', items: ['AI product strategy', 'Data readiness for AI/ML', 'Agentic workflows', 'LLM tooling'] },
+  {
+    group: 'Data',
+    items: ['Data platform roadmaps', 'Data ownership', 'SQL', 'Cloud data platforms', 'Data migration', 'REST APIs'],
+  },
   { group: 'Strategy', items: ['Technical PRDs', 'Roadmaps', 'Product analytics', 'Rapid prototyping'] },
-  { group: 'AI', items: ['Agentic workflows', 'LLM tooling'] },
-  { group: 'Data', items: ['SQL', 'Cloud data platforms', 'REST APIs', 'Data migration'] },
+  { group: 'Discovery', items: ['Customer & stakeholder interviews', 'Hypothesis validation', 'Market analysis'] },
 ];
 
 /**
