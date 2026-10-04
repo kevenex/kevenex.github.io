@@ -228,9 +228,11 @@ Logos live in `public/logos/` as 160px tiles (`ibm.svg` has its viewBox
 cropped to the wordmark; at 40px the original's margins made it illegible).
 A role or credential names its file in `resume.ts` through a `Mark`:
 `logo` when there is one, and always a `monogram`. `CompanyMark` shows the
-logo, or the monogram on a hairline tile of the same size until a logo
-exists — Plusgrade and ATB Financial are monograms for now. The company
-name is always printed beside the mark, so the image takes an empty alt.
+logo, or the monogram on a hairline tile of the same size if a logo is
+ever missing — every company has one now. `plusgrade.webp` sits on a white
+ground the source file doesn't have: its dark grey would vanish on the dark
+theme otherwise. The company name is always printed beside the mark, so the
+image takes an empty alt.
 
 ## Memoji
 

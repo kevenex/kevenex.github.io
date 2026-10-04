@@ -57,6 +57,7 @@ export interface Closer {
 /** The current role gets the framed treatment; the rest follow it. */
 export const FEATURED = {
   company: 'Plusgrade',
+  logo: '/logos/plusgrade.webp',
   monogram: 'P',
   title: 'Product Manager',
   start: '2024',
@@ -90,24 +91,10 @@ export const FEATURED = {
 
 /** The line beside "Before Plusgrade": every earlier role in one breath. */
 export const BEFORE_SUMMARY =
-  'Launching cards with banks, getting a team to measure the same way, retail data, a prototype that shipped, and a startup’s first round.';
+  'Launching cards with banks, retail data, a prototype that shipped, and a startup’s first round.';
 
 /** Newest first — a recruiter reads down from the present. */
 export const ROLES: Role[] = [
-  {
-    company: 'ATB Financial',
-    monogram: 'ATB',
-    title: 'Product Manager',
-    start: '2023',
-    span: '2023–2024',
-    city: 'Toronto',
-    domain: 'Banking',
-    gist: 'Agreeing on how to measure a product',
-    headline: 'First, agree on what good looks like.',
-    flow: ['Shared metrics', 'Better accuracy'],
-    body: 'I owned an identity verification service. Before changing anything, I sat down with data and engineering to decide how we’d measure it, and we set up the tracking together. Accuracy and performance both went up after that. I also got the team writing requirements and launch plans the same way.',
-    takeaway: 'half the arguments about what to build next went away once everyone could see the same numbers.',
-  },
   {
     company: 'Brim Financial',
     logo: '/logos/brim.webp',

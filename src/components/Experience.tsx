@@ -165,7 +165,7 @@ export default function Experience() {
           {...reveal}
           transition={{ ...reveal.transition, delay: 0.1 }}
         >
-          I&rsquo;ve worked at six companies, mostly in fintech and banking, with a year in
+          I&rsquo;ve worked at five companies, mostly in fintech and banking, with a year in
           retail. The products have been very different. My part in them has mostly been the
           same, which is working out what the problem is and getting it shipped.
         </motion.p>
