@@ -35,7 +35,7 @@ export default function Fit() {
         {FIT.scope}
       </motion.p>
 
-      <ul className="mt-16 grid gap-12 border-t border-ink/15 pt-12 lg:grid-cols-3 lg:gap-10">
+      <ul className="mt-16 grid gap-12 border-t border-ink/15 pt-12 md:grid-cols-2 md:gap-x-10">
         {FIT.cases.map((item, index) => (
           <motion.li
             key={item.title}

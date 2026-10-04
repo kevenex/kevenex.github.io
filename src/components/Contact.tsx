@@ -94,7 +94,7 @@ export default function Contact() {
         </a>
 
         <p className="mt-6 max-w-measure font-sans text-lead text-muted">
-          Happy to talk about product, fintech, or anything I&rsquo;ve built here.
+          Happy to talk about product, AI, fintech, or anything I&rsquo;ve built here.
         </p>
 
         {/* Renders nothing until there is a real line to print. */}

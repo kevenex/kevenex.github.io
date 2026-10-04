@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Compass, CreditCard, Database } from 'lucide-react';
+import { Compass, Database, Sparkles } from 'lucide-react';
 import { BEFORE_SUMMARY, FEATURED, ROLES, type Closer } from '../content/resume';
 import {
   EASE,
@@ -28,9 +28,12 @@ import CompanyMark from './CompanyMark';
 
 const ICONS: Record<Closer['icon'], typeof Database> = {
   data: Database,
-  payments: CreditCard,
+  ai: Sparkles,
   compass: Compass,
 };
+
+/** The before-and-after chips in Flow, and the accented chip in Foundation. */
+const CHIP = 'border border-oxide/35 bg-oxide/[0.07] px-3 py-1.5 text-oxide';
 
 /*
  * The distance from the content column's left edge back out to the rail, at
@@ -91,7 +94,7 @@ function Node({
  * starts "→ …" instead of the first line ending on a dangling arrow.
  */
 function Flow({ steps: [from, to] }: { steps: [string, string] }) {
-  const chip = 'border border-oxide/35 bg-oxide/[0.07] px-3 py-1.5 text-oxide sm:px-4 sm:py-2';
+  const chip = `${CHIP} sm:px-4 sm:py-2`;
 
   return (
     <p className="mt-8 flex flex-wrap items-center gap-3 font-sans text-small">
@@ -104,6 +107,38 @@ function Flow({ steps: [from, to] }: { steps: [string, string] }) {
         <span className={chip}>{to}</span>
       </span>
     </p>
+  );
+}
+
+/**
+ * What the current role is, drawn: the teams that depend on it as chips,
+ * standing on one base under the same short heavy rule the facts column
+ * opens with. The chips wrap rather than divide the width, so a long name
+ * never squeezes its neighbours at phone width. Source order is the reading
+ * order — who depends on it, then what it is — so a screen reader hears the
+ * drawing as a sentence.
+ */
+function Foundation() {
+  const { label, on, accent, base, note } = FEATURED.foundation;
+
+  return (
+    <div className="mt-10">
+      <p className="font-mono text-label uppercase text-muted">{label}</p>
+
+      <ul className="mt-4 flex flex-wrap gap-2 font-sans text-small">
+        {on.map((team) => (
+          <li key={team} className="border border-ink/15 px-3 py-1.5 text-ink">
+            {team}
+          </li>
+        ))}
+        <li className={CHIP}>{accent}</li>
+      </ul>
+
+      <div className="mt-2 border-t-2 border-ink bg-ink/[0.04] px-4 py-3">
+        <p className="font-mono text-data uppercase tracking-[0.1em] text-ink">{base}</p>
+        <p className="mt-1 font-sans text-small text-muted">{note}</p>
+      </div>
+    </div>
   );
 }
 
@@ -165,9 +200,10 @@ export default function Experience() {
           {...reveal}
           transition={{ ...reveal.transition, delay: 0.1 }}
         >
-          I&rsquo;ve worked at five companies, mostly in fintech and banking, with a year in
+          I&rsquo;ve worked at five companies, mostly in fintech and payments, with a year in
           retail. The products have been very different. My part in them has mostly been the
-          same, which is working out what the problem is and getting it shipped.
+          same: working out what the problem is and getting it shipped, usually with data at
+          the centre of it.
         </motion.p>
 
         {/*
@@ -271,13 +307,7 @@ export default function Experience() {
 
                 <p className="mt-6 max-w-measure font-sans text-body text-muted">{FEATURED.body}</p>
 
-                <div className="mt-10 border-l border-oxide/50 pl-5">
-                  <p className="font-mono text-label uppercase text-muted">{FEATURED.scale.label}</p>
-                  <p className="mt-2 font-serif text-[32px] leading-tight text-ink">
-                    {FEATURED.scale.value}
-                  </p>
-                  <p className="font-sans text-body text-oxide">{FEATURED.scale.note}</p>
-                </div>
+                <Foundation />
 
                 <p className="mt-12 font-mono text-label uppercase text-muted">A closer look</p>
 
@@ -339,6 +369,17 @@ export default function Experience() {
                     <p className="tabular mt-4 font-mono text-data uppercase text-muted">{role.span}</p>
                     <p className="mt-2 font-sans text-[18px] leading-snug text-muted">{role.domain}</p>
                     <p className="mt-1 font-sans text-small text-muted">{role.city}</p>
+
+                    {/* One sense of scale, set like a pull figure, where the role has one. */}
+                    {role.figure && (
+                      <div className="mt-6 border-l border-oxide/50 pl-4">
+                        <p className="font-mono text-label uppercase text-muted">{role.figure.label}</p>
+                        <p className="mt-2 font-serif text-[28px] leading-tight text-ink">
+                          {role.figure.value}
+                        </p>
+                        <p className="mt-1 font-sans text-small text-oxide">{role.figure.note}</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* The story. */}
