@@ -13,7 +13,10 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
    his Memoji.
 2. **Experience** — newest first. The current role is a framed card; every role
-   before it is a headline, what happened, and *What I took from it*.
+   before it sits under *Before Plusgrade* and splits in two at xl: a narrow
+   column of facts (logo, company, title, years, domain, city) under a short
+   heavy rule, and a wide one for the story (headline, two flow chips, what
+   happened, *What I took from it*).
 3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
 4. **How I work** — one principle, and the things a team can hand over.
 5. **Credentials** — education, certifications, skills.
@@ -52,6 +55,7 @@ public/
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
   memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
+  logos/                   Company and school marks, 160px tiles shown at 40px
   favicon.svg
 scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
@@ -81,6 +85,7 @@ src/
     Spread.tsx             Shared layout for a project (not mounted)
     WickSpread.tsx         Project Wick, with figures read at build time (not mounted)
     FlyerSpread.tsx        Flyer Fable (not mounted)
+    CompanyMark.tsx        A company's logo tile, or its monogram until there is one
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -90,6 +95,7 @@ src/
     ThemeToggle.tsx        Light/dark switch
     ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
+    CanadaFlag.tsx         The hero's flag, drawn (Windows has no flag emoji)
     WickMark.tsx           Project Wick's mark
 ```
 
@@ -207,6 +213,16 @@ sits at `opacity: 0` waiting for an intersection the CSS cannot influence. Use
 animated, and `useHoverLayer()` from `lib/pointer.ts` for anything that responds
 to a pointer, or a reader who asked for no motion gets content that never
 appears.
+
+## Company marks
+
+Logos live in `public/logos/` as 160px tiles (`ibm.svg` has its viewBox
+cropped to the wordmark; at 40px the original's margins made it illegible).
+A role or credential names its file in `resume.ts` through a `Mark`:
+`logo` when there is one, and always a `monogram`. `CompanyMark` shows the
+logo, or the monogram on a hairline tile of the same size until a logo
+exists — Plusgrade and ATB Financial are monograms for now. The company
+name is always printed beside the mark, so the image takes an empty alt.
 
 ## Memoji
 
