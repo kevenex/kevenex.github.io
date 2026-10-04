@@ -16,9 +16,12 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
    before it is a headline, what happened, and *What I took from it*.
 3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
 4. **How I work** — one principle, and the things a team can hand over.
-5. **Curiosity** — Project Wick and Flyer Fable, framed as things built on his own time.
-6. **Credentials** — education, certifications, skills.
-7. **Contact** — LinkedIn first; the form underneath.
+5. **Credentials** — education, certifications, skills.
+6. **Contact** — LinkedIn first; the form underneath.
+
+The projects (Project Wick, Flyer Fable) are not set on the page; the
+colophon links to them. Their spreads and the Curiosity hinge are still in
+`src/components/`, unmounted, so they can come back without a rebuild.
 
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
 carry none of their own. It is deliberately anonymized — outcomes without vendor
@@ -74,10 +77,10 @@ src/
     Experience.tsx         Featured current role, then the timeline on the spine
     Fit.tsx                Where I fit
     HowIWork.tsx           Principle and three ways to help
-    Curiosity.tsx          The hinge into the projects
-    Spread.tsx             Shared layout for a project
-    WickSpread.tsx         Project Wick, with figures read at build time
-    FlyerSpread.tsx        Flyer Fable
+    Curiosity.tsx          The hinge into the projects (not mounted)
+    Spread.tsx             Shared layout for a project (not mounted)
+    WickSpread.tsx         Project Wick, with figures read at build time (not mounted)
+    FlyerSpread.tsx        Flyer Fable (not mounted)
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -120,7 +123,8 @@ The colophon has its own `band` role rather than reusing `ink`, because in dark
 mode it goes *darker* than the page — inverting it into a pale slab would make
 the close shout when its job is to settle.
 
-**`Spread` has an empty plate slot.** Its `children` render under the data
+**`Spread` has an empty plate slot.** (The spreads are off the home page for
+now; this holds for when they return.) Its `children` render under the data
 strip, and neither project currently passes anything — both spreads are a
 thesis, a figure strip and a link out. Two plates were built there and removed
 by decision, not by accident: the projects say more as an invitation to their
@@ -235,7 +239,7 @@ reports a result rather than a status. Its headline is a negative one — the
 agent developed real self-awareness and its curiosity died anyway — which is
 the finding, not a caveat on it.
 
-The home page spread prints that journal's real figures — entries, words, days,
+The home page spread (currently unmounted) prints that journal's real figures — entries, words, days,
 wiki pages, newest entry, source commit — via the `wick-summary` Vite plugin in
 `vite.config.ts`, which reads `journal.json` at build time and emits only what
 the page shows. Importing the file directly would inline ~640KB to display six

@@ -15,10 +15,11 @@ export const RAIL_PAD = 'pl-16 md:pl-32 lg:pl-44';
 
 /*
  * Right-hand breathing room — and, at lg and up, the section rail's gutter.
- * The rail is fixed at right-6 and its widest label ("Project Wick") makes it
- * 142px across, so it occupies the last 166px of the viewport. Anything less
- * than that here and right-aligned content runs underneath it: the data strip
- * was colliding with the active label at lg:pr-24. 192px clears it.
+ * The rail is fixed at right-6 and its widest label ("Credentials") makes it
+ * about 135px across, so it occupies the last 160px or so of the viewport.
+ * Anything less than that here and right-aligned content runs underneath it:
+ * the old data strip collided with the active label at lg:pr-24. 192px clears
+ * it with room to spare.
  *
  * Only lg needs it; below that the rail is hidden entirely.
  */

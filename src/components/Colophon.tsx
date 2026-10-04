@@ -68,14 +68,10 @@ export default function Colophon() {
 
             <div className="mt-6 flex flex-col gap-4">
               <p>
-                I built this with Claude Code, mostly by talking it through. It&rsquo;s React,
-                TypeScript, Vite and Tailwind, with Framer Motion and Lenis for the scrolling. A
-                small Cloudflare Worker sends the contact form.
+                Built with Claude Code. React, TypeScript, Vite and Tailwind, with Framer Motion
+                and Lenis for the scrolling.
               </p>
-              <p>
-                Headlines are set in Instrument Serif and body text in Instrument Sans. Anything a
-                machine produced, like years and commit hashes, is in Space Mono.
-              </p>
+              <p>Fonts: Instrument Serif &amp; Sans, and Space Mono.</p>
             </div>
           </details>
 

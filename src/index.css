@@ -26,7 +26,7 @@
  */
 :root {
   --c-paper: 229 225 216; /* #E5E1D8 greige, closer to uncoated stock than cream */
-  --c-paper-deep: 214 207 194; /* #D6CFC2 taupe band — Project Wick's spread */
+  --c-paper-deep: 214 207 194; /* #D6CFC2 taupe band — the project spreads, not mounted */
   --c-paper-lift: 239 236 228; /* #EFECE4 toward light, for Contact */
   --c-ink: 22 18 16; /* #161210 */
   --c-muted: 92 84 74; /* #5C544A warm grey-brown, biased toward the accent */

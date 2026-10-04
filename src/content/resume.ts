@@ -151,7 +151,7 @@ export const FIT = {
     },
     {
       title: 'You want a PM who tries things before writing the spec.',
-      body: 'I build quick prototypes with AI tools to see if an idea holds up before engineering spends time on it. The two projects further down are things I built on my own.',
+      body: 'I build quick prototypes with AI tools to see if an idea holds up before engineering spends time on it.',
     },
   ],
 };
