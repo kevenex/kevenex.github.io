@@ -16,7 +16,7 @@ export const IDENTITY = {
   title: 'Product Manager',
   location: 'Toronto, ON',
   greeting: 'Hi. I’m Kevin.',
-  lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m the product manager for the data that finance, risk and AI products depend on.',
+  lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m a data product manager at Plusgrade, with a view across all of its data and the products that depend on it.',
   how: 'I’m good at taking a problem nobody has pinned down yet and getting it to launch.',
 };
 
@@ -70,7 +70,7 @@ export const FEATURED = {
   company: 'Plusgrade',
   logo: '/logos/plusgrade.webp',
   monogram: 'P',
-  title: 'Product Manager',
+  title: 'Data Product Manager',
   start: '2024',
   span: '2024–',
   city: 'Toronto',
@@ -78,7 +78,7 @@ export const FEATURED = {
   gist: 'The data foundation for finance, risk and AI',
   team: 'Data engineering, finance, risk, analytics and partner operations',
   headline: 'Making the company’s data reliable enough to build on.',
-  body: 'I’m the main product manager for data at Plusgrade. I decide what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and partner operations run on that data, and so do the AI products the company is building. Plusgrade has grown by buying other companies, so a lot of the work is getting each one onto the same foundation, reliably and at global scale.',
+  body: 'I’m one of Plusgrade’s data product managers, and I look at the whole picture: all of the company’s data, and how it works with our products. I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and partner operations run on that data, and so do the AI products the company is building. Plusgrade has grown by buying other companies, so a lot of the work is getting each one onto the same foundation, reliably and at global scale.',
   /** Drawn as the teams' chips standing on one base: who depends on the work, and what it is. */
   foundation: {
     label: 'Built on it',
@@ -91,7 +91,7 @@ export const FEATURED = {
   closer: [
     {
       icon: 'compass',
-      text: 'Set what Data Engineering works on: the capability each piece adds, the business outcome behind it, and who owns it.',
+      text: 'Help set what Data Engineering works on: the capability each piece adds, the business outcome behind it, and who owns it.',
     },
     {
       icon: 'data',
@@ -188,7 +188,7 @@ export const FIT = {
   cases: [
     {
       title: 'You’re building AI products and the data isn’t ready for them.',
-      body: 'An AI product is only as good as the data under it. I own that layer today: what gets built, which outcome it supports, who owns it, and what comes first.',
+      body: 'An AI product is only as good as the data under it. That layer is my work today: what gets built, which outcome it supports, who owns it, and what comes first.',
     },
     {
       title: 'You’re launching a financial product with bank partners.',
