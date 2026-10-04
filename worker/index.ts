@@ -1,6 +1,6 @@
 /*
  * The one server this site has: a single route that takes the contact form's
- * submission and mails it.
+ * submission and mails it, plus the redirect that retires /app/.
  *
  * It sends through Cloudflare's `send_email` binding rather than a third-party
  * API, which means there is no credential anywhere — not in the bundle, not in
@@ -44,10 +44,21 @@ function text(value: unknown): string {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const { pathname } = new URL(request.url);
+    const url = new URL(request.url);
+    const { pathname } = url;
+
+    /*
+     * The site lived at /app/ while / held a password gate. Every old link
+     * lands on the home page now, permanently. The browser carries a #fragment
+     * across a redirect by itself, so /app/#contact still arrives at the
+     * contact form; the query string is passed on explicitly.
+     */
+    if (pathname === '/app' || pathname.startsWith('/app/')) {
+      return Response.redirect(new URL(`/${url.search}`, url).toString(), 301);
+    }
 
     // The asset server handles everything else; `run_worker_first` in
-    // wrangler.jsonc is what routes /api/* here in the first place.
+    // wrangler.jsonc is what routes /api/* (and /app) here in the first place.
     if (pathname !== '/api/contact') {
       return json({ error: 'Not found' }, 404);
     }

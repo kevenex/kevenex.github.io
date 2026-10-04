@@ -107,7 +107,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
-        app: 'app/index.html',
         ai: 'how-i-use-ai/index.html',
       },
     },

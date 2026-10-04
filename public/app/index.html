@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+      The site lived at /app/ while / held a password gate; it is at / now.
+
+      On kevink.im this file is never served: the Worker answers /app and
+      everything under it with a 301 first (run_worker_first in
+      wrangler.jsonc). It exists for hosts that cannot redirect on the server,
+      GitHub Pages among them. The script keeps the query and the #fragment,
+      so /app/#contact still lands on the contact form; the meta refresh is
+      for a reader without JavaScript, and the link for one who stops even
+      that.
+    -->
+    <title>Kevin Kim | Product Manager</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://kevink.im/" />
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      location.replace('/' + location.search + location.hash);
+    </script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #e5e1d8;
+        color: #161210;
+        font-family: system-ui, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #14110e;
+          color: #e9e4da;
+        }
+      }
+      p {
+        padding: 2rem 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <p>This page has moved to <a href="/">kevink.im</a>.</p>
+  </body>
+</html>
