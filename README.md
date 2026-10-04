@@ -13,12 +13,18 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
    his Memoji.
 2. **Experience** — newest first. The current role is a framed card; every role
-   before it is a headline, what happened, and *What I took from it*.
+   before it sits under *Before Plusgrade* and splits in two at xl: a narrow
+   column of facts (logo, company, title, years, domain, city) under a short
+   heavy rule, and a wide one for the story (headline, two flow chips, what
+   happened, *What I took from it*).
 3. **Where I fit** — open to roles, then three "You're…" cases written to the reader.
 4. **How I work** — one principle, and the things a team can hand over.
-5. **Curiosity** — Project Wick and Flyer Fable, framed as things built on his own time.
-6. **Credentials** — education, certifications, skills.
-7. **Contact** — LinkedIn first; the form underneath.
+5. **Credentials** — education, certifications, skills.
+6. **Contact** — LinkedIn first; the form underneath.
+
+The projects (Project Wick, Flyer Fable) are not set on the page; the
+colophon links to them. Their spreads and the Curiosity hinge are still in
+`src/components/`, unmounted, so they can come back without a rebuild.
 
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
 carry none of their own. It is deliberately anonymized — outcomes without vendor
@@ -49,6 +55,10 @@ public/
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
   memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
+  memoji/thinking.webp     …and two more expressions for How I use AI
+  memoji/grin.webp
+  ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
+  logos/                   Company and school marks, 160px tiles shown at 40px
   favicon.svg
 scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
@@ -58,8 +68,12 @@ worker/
   index.ts                 POST /api/contact — the only server (see Contact, below)
 src/
   App.tsx                  Page composition
+  pages/
+    HowIUseAI.tsx          The /how-i-use-ai/ page
+  main-ai.tsx              Its entry, behind the same gate as /app/
   content/
     resume.ts              Every word of career copy — the one place to edit it
+    ai.ts                  Every word on How I use AI
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
@@ -74,10 +88,12 @@ src/
     Experience.tsx         Featured current role, then the timeline on the spine
     Fit.tsx                Where I fit
     HowIWork.tsx           Principle and three ways to help
-    Curiosity.tsx          The hinge into the projects
-    Spread.tsx             Shared layout for a project
-    WickSpread.tsx         Project Wick, with figures read at build time
-    FlyerSpread.tsx        Flyer Fable
+    Curiosity.tsx          The hinge into the projects (not mounted)
+    Spread.tsx             Shared layout for a project (not mounted)
+    WickSpread.tsx         Project Wick, with figures read at build time (not mounted)
+    FlyerSpread.tsx        Flyer Fable (not mounted)
+    CompanyMark.tsx        A company's logo tile, or its monogram until there is one
+    DrawnLink.tsx          The mono link whose rule draws in on hover
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -87,6 +103,7 @@ src/
     ThemeToggle.tsx        Light/dark switch
     ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
+    CanadaFlag.tsx         The hero's flag, drawn (Windows has no flag emoji)
     WickMark.tsx           Project Wick's mark
 ```
 
@@ -110,8 +127,8 @@ anywhere in the markup. Two things make it work:
 - The theme is resolved by a **blocking inline script in the document head**,
   before first paint. React mounts long after the browser paints, so deciding
   in the bundle would flash the wrong theme on every load. It is duplicated in
-  `index.html` and `app/index.html` because the gate and the site share an
-  origin and a stored preference.
+  `index.html`, `app/index.html` and `how-i-use-ai/index.html` because the
+  gate and the pages share an origin and a stored preference.
 - A stored choice outranks the OS. With nothing stored the page follows
   `prefers-color-scheme` live; once someone picks a side, changing the system
   theme no longer overrides them (`src/lib/theme.ts`).
@@ -120,7 +137,8 @@ The colophon has its own `band` role rather than reusing `ink`, because in dark
 mode it goes *darker* than the page — inverting it into a pale slab would make
 the close shout when its job is to settle.
 
-**`Spread` has an empty plate slot.** Its `children` render under the data
+**`Spread` has an empty plate slot.** (The spreads are off the home page for
+now; this holds for when they return.) Its `children` render under the data
 strip, and neither project currently passes anything — both spreads are a
 thesis, a figure strip and a link out. Two plates were built there and removed
 by decision, not by accident: the projects say more as an invitation to their
@@ -204,6 +222,18 @@ animated, and `useHoverLayer()` from `lib/pointer.ts` for anything that responds
 to a pointer, or a reader who asked for no motion gets content that never
 appears.
 
+## Company marks
+
+Logos live in `public/logos/` as 160px tiles (`ibm.svg` has its viewBox
+cropped to the wordmark; at 40px the original's margins made it illegible).
+A role or credential names its file in `resume.ts` through a `Mark`:
+`logo` when there is one, and always a `monogram`. `CompanyMark` shows the
+logo, or the monogram on a hairline tile of the same size if a logo is
+ever missing — every company has one now. `plusgrade.webp` sits on a white
+ground the source file doesn't have: its dark grey would vanish on the dark
+theme otherwise. The company name is always printed beside the mark, so the
+image takes an empty alt.
+
 ## Memoji
 
 The hero's Memoji is a single still frame. It used to turn toward the cursor by
@@ -220,7 +250,36 @@ carry audio). To rebuild, with an ffmpeg that decodes H.264 and encodes WebP:
 
 ```sh
 FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs EmojiMovie812735549.mov
+
+# How I use AI's two expressions: [start] [frame] [out]
+node scripts/build-memoji.mjs EmojiMovie812735599.mov 11.2 1 public/memoji/thinking.webp
+node scripts/build-memoji.mjs EmojiMovie812735414.mov 9.45 1 public/memoji/grin.webp
 ```
+
+## How I use AI (`/how-i-use-ai/`)
+
+A sub-page modelled on the structure of tariquekhan.ca/how-i-use-ai: what
+Kevin uses AI for, three things built with it (Project Wick, Flyer Fable,
+this site), how he keeps an assistant in context, the tools he reaches for,
+and a way to get in touch. It is a third Vite entry (`how-i-use-ai/index.html`
+→ `src/main-ai.tsx` → `src/pages/HowIUseAI.tsx`), registered in
+`vite.config.ts`, and every word is in `src/content/ai.ts`.
+
+- **Same gate as `/app/`.** No stored access sends a reader back to `/`.
+- **The URL won't move at launch, but its back links will.** "Back to the
+  site" and "Get in touch" point at `/app/` and `/app/#contact`; change them
+  in `ai.ts` when the site moves to `/`.
+- **The home page's grammar, minus the instruments.** Paper, the left rail
+  inset, the three voices, hairlines and `DrawnLink`; no spine, rail or year
+  counter, because it is read top to bottom rather than scrubbed. The
+  colophon is the shared one, with `top="#top"` so *Back to the start* lands
+  on this page's header.
+- **The screenshots are static.** `public/ai/` holds frames of
+  `/project-wick/` and `/flyer-fable/` taken with Playwright at 1600×1000
+  (Flyer Fable mid-flight, after *Start Flying*). Retake them if either page
+  changes noticeably.
+
+The home page links to it from under How I work and from the colophon.
 
 ## Project Wick (`/project-wick/`)
 
@@ -235,7 +294,7 @@ reports a result rather than a status. Its headline is a negative one — the
 agent developed real self-awareness and its curiosity died anyway — which is
 the finding, not a caveat on it.
 
-The home page spread prints that journal's real figures — entries, words, days,
+The home page spread (currently unmounted) prints that journal's real figures — entries, words, days,
 wiki pages, newest entry, source commit — via the `wick-summary` Vite plugin in
 `vite.config.ts`, which reads `journal.json` at build time and emits only what
 the page shows. Importing the file directly would inline ~640KB to display six

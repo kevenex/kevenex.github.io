@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { IDENTITY, LINKEDIN } from '../content/resume';
 import { EASE, RAIL_PAD, RAIL_PAD_R, usePrefersReducedMotion } from '../lib/layout';
 import { useMagnetic } from '../lib/pointer';
+import CanadaFlag from './CanadaFlag';
 import Memoji from './Memoji';
 
 /*
@@ -57,7 +58,10 @@ export default function Arrival() {
         <span className="text-muted/60"> · </span>
         {IDENTITY.title}
         <span className="text-muted/60"> · </span>
-        {IDENTITY.location}
+        <span className="whitespace-nowrap">
+          {IDENTITY.location}
+          <CanadaFlag className="ml-2 h-[0.8em] w-auto align-[-0.05em]" />
+        </span>
       </motion.p>
 
       <motion.div

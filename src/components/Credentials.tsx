@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { CERTIFICATIONS, EDUCATION, SKILLS } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
+import CompanyMark from './CompanyMark';
 
 /*
  * The part of a résumé nobody reads for pleasure and everybody checks. Kept
@@ -8,6 +9,10 @@ import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
  * with the years in a column of their own so they scan as a list of dates.
  *
  * No skill percentages. A self-assessed "95%" encodes nothing a peer can use.
+ *
+ * A row whose institution has a mark (Western, for now) carries it beside
+ * the name, the same tile Experience uses, and centres its date against the
+ * pair instead of on the first line.
  */
 export default function Credentials() {
   const reveal = useReveal();
@@ -36,11 +41,16 @@ export default function Credentials() {
               {rows.map((row) => (
                 <div
                   key={row.what}
-                  className="flex items-baseline justify-between gap-6 border-b border-ink/10 py-4"
+                  className={`flex justify-between gap-6 border-b border-ink/10 py-4 ${
+                    row.mark ? 'items-center' : 'items-baseline'
+                  }`}
                 >
-                  <dt className="font-sans text-body text-ink">
-                    {row.what}
-                    <span className="block font-sans text-small text-muted">{row.where}</span>
+                  <dt className="flex items-center gap-4 font-sans text-body text-ink">
+                    {row.mark && <CompanyMark mark={row.mark} />}
+                    <span>
+                      {row.what}
+                      <span className="block font-sans text-small text-muted">{row.where}</span>
+                    </span>
                   </dt>
                   <dd className="tabular shrink-0 font-mono text-data text-muted">{row.year}</dd>
                 </div>

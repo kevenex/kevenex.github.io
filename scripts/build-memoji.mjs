@@ -1,8 +1,9 @@
 /**
  * Builds public/memoji/kevin.webp — one still, transparent frame — from a
- * Memoji recording.
+ * Memoji recording. The optional last argument writes somewhere else, which
+ * is how the How I use AI page's expressions were cut from the same takes.
  *
- *   FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs path/to/EmojiMovie.mov [start] [frame]
+ *   FFMPEG=/path/to/ffmpeg node scripts/build-memoji.mjs path/to/EmojiMovie.mov [start] [frame] [out]
  *
  * Defaults match the shipped image: EmojiMovie812735549.mov, sampled from
  * 20.55s at 36 frames over 1.6s, keeping frame 13 — the most front-on point of
@@ -23,10 +24,10 @@ import { writeFileSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const [input, start = '20.55', pick = '13'] = process.argv.slice(2);
+const [input, start = '20.55', pick = '13', out = 'public/memoji/kevin.webp'] = process.argv.slice(2);
 const ffmpeg = process.env.FFMPEG ?? 'ffmpeg';
 if (!input) {
-  console.error('usage: FFMPEG=… node scripts/build-memoji.mjs <movie.mov> [start] [frame]');
+  console.error('usage: FFMPEG=… node scripts/build-memoji.mjs <movie.mov> [start] [frame] [out]');
   process.exit(1);
 }
 
@@ -108,6 +109,6 @@ const rawPath = join(dir, 'frame.rgba');
 writeFileSync(rawPath, cropped);
 execFileSync(ffmpeg, [
   '-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${S}x${S}`,
-  '-i', rawPath, '-frames:v', '1', '-c:v', 'libwebp', '-q:v', '85', 'public/memoji/kevin.webp',
+  '-i', rawPath, '-frames:v', '1', '-c:v', 'libwebp', '-q:v', '85', out,
 ]);
-console.log(`public/memoji/kevin.webp — frame ${FRAME}, ${S}px, ${readFileSync('public/memoji/kevin.webp').length} bytes`);
+console.log(`${out} — frame ${FRAME}, ${S}px, ${readFileSync(out).length} bytes`);

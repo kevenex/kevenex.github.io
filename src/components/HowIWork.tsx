@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Rocket, Search, Users, Wrench } from 'lucide-react';
 import { HOW, type WorkItem } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
+import DrawnLink from './DrawnLink';
 
 const ICONS: Record<WorkItem['icon'], typeof Search> = {
   search: Search,
@@ -67,6 +68,10 @@ export default function HowIWork() {
           );
         })}
       </ul>
+
+      <motion.div className="mt-14" {...reveal}>
+        <DrawnLink href={HOW.more.href}>{HOW.more.label}&nbsp;&rarr;</DrawnLink>
+      </motion.div>
     </section>
   );
 }
