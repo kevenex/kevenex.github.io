@@ -104,10 +104,6 @@ export const FEATURED = {
   ] satisfies Closer[],
 };
 
-/** The line beside "Before Plusgrade": every earlier role in one breath. */
-export const BEFORE_SUMMARY =
-  'Card platforms with banks on two continents, retail data through a nationwide rollout, a greenlit prototype, and a startup’s first round.';
-
 /** Newest first — a recruiter reads down from the present. */
 export const ROLES: Role[] = [
   {
