@@ -7,7 +7,7 @@
  * employer's systems.
  */
 
-export const AI_BACK = { href: '/app/', label: 'Back to the site' };
+export const AI_BACK = { href: '/', label: 'Back to the site' };
 
 export const AI_HERO = {
   title: 'How I use AI.',
@@ -86,7 +86,7 @@ export const AI_TRYING = {
         quote: 'Every outcome on the home page is mine. The numbers stay on my résumé; the page keeps the judgment behind them.',
         after: 'When I reread a draft, the question is whether I’d say it that way in an interview. If I wouldn’t, it goes.',
       },
-      link: { href: '/app/', label: 'See the site' },
+      link: { href: '/', label: 'See the site' },
     },
   ] satisfies AiProject[],
 };
@@ -141,5 +141,5 @@ export const AI_TOOLS = {
 
 export const AI_CLOSE = {
   text: 'If you’re building something and want to compare notes, or want to talk about a role:',
-  link: { href: '/app/#contact', label: 'Get in touch' },
+  link: { href: '/#contact', label: 'Get in touch' },
 };

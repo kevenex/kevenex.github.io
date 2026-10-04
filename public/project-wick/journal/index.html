@@ -7,12 +7,12 @@
   The run is over: Aug 8 – Aug 26, 2026, 349 entries. This page is now a closed
   record rather than a live one, and says so.
 
-  On the same design system as the one-pager and /app/ — the palette, the three
+  On the same design system as the one-pager and the home page — the palette, the three
   type voices and the shared components come from ../wick.css, which restates
   src/index.css and tailwind.config.js in plain CSS for the pages that have no
   build step. Only what this page alone needs is inline below.
 
-  LISTED, on the same terms as the one-pager, which is on the /app/ spread and
+  LISTED, on the same terms as the one-pager, which is on the home page's spread and
   in its rail. This page is deliberately in neither: it is reached from the
   one-pager, because the entries make far more sense after the argument for why
   they exist. Crawlers are welcome.
@@ -76,7 +76,7 @@
 
     <!--
       Resolve the theme before first paint, against the same localStorage key
-      /app/ and the one-pager use, so a choice made anywhere on the site holds
+      the home page and the one-pager use, so a choice made anywhere on the site holds
       here. Deliberately a blocking inline script: anything deferred would show
       a flash of the wrong theme on every load for someone who chose dark.
     -->
@@ -185,7 +185,7 @@
 
       /*
        * The four headline figures. Not tiles: label left, figure right, on one
-       * hairline — the same data strip the one-pager and /app/ use. The JS
+       * hairline — the same data strip the one-pager and the home page use. The JS
        * builds `.label`, `.value` and `.sub` as siblings, so the grid places
        * them rather than the markup nesting them.
        */
@@ -797,7 +797,7 @@
 
     <script>
       /*
-       * The theme toggle, against the same localStorage key /app/ and the
+       * The theme toggle, against the same localStorage key the home page and the
        * one-pager use. Separate from the render below because it must work
        * whether or not the data file loads.
        */

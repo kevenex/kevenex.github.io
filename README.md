@@ -65,18 +65,20 @@ public/
   memoji/grin.webp
   ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
   logos/                   Company and school marks, 160px tiles shown at 40px
+  app/index.html           Redirects the retired /app/ to / where the host can't — see below
   favicon.svg
 scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
 worker/
-  index.ts                 POST /api/contact — the only server (see Contact, below)
+  index.ts                 POST /api/contact, and the /app → / redirect — the only server
 src/
   App.tsx                  Page composition
+  main.tsx                 The home page's entry
   pages/
     HowIUseAI.tsx          The /how-i-use-ai/ page
-  main-ai.tsx              Its entry, behind the same gate as /app/
+  main-ai.tsx              Its entry
   content/
     resume.ts              Every word of career copy — the one place to edit it
     ai.ts                  Every word on How I use AI
@@ -107,7 +109,6 @@ src/
     Rail.tsx               Scrubbable map of the page
     Cursor.tsx             The page's own cursor
     ThemeToggle.tsx        Light/dark switch
-    ComingSoon.tsx         The password gate at /
     KevinKLogo.tsx         4-fold symmetric SVG mark
     CanadaFlag.tsx         The hero's flag, drawn (Windows has no flag emoji)
     WickMark.tsx           Project Wick's mark
@@ -133,8 +134,8 @@ anywhere in the markup. Two things make it work:
 - The theme is resolved by a **blocking inline script in the document head**,
   before first paint. React mounts long after the browser paints, so deciding
   in the bundle would flash the wrong theme on every load. It is duplicated in
-  `index.html`, `app/index.html` and `how-i-use-ai/index.html` because the
-  gate and the pages share an origin and a stored preference.
+  `index.html` and `how-i-use-ai/index.html` (and the standalone pages under
+  `public/`) because they share an origin and a stored preference.
 - A stored choice outranks the OS. With nothing stored the page follows
   `prefers-color-scheme` live; once someone picks a side, changing the system
   theme no longer overrides them (`src/lib/theme.ts`).
@@ -267,14 +268,12 @@ node scripts/build-memoji.mjs EmojiMovie812735414.mov 9.45 1 public/memoji/grin.
 A sub-page modelled on the structure of tariquekhan.ca/how-i-use-ai: what
 Kevin uses AI for, three things built with it (Project Wick, Flyer Fable,
 this site), how he keeps an assistant in context, the tools he reaches for,
-and a way to get in touch. It is a third Vite entry (`how-i-use-ai/index.html`
+and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
 → `src/main-ai.tsx` → `src/pages/HowIUseAI.tsx`), registered in
 `vite.config.ts`, and every word is in `src/content/ai.ts`.
 
-- **Same gate as `/app/`.** No stored access sends a reader back to `/`.
-- **The URL won't move at launch, but its back links will.** "Back to the
-  site" and "Get in touch" point at `/app/` and `/app/#contact`; change them
-  in `ai.ts` when the site moves to `/`.
+- **Back to the home page.** "Back to the site" and "Get in touch" point at
+  `/` and `/#contact`, set in `ai.ts`.
 - **The home page's grammar, minus the instruments.** Paper, the left rail
   inset, the three voices, hairlines and `DrawnLink`; no spine, rail or year
   counter, because it is read top to bottom rather than scrubbed. The
@@ -346,9 +345,9 @@ rail, and the components both pages share.
 
 **Its token blocks are copied from `src/index.css`. Change one, change the
 other** — nothing in the build catches the drift, and a Wick page on a different
-greige than `/app/` is worse than no shared language at all. Each page also
+greige than the home page is worse than no shared language at all. Each page also
 inlines the critical tokens and the pre-paint theme script from
-`app/index.html`, against the same `localStorage` key, so a theme chosen
+`index.html`, against the same `localStorage` key, so a theme chosen
 anywhere on the site holds everywhere.
 
 `wick.css` adds exactly one role the SPA does not have: `--c-fault`, for an open
@@ -469,8 +468,7 @@ Five things that bite, in the order they bite:
   Cloudflare Workers Build is wired to `master`, its next run silently reverts
   production to a version with no `/api/contact`.
 
-Test the preview URL with `curl` rather than a browser — it is a different origin,
-so `localStorage` is empty and the password gate bounces you back to `/`:
+Test the contact route on the preview URL with `curl`:
 
 ```sh
 curl -i -X POST https://<version>-kevink-im.<subdomain>.workers.dev/api/contact \
@@ -497,11 +495,29 @@ record; delete that one first. The same attachment can be made by hand at
 Workers & Pages → kevink-im → Settings → Domains & Routes → Add → Custom
 domain. Check afterwards with `dig +short kevink.im`.
 
-## Before the Coming Soon gate comes off
+## The retired `/app/`
 
-`/` is a password gate (`ComingSoon.tsx`); the site itself is at `/app/`, which
-redirects back if `localStorage` has no access token. Deferred by decision, not
-forgotten:
+Until October 2026 `/` was a password gate and the site lived at `/app/`. The
+gate is gone and the site is at `/`, but links to `/app/` are out there, so
+both hosts send them home:
+
+- **kevink.im (the Worker)** answers `/app` and everything under it with a 301
+  to `/`, query string kept. `run_worker_first` in `wrangler.jsonc` lists
+  `/app` and `/app/*` so the Worker sees the request before the asset server
+  does. The browser carries the `#fragment` across the redirect on its own, so
+  `/app/#contact` lands on the contact form. Check with
+  `curl -sI https://kevink.im/app/`, which should show `301` and
+  `location: https://kevink.im/`.
+- **GitHub Pages** can't redirect on the server, so `public/app/index.html`
+  is a client-side redirect (script, then meta refresh, then a link) with a
+  canonical pointing at `https://kevink.im/`. The Worker never serves it.
+
+Nothing reads the old `site-access` key in `localStorage` any more; browsers
+that still hold it are unaffected.
+
+## Still open
+
+Deferred by decision, not forgotten:
 
 1. **Resolve the Project Wick sync** (see Known stale above), so the spread's
    figures are current rather than a snapshot.

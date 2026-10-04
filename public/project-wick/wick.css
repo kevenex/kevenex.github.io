@@ -9,7 +9,7 @@
  * deliberate duplication with one rule attached:
  *
  *   THE TOKEN BLOCKS BELOW ARE COPIED FROM src/index.css. Change one, change
- *   the other. A Wick page on a different greige than /app/ is worse than no
+ *   the other. A Wick page on a different greige than the home page is worse than no
  *   shared language at all, and nothing in the build will catch the drift.
  *
  * Shared here, page-specific inline: this file carries the palette, the three
@@ -184,7 +184,7 @@ code {
 
 /*
  * The page hangs off one left rail and never resets it — the same axis
- * /app/ uses (RAIL_PAD in src/lib/layout.ts, pl-16 md:pl-32 lg:pl-44). The
+ * the home page uses (RAIL_PAD in src/lib/layout.ts, pl-16 md:pl-32 lg:pl-44). The
  * right side needs far less than the SPA's, which is wide only to clear its
  * fixed section rail; here the only fixed element is the theme toggle.
  */
@@ -448,7 +448,7 @@ section {
 
 /*
  * The page's one dark band and the only place it departs from paper — the same
- * close /app/ uses. Its ground is its own role, not a reuse of `ink`, because
+ * close the home page uses. Its ground is its own role, not a reuse of `ink`, because
  * in dark mode it goes darker than the page rather than inverting into a pale
  * slab.
  *

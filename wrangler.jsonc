@@ -29,7 +29,11 @@
     // would never run, and a form checking only response.ok would report a
     // message delivered that was never sent. This routes /api/* to the Worker
     // before assets get a look. Needs Wrangler >= 4.20.0.
-    "run_worker_first": ["/api/*"]
+    //
+    // /app and everything under it come here too, for the permanent redirect
+    // to / in worker/index.ts. The site lived at /app/ while / held a
+    // password gate, so old links and bookmarks still point there.
+    "run_worker_first": ["/api/*", "/app", "/app/*"]
   },
   // Unrestricted by choice: the binding can only reach destination addresses
   // already verified on the account, and naming the recipient here would
