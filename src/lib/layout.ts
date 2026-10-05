@@ -7,11 +7,15 @@ import { useEffect, useState } from 'react';
  * been following since the top of the page — that shared coordinate is what
  * makes the spine *become* the timeline rather than resemble it.
  *
+ * On a phone the column is centred instead: 32px either side, with the spine
+ * drawn 16px in, inside the left margin. A wider left inset there pushed every
+ * line visibly off-centre on a screen only 390px across.
+ *
  * Full class strings rather than composed fragments, so Tailwind's content
  * scanner sees them.
  */
-export const RAIL = 'left-6 md:left-16 lg:left-24';
-export const RAIL_PAD = 'pl-16 md:pl-32 lg:pl-44';
+export const RAIL = 'left-4 md:left-16 lg:left-24';
+export const RAIL_PAD = 'pl-8 md:pl-32 lg:pl-44';
 
 /*
  * Right-hand breathing room — and, at lg and up, the section rail's gutter.
@@ -21,9 +25,10 @@ export const RAIL_PAD = 'pl-16 md:pl-32 lg:pl-44';
  * the old data strip collided with the active label at lg:pr-24. 192px clears
  * it with room to spare.
  *
- * Only lg needs it; below that the rail is hidden entirely.
+ * Only lg needs it; below that the rail is hidden entirely. On a phone it
+ * matches RAIL_PAD, so the column sits in the middle of the screen.
  */
-export const RAIL_PAD_R = 'pr-6 md:pr-16 lg:pr-48';
+export const RAIL_PAD_R = 'pr-8 md:pr-16 lg:pr-48';
 
 /** One easing curve and one distance for every reveal on the page. */
 export const EASE = [0.22, 0.61, 0.36, 1] as const;

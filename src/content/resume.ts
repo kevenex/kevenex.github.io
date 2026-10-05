@@ -13,7 +13,7 @@ export const LINKEDIN = 'https://www.linkedin.com/in/kevinsunkim';
 
 export const IDENTITY = {
   name: 'Kevin Kim',
-  title: 'Product Manager',
+  title: 'Product Manager & Builder',
   location: 'Toronto, ON',
   greeting: 'Hi. I’m Kevin.',
   lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m a data product manager at Plusgrade, with a view across all of its data and the products that depend on it.',

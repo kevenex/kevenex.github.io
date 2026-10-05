@@ -5,6 +5,11 @@ import { useTheme } from '../lib/theme';
  * draws, not an icon button with a pill around it. It names the theme you
  * would get by pressing it, which is less ambiguous than a sun/moon glyph
  * that could mean either the current state or the destination.
+ *
+ * Fixed only from lg, where the page keeps a right-hand gutter clear for it.
+ * Below that there is no such gutter, so it is set at the top of the document
+ * beside the hero's header line and scrolls away with it rather than floating
+ * over the text of every section.
  */
 export default function ThemeToggle() {
   const { theme, toggle } = useTheme();
@@ -15,7 +20,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={`Switch to ${next.toLowerCase()} theme`}
-      className="group fixed right-6 top-6 z-50 inline-flex flex-col gap-1.5 font-mono text-label uppercase text-muted outline-none"
+      className="group absolute right-8 top-6 z-50 inline-flex flex-col gap-1.5 font-mono text-label uppercase text-muted outline-none md:right-6 lg:fixed"
     >
       <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
         {next}
