@@ -388,19 +388,21 @@ plus a WebGL render loop. It is a leaf page; let it be one.
 
 ## GGP Tracker (`/ggpoker-tracker/readme/`)
 
-A one-pager for a private, in-browser analytics tool for GGPoker tournament
-players, written as a PM case study. **It is not built from this repository.**
-`kevink.im/ggpoker-tracker*` is a Worker route belonging to
-`kevenex/ggpoker-tracker` (a private repository), which serves the app at
-`/ggpoker-tracker/`. Requests under that path reach that Worker, not this one,
-so a copy committed here would only ever reach the GitHub Pages mirror. The page lives at
-`web/public/readme/index.html` over there and ships with the app's deploys.
+A blog post on building a private, in-browser analytics tool for GGPoker
+tournament players, written first person from the player's and the PM's side.
+**It is not built from this repository.** `kevink.im/ggpoker-tracker*` is a
+Worker route belonging to `kevenex/ggpoker-tracker` (a private repository),
+which serves the app at `/ggpoker-tracker/`. Requests under that path reach
+that Worker, not this one, so a copy committed here would only ever reach the
+GitHub Pages mirror. The page lives at `web/public/readme/index.html` over there
+and ships with the app's deploys.
 
-It is built the way the Wick one-pager is: hand-written HTML on `wick.css`,
-loaded from `/project-wick/` on the same origin, with the critical tokens and
-the pre-paint theme script inlined against the same `localStorage` key. So it
-reads as a page of this site, and a theme chosen here holds there. The colophon
-links to it; nothing else on this site does.
+It is built the way the Wick one-pager is, though it reads as one continuous
+article rather than sections: hand-written HTML on `wick.css`, loaded from
+`/project-wick/` on the same origin, with the critical tokens and the pre-paint
+theme script inlined against the same `localStorage` key. So it reads as a page
+of this site, and a theme chosen here holds there. The colophon links to it;
+nothing else on this site does.
 
 ## Contact
 
