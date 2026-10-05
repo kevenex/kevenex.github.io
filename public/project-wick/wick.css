@@ -17,6 +17,12 @@
  * eyebrow, the drawing rule, the data strip, the theme toggle, the closing
  * band). Anything only one page needs — the one-pager's diagram, the journal's
  * entry list — stays in that page's own <style>.
+ *
+ * One more page loads this file, and it is not in this repository:
+ * kevink.im/ggpoker-tracker/readme/, served by the ggpoker-tracker Worker from
+ * kevenex/ggpoker-tracker (web/public/readme/index.html), links it by absolute
+ * path to share the site's look. Rename or move this file and that page loses
+ * its styles without any build here noticing.
  */
 
 /* ------------------------------------------------------------------ tokens */

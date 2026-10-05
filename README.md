@@ -25,8 +25,8 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 5. **Credentials** — education, certifications, skills.
 6. **Contact** — LinkedIn first; the form underneath.
 
-The projects (Project Wick, Flyer Fable) are not set on the page; the
-colophon links to them. Their spreads and the Curiosity hinge are still in
+The projects (Project Wick, Flyer Fable, GGP Tracker) are not set on the page;
+the colophon links to them. Their spreads and the Curiosity hinge are still in
 `src/components/`, unmounted, so they can come back without a rebuild.
 
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
@@ -359,6 +359,10 @@ nor `--c-amber` is ever the only signal — both are set beside a written label.
 `/flyer-fable/` is the other standalone page and has **not** been brought onto
 `wick.css`; it still carries the old dark, mono-only look.
 
+**A page outside this repository loads it too.** `/ggpoker-tracker/readme/` (see
+GGP Tracker, below) links `/project-wick/wick.css` by absolute path. Renaming or
+moving the file breaks that page silently, so update it in the same change.
+
 ## Flyer Fable (`/flyer-fable/`)
 
 A stylized first-person flight over a low-poly South Korea. Vendored from
@@ -381,6 +385,22 @@ holding focus swallows the reader's own scroll keys. It calls
 under pointer lock the parent stops receiving `pointermove`, which freezes the
 custom cursor mid-page. And it is an 89KB page plus a 670KB copy of Three.js
 plus a WebGL render loop. It is a leaf page; let it be one.
+
+## GGP Tracker (`/ggpoker-tracker/readme/`)
+
+A one-pager for a private, in-browser analytics tool for GGPoker tournament
+players, written as a PM case study. **It is not built from this repository.**
+`kevink.im/ggpoker-tracker*` is a Worker route belonging to
+`kevenex/ggpoker-tracker` (a private repository), which serves the app at
+`/ggpoker-tracker/`. Requests under that path reach that Worker, not this one,
+so a copy committed here would only ever reach the GitHub Pages mirror. The page lives at
+`web/public/readme/index.html` over there and ships with the app's deploys.
+
+It is built the way the Wick one-pager is: hand-written HTML on `wick.css`,
+loaded from `/project-wick/` on the same origin, with the critical tokens and
+the pre-paint theme script inlined against the same `localStorage` key. So it
+reads as a page of this site, and a theme chosen here holds there. The colophon
+links to it; nothing else on this site does.
 
 ## Contact
 

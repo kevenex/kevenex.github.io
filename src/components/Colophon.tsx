@@ -38,6 +38,7 @@ export default function Colophon({ top = '#arrival' }: { top?: string }) {
   const ai = useMagnetic<HTMLAnchorElement>();
   const wick = useMagnetic<HTMLAnchorElement>();
   const flyer = useMagnetic<HTMLAnchorElement>();
+  const ggp = useMagnetic<HTMLAnchorElement>();
   const topLink = useMagnetic<HTMLAnchorElement>();
 
   const toTop = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -118,6 +119,22 @@ export default function Colophon({ top = '#arrival' }: { top?: string }) {
                   className={LINK}
                 >
                   Flyer Fable
+                </a>
+                <span aria-hidden="true" className="px-2 text-band-text/30">
+                  /
+                </span>
+                {/*
+                 * Not one of this repo's pages: kevink.im/ggpoker-tracker* is routed to the
+                 * ggpoker-tracker Worker, so the write-up ships from kevenex/ggpoker-tracker
+                 * (web/public/readme/). See README, GGP Tracker.
+                 */}
+                <a
+                  ref={ggp}
+                  href="/ggpoker-tracker/readme/"
+                  data-cursor-label="/ggpoker-tracker/readme/"
+                  className={LINK}
+                >
+                  GGP Tracker
                 </a>
               </dd>
             </div>
