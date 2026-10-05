@@ -16,8 +16,8 @@ import CompanyMark from './CompanyMark';
 /*
  * Newest first. A recruiter reads down from the present, so the current role
  * opens the section in a framed card and everything before it follows as a
- * timeline on the spine — each role a headline, what happened, and what it
- * taught, rather than a list of duties.
+ * timeline on the spine — each role a headline, what happened, and what I
+ * learnt, rather than a list of duties.
  *
  * Every role, framed or not, splits the same way at xl: a narrow column of
  * facts (who, when, what kind of company) under a short heavy rule, and a
@@ -435,9 +435,17 @@ export default function Experience() {
 
                       <p className="mt-8 max-w-measure font-sans text-body text-muted">{role.body}</p>
 
-                      <p className="mt-4 max-w-measure font-sans text-body text-ink">
-                        <span className="text-oxide">What I took from it:</span> {role.takeaway}
-                      </p>
+                      <p className="mt-8 font-sans text-body text-oxide">What I learnt</p>
+
+                      {/* A short drawn rule for each marker, not a bullet. */}
+                      <ul className="mt-3 flex max-w-measure flex-col gap-3 font-sans text-body text-ink">
+                        {role.learnt.map((lesson) => (
+                          <li key={lesson} className="flex gap-3">
+                            <span aria-hidden="true" className="mt-[0.8em] h-px w-3 shrink-0 bg-oxide/60" />
+                            <span>{lesson}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </More>
                   </div>
                 </motion.div>
