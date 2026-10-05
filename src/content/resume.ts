@@ -48,7 +48,8 @@ export interface Role extends Mark {
   /** The two chips under the headline: what the work started from, and what it turned into. */
   flow: [string, string];
   body: string;
-  takeaway: string;
+  /** What the role taught, one sentence per item, listed under "What I learnt". */
+  learnt: string[];
   /** One sense of scale in the facts column. Optional: not every role has one worth printing. */
   figure?: Figure;
 }
@@ -119,7 +120,10 @@ export const ROLES: Role[] = [
     headline: 'Moving traditional banks onto a modern card platform.',
     flow: ['Traditional banking', 'Modular card issuing'],
     body: 'Brim sells a card issuing platform to banks, and the banks offer the cards to their own customers. I led major integrations with banks in North America and Europe from 0 to 1: discovery, partner communications, delivery, and stabilizing things after launch. I ran a team of PMs and QA analysts, turned loose ideas into decisions engineering could act on, and worked directly with the executive team, directors and SVPs on each rollout.',
-    takeaway: 'I learned to plan the handover to the bank’s team from the first week, not the last.',
+    learnt: [
+      'Building 0 to 1 at a fast-moving startup means there’s no playbook. I wrote the process as we went and kept only what helped us ship.',
+      'Scope is never settled at that stage. The real skill is deciding what ships now and what waits for version two.',
+    ],
     figure: {
       label: 'Scale of the work',
       value: 'Two continents',
@@ -139,7 +143,11 @@ export const ROLES: Role[] = [
     headline: 'Keeping inventory data straight after an acquisition.',
     flow: ['Acquired inventory', 'Nationwide rollout'],
     body: 'My first job out of school. Canadian Tire had bought another retailer and was opening it as a store-in-store across the country. I tracked its inventory across several ERP systems and kept the data consistent and accurate as the rollout reached hundreds of locations. My analysis turned into recommendations the category team used, and excess stock went down.',
-    takeaway: 'I started building every analysis around the one decision it was supposed to help someone make.',
+    learnt: [
+      'In a company the size of Canadian Tire, progress comes from knowing who owns each decision and getting them the numbers early.',
+      'Every number has several owners. I brought them into the analysis early, so they already agreed with the recommendation by the time it landed.',
+      'Managing many stakeholders means framing the same analysis around what each team is measured on.',
+    ],
     figure: {
       label: 'Scale of the work',
       value: 'Hundreds of stores',
@@ -159,7 +167,11 @@ export const ROLES: Role[] = [
     headline: 'From a problem statement to a greenlit prototype.',
     flow: ['Problem statement', 'Greenlit prototype'],
     body: 'IBM ran the program like Dragon’s Den: three months to take a problem statement, find the pain points and the opening in it, and build something that works. I worked with three engineers and set what we built first, and we made a proof of concept that helped Java applications start faster. I pitched it to IBM’s senior management in New York, and it was greenlit for further development after the internship ended.',
-    takeaway: 'a working prototype settled questions that weeks of slides wouldn’t have.',
+    learnt: [
+      'A working prototype settles questions that weeks of slides can’t.',
+      'With three months and three engineers, deciding what not to build was most of the job.',
+      'Senior leaders back a problem they already feel, not a clever piece of technology.',
+    ],
   },
   {
     company: 'Intrepid Ventures',
@@ -174,7 +186,10 @@ export const ROLES: Role[] = [
     headline: 'Working next to the founders in Seoul.',
     flow: ['Investor meetings', 'First funding round'],
     body: 'I worked directly with the founders and their advisors on the company’s first funding round. I also looked after relationships with investors and partners, and helped get new products to market.',
-    takeaway: 'sitting in on investor meetings taught me to answer the question someone actually asked.',
+    learnt: [
+      'With nobody to hand things to, ownership isn’t a title. I took whatever was unclear and made it concrete.',
+      'Small teams move by deciding with what they have and adjusting later.',
+    ],
   },
 ];
 

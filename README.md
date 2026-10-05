@@ -18,7 +18,7 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
    under *Before Plusgrade* and splits in two at xl: a narrow column of facts
    (logo, company, title, years, domain, city, and an optional worded figure
    for scale) under a short heavy rule, and a wide one for the story
-   (headline, two flow chips, what happened, *What I took from it*).
+   (headline, two flow chips, what happened, *What I learnt*).
 3. **Where I fit** — open to roles, then four "You're…" cases written to the
    reader, two by two, AI first.
 4. **How I work** — one principle, and the things a team can hand over.
