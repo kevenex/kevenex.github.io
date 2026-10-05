@@ -46,7 +46,7 @@ export default function Arrival() {
     <section
       ref={ref}
       id="arrival"
-      className={`flex min-h-screen-dvh w-full flex-col gap-16 py-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
+      className={`flex min-h-screen-dvh w-full flex-col gap-16 pb-10 pt-6 lg:pt-10 ${RAIL_PAD} ${RAIL_PAD_R}`}
     >
       <motion.p
         className="font-mono text-label uppercase text-muted"
@@ -54,10 +54,18 @@ export default function Arrival() {
         animate={{ opacity: 1 }}
         transition={{ duration: still ? 0 : 0.8, ease: EASE }}
       >
+        {/*
+         * One line from sm. On a phone it would wrap mid-phrase and leave a
+         * separator hanging at a line end, so it stacks instead: name, title,
+         * place. The first line is short, which keeps it clear of the theme
+         * toggle sitting at the right of the same row.
+         */}
         {IDENTITY.name}
-        <span className="text-muted/60"> · </span>
+        <span className="hidden text-muted/60 sm:inline"> · </span>
+        <br className="sm:hidden" />
         {IDENTITY.title}
-        <span className="text-muted/60"> · </span>
+        <span className="hidden text-muted/60 sm:inline"> · </span>
+        <br className="sm:hidden" />
         <span className="whitespace-nowrap">
           {IDENTITY.location}
           <CanadaFlag className="ml-2 h-[0.8em] w-auto align-[-0.05em]" />

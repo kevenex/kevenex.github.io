@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Database, Sparkles } from 'lucide-react';
 import { FEATURED, ROLES, type Closer } from '../content/resume';
@@ -23,7 +23,8 @@ import CompanyMark from './CompanyMark';
  * facts (who, when, what kind of company) under a short heavy rule, and a
  * wide column for the story. Below xl the facts stack above the story; the
  * narrow column cannot hold a logo and a long company name side by side any
- * earlier than that.
+ * earlier than that. Below md the story also folds away under its headline,
+ * so a phone reads the career as facts and headlines first.
  */
 
 const ICONS: Record<Closer['icon'], typeof Database> = {
@@ -41,7 +42,7 @@ const CHIP = 'border border-oxide/35 bg-oxide/[0.07] px-3 py-1.5 text-oxide';
  * to either constant is a change in one place, and the nodes cannot drift
  * off the spine.
  */
-const NODE_REACH = '-ml-10 md:-ml-16 lg:-ml-20';
+const NODE_REACH = '-ml-4 md:-ml-16 lg:-ml-20';
 
 /** The years the counter can show, in reading order: the present first. */
 const STARTS = [FEATURED.start, ...ROLES.map((role) => role.start)];
@@ -89,24 +90,69 @@ function Node({
 
 /**
  * What the work started from and what it turned into, as two chips. The
- * arrow is drawn for the eye; a screen reader hears "to" in its place. The
- * arrow travels with the second chip, so on a narrow screen the wrapped line
- * starts "→ …" instead of the first line ending on a dangling arrow.
+ * arrow is drawn for the eye; a screen reader hears "to" in its place.
+ *
+ * On a phone the pair is a three-column grid: two equal chips with the arrow
+ * between, wrapping inside themselves rather than breaking the row, so both
+ * always sit side by side at the same height. From sm the chips run inline,
+ * and the arrow travels with the second one so a wrapped line starts "→ …"
+ * instead of the first ending on a dangling arrow.
  */
 function Flow({ steps: [from, to] }: { steps: [string, string] }) {
-  const chip = `${CHIP} sm:px-4 sm:py-2`;
+  const chip = `${CHIP} flex items-center justify-center text-center sm:px-4 sm:py-2`;
 
   return (
-    <p className="mt-8 flex flex-wrap items-center gap-3 font-sans text-small">
+    <p className="mt-8 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-3 font-sans text-small sm:flex sm:flex-wrap sm:items-center">
       <span className={chip}>{from}</span>
-      <span className="inline-flex items-center gap-3">
-        <span aria-hidden="true" className="text-muted">
+      <span className="contents sm:inline-flex sm:items-center sm:gap-3">
+        <span aria-hidden="true" className="self-center text-muted">
           →
         </span>
         <span className="sr-only">to</span>
         <span className={chip}>{to}</span>
       </span>
     </p>
+  );
+}
+
+/**
+ * The part of a role a phone reader can come back to. Below md it folds away
+ * behind a disclosure under the headline; from md it is simply there, with no
+ * button and nothing to open, so the wider page is unchanged. CSS decides
+ * which rather than a media query in JavaScript, so the first paint is right
+ * at every width.
+ *
+ * The button sits above what it opens, so neither opening nor closing moves
+ * the line the reader is on. Same drawn-rule language as every other link.
+ */
+function More({ about, children }: { about: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((value) => !value)}
+        className="group mt-8 inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none md:hidden"
+      >
+        <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+          {open ? 'Show less' : 'Read more'}
+          <span className="sr-only"> about {about}</span>
+          <span aria-hidden="true"> {open ? '↑' : '↓'}</span>
+        </span>
+        <span
+          aria-hidden="true"
+          className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+        />
+      </button>
+
+      <div id={id} className={open ? undefined : 'hidden md:block'}>
+        {children}
+      </div>
+    </>
   );
 }
 
@@ -307,21 +353,23 @@ export default function Experience() {
 
                 <p className="mt-6 max-w-measure font-sans text-body text-muted">{FEATURED.body}</p>
 
-                <Foundation />
+                <More about={FEATURED.company}>
+                  <Foundation />
 
-                <p className="mt-12 font-mono text-label uppercase text-muted">A closer look</p>
+                  <p className="mt-12 font-mono text-label uppercase text-muted">A closer look</p>
 
-                <ul className="mt-6 flex flex-col gap-6">
-                  {FEATURED.closer.map(({ icon, text }) => {
-                    const Icon = ICONS[icon];
-                    return (
-                      <li key={text} className="flex max-w-measure gap-4 font-sans text-body text-ink">
-                        <Icon aria-hidden="true" strokeWidth={1.5} className="mt-1 h-5 w-5 shrink-0 text-oxide" />
-                        <span>{text}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                  <ul className="mt-6 flex flex-col gap-6">
+                    {FEATURED.closer.map(({ icon, text }) => {
+                      const Icon = ICONS[icon];
+                      return (
+                        <li key={text} className="flex max-w-measure gap-4 font-sans text-body text-ink">
+                          <Icon aria-hidden="true" strokeWidth={1.5} className="mt-1 h-5 w-5 shrink-0 text-oxide" />
+                          <span>{text}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </More>
               </div>
             </div>
           </motion.div>
@@ -382,13 +430,15 @@ export default function Experience() {
                       {role.headline}
                     </h4>
 
-                    <Flow steps={role.flow} />
+                    <More about={role.company}>
+                      <Flow steps={role.flow} />
 
-                    <p className="mt-8 max-w-measure font-sans text-body text-muted">{role.body}</p>
+                      <p className="mt-8 max-w-measure font-sans text-body text-muted">{role.body}</p>
 
-                    <p className="mt-4 max-w-measure font-sans text-body text-ink">
-                      <span className="text-oxide">What I took from it:</span> {role.takeaway}
-                    </p>
+                      <p className="mt-4 max-w-measure font-sans text-body text-ink">
+                        <span className="text-oxide">What I took from it:</span> {role.takeaway}
+                      </p>
+                    </More>
                   </div>
                 </motion.div>
               </li>
