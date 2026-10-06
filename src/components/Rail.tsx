@@ -5,7 +5,6 @@ import { useScrollTo, useScrollToOffset } from '../lib/lenis-context';
 const SECTIONS = [
   { id: 'experience', label: 'Experience' },
   { id: 'fit', label: 'Where I fit' },
-  { id: 'how', label: 'How I work' },
   { id: 'credentials', label: 'Credentials' },
   { id: 'contact', label: 'Contact' },
 ];
