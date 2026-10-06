@@ -172,6 +172,11 @@ export const ROLES: Role[] = [
       'With three months and three engineers, deciding what not to build was most of the job.',
       'Senior leaders back a problem they already feel, not a clever piece of technology.',
     ],
+    figure: {
+      label: 'Scale of the work',
+      value: 'Three months',
+      note: 'with three engineers, pitched to senior management in New York',
+    },
   },
   {
     company: 'Intrepid Ventures',
@@ -190,65 +195,43 @@ export const ROLES: Role[] = [
       'With nobody to hand things to, ownership isn’t a title. I took whatever was unclear and made it concrete.',
       'Small teams move by deciding with what they have and adjusting later.',
     ],
+    figure: {
+      label: 'Scale of the work',
+      value: 'Company-wide',
+      note: 'fundraising, partners and product launches, beside the founders',
+    },
   },
 ];
 
+export interface FitCase {
+  title: string;
+  body: string;
+  /** Where the case is shown rather than claimed, when there is somewhere to send the reader. */
+  link?: { href: string; label: string };
+}
+
 export const FIT = {
   open: 'I’m looking for product roles in AI, data platforms and fintech.',
-  scope: 'Product management, especially where AI is being built on payments or financial data and someone has to get that data ready for it.',
+  scope: 'I’m at my best where AI meets payments and financial data, and the data has to be ready before the product can rely on it.',
   cases: [
     {
-      title: 'You’re building AI products and the data isn’t ready for them.',
+      title: 'AI is at the heart of your business, and your data has to be ready for it.',
       body: 'An AI product is only as good as the data under it. That layer is my work today: what gets built, which outcome it supports, who owns it, and what comes first.',
     },
     {
-      title: 'You’re launching a financial product with bank partners.',
+      title: 'You’re taking a payments or card product live with bank partners.',
       body: 'Banks and compliance teams will shape your roadmap as much as you do. I’ve led card platform integrations with major banks in North America and Europe, from discovery through to after launch.',
     },
     {
-      title: 'You bought a company and now have two of everything.',
+      title: 'You’re growing by acquisition, and the data hasn’t caught up.',
       body: 'Two sets of systems, and nobody is sure which numbers are right. I’ve led that kind of migration and I know where it usually gets stuck.',
     },
     {
-      title: 'You want a PM who tries things before writing the spec.',
+      title: 'You want a PM who shows a working prototype, not just a PRD.',
       body: 'I build quick prototypes with AI tools to see if an idea holds up before engineering spends time on it.',
+      link: { href: '/how-i-use-ai/', label: 'How I use AI' },
     },
-  ],
-};
-
-export interface WorkItem {
-  icon: 'search' | 'people' | 'build' | 'ship';
-  title: string;
-  body: string;
-}
-
-export const HOW = {
-  headline: 'Start with who has to decide.',
-  body: 'Most requests show up as a feature someone wants. I try to find out who actually has to make the call and what they’d need to see, then build the least we can get away with to show them.',
-  help: [
-    {
-      icon: 'search',
-      title: 'Figure out the real problem',
-      body: 'Talk to customers and stakeholders until the problem is specific enough that we’d know if we fixed it.',
-    },
-    {
-      icon: 'people',
-      title: 'Get people to agree',
-      body: 'Product, engineering, data and partners working from the same roadmap, and knowing why it’s in that order.',
-    },
-    {
-      icon: 'build',
-      title: 'Prototype before committing',
-      body: 'A rough version built with AI tools, so we can react to something real before engineering starts.',
-    },
-    {
-      icon: 'ship',
-      title: 'Ship it and check it worked',
-      body: 'Decide how we’ll measure success before launch, then actually look at the numbers afterward.',
-    },
-  ] satisfies WorkItem[],
-  /** Where the prototyping above is shown, not just claimed. */
-  more: { href: '/how-i-use-ai/', label: 'How I use AI' },
+  ] satisfies FitCase[],
 };
 
 export interface Credential {

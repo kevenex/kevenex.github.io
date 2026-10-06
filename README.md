@@ -19,16 +19,16 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
    (logo, company, title, years, domain, city, and an optional worded figure
    for scale) under a short heavy rule, and a wide one for the story
    (headline, two flow chips, what happened, *What I learnt*).
-3. **Where I fit** — open to roles, then four "You're…" cases written to the
-   reader, two by two, AI first.
-4. **How I work** — one principle, and the things a team can hand over.
-5. **Credentials** — education, certifications, skills.
-6. **Contact** — LinkedIn first; the form underneath.
+3. **Where I fit** — open to roles, then four cases written to the reader as
+   their own situation, two by two, AI first. The prototyping case links to
+   How I use AI.
+4. **Credentials** — education, certifications, skills.
+5. **Contact** — LinkedIn first; the form underneath.
 
 The projects are not set on the page. They are listed at `/projects/`, which
 the hero and the colophon link to (see Projects, below). The old spreads and
 the Curiosity hinge are still in `src/components/`, unmounted, so they can
-come back without a rebuild.
+come back without a rebuild. Flyer Fable is archived — see below.
 
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
 carry none of their own. It is deliberately anonymized — outcomes without vendor
@@ -58,13 +58,13 @@ timestamps and a hard grid do that work while the palette stays warm and analog.
 
 ```
 public/
-  flyer-fable/             Standalone flight game — see below
+  flyer-fable/             Standalone flight game; archived, reachable by URL, unlinked — see below
   project-wick/            Product one-pager + the agent's journal — see below
   chloe/                   Standalone pet game; reachable by URL, unlinked
   memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
   memoji/thinking.webp     …and two more expressions for How I use AI
   memoji/grin.webp
-  ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
+  ai/                      Screenshots for How I use AI (flyer-fable.webp is unused while archived)
   projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects — see below
   logos/                   Company and school marks, 160px tiles shown at 40px
   app/index.html           Redirects the retired /app/ to / where the host can't — see below
@@ -101,11 +101,10 @@ src/
     Memoji.tsx             The still Memoji beside the introduction
     Experience.tsx         Featured current role, then the timeline on the spine
     Fit.tsx                Where I fit
-    HowIWork.tsx           Principle and three ways to help
     Curiosity.tsx          The hinge into the projects (not mounted)
     Spread.tsx             Shared layout for a project (not mounted)
     WickSpread.tsx         Project Wick, with figures read at build time (not mounted)
-    FlyerSpread.tsx        Flyer Fable (not mounted)
+    FlyerSpread.tsx        Flyer Fable (not mounted; archived)
     CompanyMark.tsx        A company's logo tile, or its monogram until there is one
     DrawnLink.tsx          The mono link whose rule draws in on hover
     LockedLink.tsx         Where a link would be, for a write-up not open yet
@@ -275,8 +274,8 @@ node scripts/build-memoji.mjs EmojiMovie812735414.mov 9.45 1 public/memoji/grin.
 ## How I use AI (`/how-i-use-ai/`)
 
 A sub-page modelled on the structure of tariquekhan.ca/how-i-use-ai: what
-Kevin uses AI for, three things built with it (Project Wick, Flyer Fable,
-this site), how he keeps an assistant in context, the tools he reaches for,
+Kevin uses AI for, two things built with it (Project Wick and this site),
+how he keeps an assistant in context, the tools he reaches for,
 and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
 → `src/main-ai.tsx` → `src/pages/HowIUseAI.tsx`), registered in
 `vite.config.ts`, and every word is in `src/content/ai.ts`.
@@ -288,12 +287,13 @@ and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
   counter, because it is read top to bottom rather than scrubbed. The
   colophon is the shared one, with `top="#top"` so *Back to the start* lands
   on this page's header.
-- **The screenshots are static.** `public/ai/` holds frames of
-  `/project-wick/` and `/flyer-fable/` taken with Playwright at 1600×1000
-  (Flyer Fable mid-flight, after *Start Flying*). Retake them if either page
-  changes noticeably.
+- **The screenshots are static.** `public/ai/` holds a frame of
+  `/project-wick/` taken with Playwright at 1600×1000. Retake it if the page
+  changes noticeably. `flyer-fable.webp` (mid-flight, after *Start Flying*)
+  is kept for the archived Flyer Fable and is not shown.
 
-The home page links to it from under How I work and from the colophon.
+The home page links to it from the prototyping case under Where I fit and
+from the colophon.
 
 ## Projects (`/projects/`)
 
@@ -307,8 +307,8 @@ and it is built in How I use AI's grammar: same header, same hairline
 articles, same close and colophon. The hero's *My projects* and the colophon's
 *All projects* both point here.
 
-It lists two projects, by decision. Flyer Fable is a game with no write-up, so
-How I use AI links it instead; Chloe stays unlisted.
+It lists two projects, by decision. Flyer Fable is archived (see below) and
+Chloe stays unlisted.
 
 - **Project Wick's write-up is locked while it is redone.** Its link carries
   `locked: true` in both `projects.ts` and `ai.ts`, which renders
@@ -421,6 +421,12 @@ nor `--c-amber` is ever the only signal — both are set beside a written label.
 `wick.css`; it still carries the old dark, mono-only look.
 
 ## Flyer Fable (`/flyer-fable/`)
+
+**Archived, not deleted.** Since October 2026 nothing on the site links to
+it — not Projects, not How I use AI — but the page is still built and served
+at `/flyer-fable/`, the same way `/chloe/` is. Bringing it back is re-adding
+its entry to `AI_TRYING.projects` in `src/content/ai.ts` (the screenshot is
+still in `public/ai/`), or giving it one in `src/content/projects.ts`.
 
 A stylized first-person flight over a low-poly South Korea. Vendored from
 [kevenex/korea-flyer](https://github.com/kevenex/korea-flyer) at commit
