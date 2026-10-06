@@ -36,8 +36,7 @@ export default function Colophon({ top = '#arrival' }: { top?: string }) {
 
   const linkedin = useMagnetic<HTMLAnchorElement>();
   const ai = useMagnetic<HTMLAnchorElement>();
-  const wick = useMagnetic<HTMLAnchorElement>();
-  const flyer = useMagnetic<HTMLAnchorElement>();
+  const projects = useMagnetic<HTMLAnchorElement>();
   const topLink = useMagnetic<HTMLAnchorElement>();
 
   const toTop = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -101,23 +100,12 @@ export default function Colophon({ top = '#arrival' }: { top?: string }) {
               <dt className="uppercase tracking-[0.1em]">Projects</dt>
               <dd className="text-right">
                 <a
-                  ref={wick}
-                  href="/project-wick/"
-                  data-cursor-label="/project-wick/"
+                  ref={projects}
+                  href="/projects/"
+                  data-cursor-label="/projects/"
                   className={LINK}
                 >
-                  Wick
-                </a>
-                <span aria-hidden="true" className="px-2 text-band-text/30">
-                  /
-                </span>
-                <a
-                  ref={flyer}
-                  href="/flyer-fable/"
-                  data-cursor-label="/flyer-fable/"
-                  className={LINK}
-                >
-                  Flyer Fable
+                  All projects
                 </a>
               </dd>
             </div>

@@ -34,7 +34,11 @@ export interface AiProject {
   check?: string;
   /** A pull-quote set apart from the body, with its own small label. */
   detail?: { label: string; quote: string; after: string };
-  link: { href: string; label: string };
+  /**
+   * `locked` keeps the destination but renders the label without a link, for
+   * a write-up that is not ready to be read. Unlocking is deleting the flag.
+   */
+  link: { href: string; label: string; locked?: boolean };
   image?: { src: string; alt: string; caption: string; width: number; height: number };
 }
 
@@ -53,7 +57,8 @@ export const AI_TRYING = {
       body: 'I gave an agent internet access, a place to write and nothing to finish, and let it run on a server for nineteen days. It named itself, wrote 349 journal entries, and then stopped being curious.',
       check:
         'what it can do without asking. It could write to three folders and nothing else. Git, posting, spending and deleting had no tool at all, so the only way to any of them was to ask me.',
-      link: { href: '/project-wick/', label: 'Read about Project Wick' },
+      // The write-up is being redone, so the way in is shut for now.
+      link: { href: '/project-wick/', label: 'Write-up in progress', locked: true },
       image: {
         src: '/ai/project-wick.webp',
         alt: 'The Project Wick page, headed “Give an agent the internet and no task. See what it does with it.”',

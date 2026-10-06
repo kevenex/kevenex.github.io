@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#E5E1D8" />
+    <meta
+      name="description"
+      content="Projects by Kevin Kim, a product manager in Toronto: GGP Tracker, a private poker analytics tool, and Project Wick, an AI agent left to run with no task."
+    />
+    <title>Projects | Kevin Kim</title>
+
+    <!--
+      What a link unfurls as when a recruiter pastes it into Slack, Teams or
+      LinkedIn. Text only for now; og:image is the next thing to add.
+    -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Projects | Kevin Kim" />
+    <meta
+      property="og:description"
+      content="GGP Tracker and Project Wick: what each one is, and how it works."
+    />
+    <meta property="og:url" content="https://kevink.im/projects/" />
+    <meta name="twitter:card" content="summary" />
+
+    <!--
+      Critical CSS, inlined so the first paint is already on the right ground
+      instead of a white flash while the bundled stylesheet is in flight.
+      Mirrors the token blocks in src/index.css.
+    -->
+    <style>
+      :root {
+        --c-paper: 229 225 216;
+        --c-ink: 22 18 16;
+      }
+      html.dark {
+        --c-paper: 20 17 14;
+        --c-ink: 233 228 218;
+      }
+      html,
+      body {
+        margin: 0;
+        background: rgb(var(--c-paper));
+        color: rgb(var(--c-ink));
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+      }
+    </style>
+
+    <!--
+      Resolve the theme before first paint. This is deliberately a blocking
+      inline script rather than anything the bundle does: React mounts long
+      after the browser has painted, so deciding there would show a flash of
+      the wrong theme on every load for anyone who chose dark.
+
+      Wrapped in try/catch because reading localStorage throws outright in
+      some privacy modes — the page must still render, just on the default.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (error) {
+          /* no stored preference available — fall through to light */
+        }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      Loaded off the critical path: `media="print"` keeps the browser from
+      treating this as render-blocking, and the onload handler promotes it to
+      `all` once it arrives. The fallbacks above render immediately and
+      `display=swap` swaps the webfonts in.
+
+      Three faces, three jobs: Instrument Serif is the human voice, Instrument
+      Sans the working voice, Space Mono the machine's.
+    -->
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main-projects.tsx"></script>
+  </body>
+</html>

@@ -108,6 +108,7 @@ export default defineConfig({
       input: {
         main: 'index.html',
         ai: 'how-i-use-ai/index.html',
+        projects: 'projects/index.html',
       },
     },
   },

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { IDENTITY, LINKEDIN } from '../content/resume';
 import { EASE, RAIL_PAD, RAIL_PAD_R, usePrefersReducedMotion } from '../lib/layout';
@@ -21,10 +21,46 @@ import Memoji from './Memoji';
 /** How far the headline lags the page on its way out, in pixels. */
 const DRIFT = 120;
 
+/**
+ * The hero's links. Same drawing rule as `DrawnLink`, so the page has a
+ * single link language, plus the magnetic pull and the cursor's label, which
+ * only the hero's links carry.
+ */
+function HeroLink({
+  href,
+  cursorLabel,
+  external = false,
+  children,
+}: {
+  href: string;
+  cursorLabel: string;
+  external?: boolean;
+  children: ReactNode;
+}) {
+  const link = useMagnetic<HTMLAnchorElement>();
+
+  return (
+    <a
+      ref={link}
+      href={href}
+      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+      data-cursor-label={cursorLabel}
+      className="group inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
+    >
+      <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+        {children}
+      </span>
+      <span
+        aria-hidden="true"
+        className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+      />
+    </a>
+  );
+}
+
 export default function Arrival() {
   const still = usePrefersReducedMotion();
   const ref = useRef<HTMLElement>(null);
-  const link = useMagnetic<HTMLAnchorElement>();
 
   /*
    * `['start start', 'end start']` — 0 while the hero fills the viewport, 1
@@ -100,25 +136,19 @@ export default function Arrival() {
           </div>
 
           {/*
-           * The one way in a recruiter actually uses. Same drawing rule as the
-           * project links, so the page has a single link language.
+           * LinkedIn first — the one way in a recruiter actually uses — then
+           * the projects, for whoever wants the evidence. They share a line
+           * wherever the column is wide enough, and wrap on a phone, where
+           * the pair is wider than it.
            */}
-          <a
-            ref={link}
-            href={LINKEDIN}
-            target="_blank"
-            rel="noreferrer"
-            data-cursor-label="LinkedIn ↗"
-            className="group mt-12 inline-flex flex-col gap-2 font-mono text-label uppercase text-ink outline-none"
-          >
-            <span className="transition-colors group-hover:text-oxide group-focus-visible:text-oxide">
+          <div className="mt-12 flex flex-wrap items-start gap-x-10 gap-y-6">
+            <HeroLink href={LINKEDIN} cursorLabel="LinkedIn ↗" external>
               Find me on LinkedIn &#8599;
-            </span>
-            <span
-              aria-hidden="true"
-              className="h-px w-full origin-left scale-x-0 bg-oxide transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
-            />
-          </a>
+            </HeroLink>
+            <HeroLink href="/projects/" cursorLabel="/projects/">
+              My projects &#8599;
+            </HeroLink>
+          </div>
         </div>
       </motion.div>
     </section>

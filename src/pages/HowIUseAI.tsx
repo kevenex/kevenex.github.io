@@ -5,6 +5,7 @@ import Colophon from '../components/Colophon';
 import Cursor from '../components/Cursor';
 import DrawnLink from '../components/DrawnLink';
 import KevinKLogo from '../components/KevinKLogo';
+import LockedLink from '../components/LockedLink';
 import ThemeToggle from '../components/ThemeToggle';
 import {
   AI_BACK,
@@ -72,9 +73,13 @@ function Project({ project, index }: { project: AiProject; index: number }) {
         </>
       )}
 
-      <DrawnLink href={project.link.href} className="mt-8">
-        {project.link.label}&nbsp;&#8599;
-      </DrawnLink>
+      {project.link.locked ? (
+        <LockedLink className="mt-8">{project.link.label}</LockedLink>
+      ) : (
+        <DrawnLink href={project.link.href} className="mt-8">
+          {project.link.label}&nbsp;&#8599;
+        </DrawnLink>
+      )}
 
       {project.image && (
         <figure className="mt-12">

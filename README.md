@@ -10,8 +10,8 @@ static pages under `public/`.
 Résumé first, evidence after — the structure is modelled on how a recruiter
 reads, and on tariquekhan.ca's plain-spoken version of it:
 
-1. **Arrival** — name, title, location, two lines on what he does, LinkedIn, and
-   his Memoji.
+1. **Arrival** — name, title, location, two lines on what he does, LinkedIn
+   and *My projects* side by side, and his Memoji.
 2. **Experience** — newest first. The current role is a framed card whose
    *Built on it* drawing shows the teams that depend on the data foundation
    as chips on one base, AI products in the accent. Every role before it sits
@@ -25,9 +25,10 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 5. **Credentials** — education, certifications, skills.
 6. **Contact** — LinkedIn first; the form underneath.
 
-The projects (Project Wick, Flyer Fable) are not set on the page; the
-colophon links to them. Their spreads and the Curiosity hinge are still in
-`src/components/`, unmounted, so they can come back without a rebuild.
+The projects are not set on the page. They are listed at `/projects/`, which
+the hero and the colophon link to (see Projects, below). The old spreads and
+the Curiosity hinge are still in `src/components/`, unmounted, so they can
+come back without a rebuild.
 
 **All career copy lives in `src/content/resume.ts`.** Components lay it out and
 carry none of their own. It is deliberately anonymized — outcomes without vendor
@@ -64,6 +65,7 @@ public/
   memoji/thinking.webp     …and two more expressions for How I use AI
   memoji/grin.webp
   ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
+  projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects — see below
   logos/                   Company and school marks, 160px tiles shown at 40px
   app/index.html           Redirects the retired /app/ to / where the host can't — see below
   favicon.svg
@@ -71,6 +73,7 @@ scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
+  make-ggp-sample.mjs      Invented GG exports for the GGP Tracker screenshot
 worker/
   index.ts                 POST /api/contact, and the /app → / redirect — the only server
 src/
@@ -78,10 +81,13 @@ src/
   main.tsx                 The home page's entry
   pages/
     HowIUseAI.tsx          The /how-i-use-ai/ page
-  main-ai.tsx              Its entry
+    Projects.tsx           The /projects/ page
+  main-ai.tsx              How I use AI's entry
+  main-projects.tsx        Projects' entry
   content/
     resume.ts              Every word of career copy — the one place to edit it
     ai.ts                  Every word on How I use AI
+    projects.ts            Every word on Projects
   index.css                Colour tokens for both themes, fonts, reset, Lenis classes
   lib/
     layout.ts              Rail geometry, the shared reveal, reduced-motion hooks
@@ -102,6 +108,7 @@ src/
     FlyerSpread.tsx        Flyer Fable (not mounted)
     CompanyMark.tsx        A company's logo tile, or its monogram until there is one
     DrawnLink.tsx          The mono link whose rule draws in on hover
+    LockedLink.tsx         Where a link would be, for a write-up not open yet
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -112,6 +119,8 @@ src/
     KevinKLogo.tsx         4-fold symmetric SVG mark
     CanadaFlag.tsx         The hero's flag, drawn (Windows has no flag emoji)
     WickMark.tsx           Project Wick's mark
+    GgpMark.tsx            GGP Tracker's mark
+    WickFlow.tsx           One Project Wick run, drawn, for Projects
 ```
 
 ## Design system
@@ -134,8 +143,8 @@ anywhere in the markup. Two things make it work:
 - The theme is resolved by a **blocking inline script in the document head**,
   before first paint. React mounts long after the browser paints, so deciding
   in the bundle would flash the wrong theme on every load. It is duplicated in
-  `index.html` and `how-i-use-ai/index.html` (and the standalone pages under
-  `public/`) because they share an origin and a stored preference.
+  `index.html`, `how-i-use-ai/index.html` and `projects/index.html` (and the
+  standalone pages under `public/`) because they share an origin and a stored preference.
 - A stored choice outranks the OS. With nothing stored the page follows
   `prefers-color-scheme` live; once someone picks a side, changing the system
   theme no longer overrides them (`src/lib/theme.ts`).
@@ -285,6 +294,58 @@ and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
   changes noticeably.
 
 The home page links to it from under How I work and from the colophon.
+
+## Projects (`/projects/`)
+
+An index of the projects that have a write-up, newest first. Under the title
+there is nothing but the list: each entry has its mark, a line or two and a
+link out on the left, and one picture on the right from xl (stacked below
+it). It is the third Vite entry
+(`projects/index.html` → `src/main-projects.tsx` → `src/pages/Projects.tsx`),
+registered in `vite.config.ts`, with every word in `src/content/projects.ts`,
+and it is built in How I use AI's grammar: same header, same hairline
+articles, same close and colophon. The hero's *My projects* and the colophon's
+*All projects* both point here.
+
+It lists two projects, by decision. Flyer Fable is a game with no write-up, so
+How I use AI links it instead; Chloe stays unlisted.
+
+- **Project Wick's write-up is locked while it is redone.** Its link carries
+  `locked: true` in both `projects.ts` and `ai.ts`, which renders
+  `LockedLink` — "Write-up in progress" behind a lock, with no anchor —
+  instead of `DrawnLink`. `/project-wick/` itself is still served and still
+  reachable by URL; nothing on the site links to it. To reopen it, delete
+  the flag in both files and put the label back to "Read about Project Wick".
+- **`WickFlow.tsx` restates the "How it worked" diagram on `/project-wick/`,**
+  cut down to one run: no heartbeat, and no cadence, because that page says
+  the schedule drifted. It makes no claim the one-pager does not, so change
+  that page first and bring this along. Below its minimum width it scrolls
+  inside its frame rather than shrinking its type.
+- **The GGP Tracker screenshot is the deployed app on invented data.** It was
+  taken from kevenex/ggpoker-tracker at `fca8aa7`, the commit its last
+  successful deploy shipped, built locally (`wasm-pack build --no-opt`, then
+  `npm run build` and `vite preview`) and captured at 1600×1000 with
+  Playwright after importing a zip from `scripts/make-ggp-sample.mjs`: about
+  240 tournament summaries and 14,000 hand histories in GG's export format,
+  drawn from a seeded RNG, so the same seed gives the same picture.
+  None of it is Kevin's play, which the image's alt text says and which keeps
+  it in line with the write-up's rule of no personal results. The page sets
+  no caption under either picture, by decision. It shows Key
+  Stats, so retake it when that panel changes noticeably.
+
+- **GGP Tracker's write-up is not in this repository.** It lives in
+  [`kevenex/ggpoker-tracker`](https://github.com/kevenex/ggpoker-tracker) at
+  `web/public/readme/index.html`, and that repo's own Worker serves it at
+  `/ggpoker-tracker/readme/` through its route for `kevink.im/ggpoker-tracker*`,
+  so this site's Worker never sees the path. The link is root-relative, which
+  keeps it on the same origin (and the theme with it), but it only resolves on
+  kevink.im: on the GitHub Pages copy it 404s, and under `vite dev` or
+  `vite preview` it falls back to this site. The write-up also loads
+  `/project-wick/wick.css` from here, so moving or renaming that file breaks
+  its styling.
+- **`GgpMark.tsx` is a copy of the chip drawn inline in that write-up's
+  header.** The two live in different repositories and nothing catches the
+  drift. Change one, change both.
 
 ## Project Wick (`/project-wick/`)
 
