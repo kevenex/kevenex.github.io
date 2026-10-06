@@ -12,7 +12,7 @@ export const AI_BACK = { href: '/', label: 'Back to the site' };
 export const AI_HERO = {
   title: 'How I use AI.',
   intro: [
-    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into a game, an agent, or this website.',
+    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into an agent or this website.',
     'It does a lot of the typing. I decide what the problem is, what holds up, and what goes out under my name.',
   ],
   jump: 'A few things I’ve been working on',
@@ -63,21 +63,6 @@ export const AI_TRYING = {
       },
     },
     {
-      eyebrow: 'A game in the browser',
-      title: 'Flyer Fable',
-      body: 'A stylized first-person flight over South Korea that runs in the browser, with landmarks along the way and quick hops between cities from Seoul to Jeju. I built it with Claude Code, one version at a time.',
-      check:
-        'what it gets confidently wrong. A landmark in the wrong place still looks convincing, so the map gets checked as well as the code.',
-      link: { href: '/flyer-fable/', label: 'Try Flyer Fable' },
-      image: {
-        src: '/ai/flyer-fable.webp',
-        alt: 'Flyer Fable mid-flight over Seoul, with Lotte World Tower and N Seoul Tower labelled and Incheon on the coast.',
-        caption: 'Over Seoul, with Incheon on the coast to the right.',
-        width: 1600,
-        height: 1000,
-      },
-    },
-    {
       eyebrow: 'Live, and still being edited',
       title: 'This website',
       body: 'Built with Claude Code, mostly by talking it through. AI wrote the code and cut my Memoji out of the recordings. I supplied the experience and kept correcting the story.',
@@ -119,7 +104,7 @@ export const AI_TOOLS = {
     {
       use: 'Building things',
       tool: 'Claude Code',
-      body: 'This site, Flyer Fable and Project Wick. I describe what I want, read what comes back, and keep correcting it until it’s right.',
+      body: 'This site and Project Wick. I describe what I want, read what comes back, and keep correcting it until it’s right.',
     },
     {
       use: 'Thinking things through',

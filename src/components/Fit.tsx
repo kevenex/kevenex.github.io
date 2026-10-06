@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 import { FIT } from '../content/resume';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
+import DrawnLink from './DrawnLink';
 
 /*
  * Where I fit. Written to the reader rather than about the writer: each case
- * starts with "You're…", so a hiring manager can check their own situation
- * against it instead of translating a list of strengths into one.
+ * is the reader's own situation, so a hiring manager can check theirs against
+ * it instead of translating a list of strengths into one.
  */
 export default function Fit() {
   const reveal = useReveal();
@@ -44,6 +45,11 @@ export default function Fit() {
           >
             <h3 className="font-sans text-[21px] font-medium leading-snug text-ink">{item.title}</h3>
             <p className="mt-3 font-sans text-body text-muted">{item.body}</p>
+            {item.link && (
+              <DrawnLink href={item.link.href} className="mt-6">
+                {item.link.label}&nbsp;&rarr;
+              </DrawnLink>
+            )}
           </motion.li>
         ))}
       </ul>
