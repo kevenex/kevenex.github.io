@@ -65,6 +65,7 @@ public/
   memoji/thinking.webp     …and two more expressions for How I use AI
   memoji/grin.webp
   ai/                      Screenshots of Project Wick and Flyer Fable for How I use AI
+  projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects — see below
   logos/                   Company and school marks, 160px tiles shown at 40px
   app/index.html           Redirects the retired /app/ to / where the host can't — see below
   favicon.svg
@@ -72,6 +73,7 @@ scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
+  make-ggp-sample.mjs      Invented GG exports for the GGP Tracker screenshot
 worker/
   index.ts                 POST /api/contact, and the /app → / redirect — the only server
 src/
@@ -106,6 +108,7 @@ src/
     FlyerSpread.tsx        Flyer Fable (not mounted)
     CompanyMark.tsx        A company's logo tile, or its monogram until there is one
     DrawnLink.tsx          The mono link whose rule draws in on hover
+    LockedLink.tsx         Where a link would be, for a write-up not open yet
     Credentials.tsx        Education, certifications, skills
     Contact.tsx            LinkedIn, then name / email / message
     Colophon.tsx           The closing dark band, with How I built this
@@ -117,6 +120,7 @@ src/
     CanadaFlag.tsx         The hero's flag, drawn (Windows has no flag emoji)
     WickMark.tsx           Project Wick's mark
     GgpMark.tsx            GGP Tracker's mark
+    WickFlow.tsx           One Project Wick run, drawn, for Projects
 ```
 
 ## Design system
@@ -293,8 +297,10 @@ The home page links to it from under How I work and from the colophon.
 
 ## Projects (`/projects/`)
 
-An index of the projects that have a write-up, newest first, each with its
-mark, a line or two, and a link out. It is the third Vite entry
+An index of the projects that have a write-up, newest first. Under the title
+there is nothing but the list: each entry has its mark, a line or two and a
+link out on the left, and one picture on the right from xl (stacked below
+it). It is the third Vite entry
 (`projects/index.html` → `src/main-projects.tsx` → `src/pages/Projects.tsx`),
 registered in `vite.config.ts`, with every word in `src/content/projects.ts`,
 and it is built in How I use AI's grammar: same header, same hairline
@@ -303,6 +309,28 @@ articles, same close and colophon. The hero's *My projects* and the colophon's
 
 It lists two projects, by decision. Flyer Fable is a game with no write-up, so
 How I use AI links it instead; Chloe stays unlisted.
+
+- **Project Wick's write-up is locked while it is redone.** Its link carries
+  `locked: true` in both `projects.ts` and `ai.ts`, which renders
+  `LockedLink` — "Write-up in progress" behind a lock, with no anchor —
+  instead of `DrawnLink`. `/project-wick/` itself is still served and still
+  reachable by URL; nothing on the site links to it. To reopen it, delete
+  the flag in both files and put the label back to "Read about Project Wick".
+- **`WickFlow.tsx` restates the "How it worked" diagram on `/project-wick/`,**
+  cut down to one run: no heartbeat, and no cadence, because that page says
+  the schedule drifted. It makes no claim the one-pager does not, so change
+  that page first and bring this along. Below its minimum width it scrolls
+  inside its frame rather than shrinking its type.
+- **The GGP Tracker screenshot is the deployed app on invented data.** It was
+  taken from kevenex/ggpoker-tracker at `fca8aa7`, the commit its last
+  successful deploy shipped, built locally (`wasm-pack build --no-opt`, then
+  `npm run build` and `vite preview`) and captured at 1600×1000 with
+  Playwright after importing a zip from `scripts/make-ggp-sample.mjs`: about
+  240 tournament summaries and 14,000 hand histories in GG's export format,
+  drawn from a seeded RNG, so the same seed gives the same picture.
+  None of it is Kevin's play, which is what the caption says, and what keeps
+  it in line with the write-up's rule of no personal results. It shows Key
+  Stats, so retake it when that panel changes noticeably.
 
 - **GGP Tracker's write-up is not in this repository.** It lives in
   [`kevenex/ggpoker-tracker`](https://github.com/kevenex/ggpoker-tracker) at

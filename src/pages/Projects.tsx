@@ -4,7 +4,9 @@ import Cursor from '../components/Cursor';
 import DrawnLink from '../components/DrawnLink';
 import GgpMark from '../components/GgpMark';
 import KevinKLogo from '../components/KevinKLogo';
+import LockedLink from '../components/LockedLink';
 import ThemeToggle from '../components/ThemeToggle';
+import WickFlow from '../components/WickFlow';
 import WickMark from '../components/WickMark';
 import {
   PROJECTS,
@@ -12,14 +14,15 @@ import {
   PROJECTS_CLOSE,
   PROJECTS_HERO,
   type Project,
+  type ProjectVisual,
 } from '../content/projects';
 import { RAIL_PAD, RAIL_PAD_R, useReveal } from '../lib/layout';
 import { LenisProvider } from '../lib/lenis';
 
 /*
  * Projects, at /projects/. An index, not a showcase: each project already has
- * a page of its own, so this one says what each is in a line or two and
- * points there. The same grammar as How I use AI — paper ground, the left
+ * a page of its own, so this one says what each is in a line or two, shows
+ * one picture of it, and points there. The same grammar as How I use AI — paper ground, the left
  * rail inset, three voices, hairlines, drawn-rule links, the dark colophon —
  * and, like it, no spine or rail, because there is nothing here to scrub.
  *
@@ -37,29 +40,75 @@ const HEADER_R = 'pr-24 lg:pr-48';
 
 const MARKS = { ggp: GgpMark, wick: WickMark } satisfies Record<Project['mark'], unknown>;
 
+/*
+ * The picture beside a project, in the hairline frame How I use AI gives its
+ * screenshots: a page set apart, not a panel with a shadow. The diagram gets
+ * the same frame so the two entries read as a pair, and scrolls inside it on
+ * a phone rather than shrinking its type past reading.
+ */
+function Visual({ visual }: { visual: ProjectVisual }) {
+  return (
+    <figure className="min-w-0">
+      {visual.kind === 'image' ? (
+        <img
+          src={visual.src}
+          alt={visual.alt}
+          width={visual.width}
+          height={visual.height}
+          loading="lazy"
+          decoding="async"
+          className="h-auto w-full border border-ink/15"
+        />
+      ) : (
+        <div className="overflow-x-auto border border-ink/15 p-5 sm:p-6">
+          <WickFlow className="min-w-[440px]" />
+        </div>
+      )}
+      <figcaption className="mt-3 font-sans text-small text-muted">{visual.caption}</figcaption>
+    </figure>
+  );
+}
+
+/*
+ * Text and picture side by side from xl, where the column is wide enough for
+ * both to be read; below that they stack, text first, since at lg the column
+ * is about 650px and either half would be squeezed. The picture takes three
+ * fifths: at 1280 that is just enough for the diagram to sit unscrolled.
+ */
 function Entry({ project, index }: { project: Project; index: number }) {
   const reveal = useReveal();
   const number = String(index + 1).padStart(2, '0');
   const Mark = MARKS[project.mark];
 
   return (
-    <motion.article className="border-t border-ink/15 pt-12" {...reveal}>
-      <p className="font-mono text-label uppercase text-muted">
-        <span className="tabular">{number}</span> / {project.eyebrow}
-      </p>
+    <motion.article
+      className="grid gap-y-12 border-t border-ink/15 pt-12 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] xl:items-start xl:gap-x-16"
+      {...reveal}
+    >
+      <div>
+        <p className="font-mono text-label uppercase text-muted">
+          <span className="tabular">{number}</span> / {project.eyebrow}
+        </p>
 
-      <div className="mt-5 flex items-center gap-4">
-        <Mark className="h-8 w-8 shrink-0 text-oxide" />
-        <h2 className="font-serif text-[clamp(34px,4vw,48px)] leading-[1.05] tracking-[-0.01em]">
-          {project.title}
-        </h2>
+        <div className="mt-5 flex items-center gap-4">
+          <Mark className="h-8 w-8 shrink-0 text-oxide" />
+          <h2 className="font-serif text-[clamp(34px,4vw,48px)] leading-[1.05] tracking-[-0.01em]">
+            {project.title}
+          </h2>
+        </div>
+
+        <p className="mt-6 max-w-measure font-sans text-body text-ink">{project.body}</p>
+
+        {project.link.locked ? (
+          <LockedLink className="mt-8">{project.link.label}</LockedLink>
+        ) : (
+          <DrawnLink href={project.link.href} className="mt-8">
+            {project.link.label}&nbsp;&#8599;
+          </DrawnLink>
+        )}
       </div>
 
-      <p className="mt-6 max-w-measure font-sans text-body text-ink">{project.body}</p>
-
-      <DrawnLink href={project.link.href} className="mt-8">
-        {project.link.label}&nbsp;&#8599;
-      </DrawnLink>
+      <Visual visual={project.visual} />
     </motion.article>
   );
 }
@@ -88,14 +137,9 @@ function Page() {
       </header>
 
       <section className={`pt-20 sm:pt-28 ${COLUMN}`}>
-        <motion.div {...reveal}>
-          <h1 className="font-serif text-hero">{PROJECTS_HERO.title}</h1>
-
-          <div className="mt-10 flex max-w-measure flex-col gap-5 font-sans text-lead">
-            <p className="text-ink">{PROJECTS_HERO.intro[0]}</p>
-            <p className="text-muted">{PROJECTS_HERO.intro[1]}</p>
-          </div>
-        </motion.div>
+        <motion.h1 className="font-serif text-hero" {...reveal}>
+          {PROJECTS_HERO.title}
+        </motion.h1>
       </section>
 
       <section className={`flex flex-col gap-24 pt-24 sm:pt-32 ${COLUMN}`}>
