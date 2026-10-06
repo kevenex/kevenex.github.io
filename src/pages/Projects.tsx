@@ -64,7 +64,6 @@ function Visual({ visual }: { visual: ProjectVisual }) {
           <WickFlow className="min-w-[440px]" />
         </div>
       )}
-      <figcaption className="mt-3 font-sans text-small text-muted">{visual.caption}</figcaption>
     </figure>
   );
 }

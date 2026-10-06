@@ -328,8 +328,9 @@ How I use AI links it instead; Chloe stays unlisted.
   Playwright after importing a zip from `scripts/make-ggp-sample.mjs`: about
   240 tournament summaries and 14,000 hand histories in GG's export format,
   drawn from a seeded RNG, so the same seed gives the same picture.
-  None of it is Kevin's play, which is what the caption says, and what keeps
-  it in line with the write-up's rule of no personal results. It shows Key
+  None of it is Kevin's play, which the image's alt text says and which keeps
+  it in line with the write-up's rule of no personal results. The page sets
+  no caption under either picture, by decision. It shows Key
   Stats, so retake it when that panel changes noticeably.
 
 - **GGP Tracker's write-up is not in this repository.** It lives in

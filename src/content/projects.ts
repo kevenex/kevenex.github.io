@@ -3,8 +3,8 @@
  * and ai.ts: the page lays it out and carries no copy of its own.
  *
  * Each project has a page of its own, and this one only points at it. The
- * lines below are taken from those pages rather than written fresh, so the
- * two cannot disagree on a fact. Project Wick's write-up is being redone, so
+ * lines below say no more than those pages do, so the two cannot disagree on
+ * a fact. Project Wick's write-up is being redone, so
  * its link is locked for now: the label says so and nothing is clickable.
  */
 
@@ -17,8 +17,8 @@ export const PROJECTS_HERO = { title: 'Projects.' };
  * show; a drawn diagram when what matters is how it works.
  */
 export type ProjectVisual =
-  | { kind: 'image'; src: string; alt: string; caption: string; width: number; height: number }
-  | { kind: 'wick-flow'; caption: string };
+  | { kind: 'image'; src: string; alt: string; width: number; height: number }
+  | { kind: 'wick-flow' };
 
 export interface Project {
   /** The mono line above the title, after its number. */
@@ -41,7 +41,7 @@ export const PROJECTS: Project[] = [
     eyebrow: 'Poker analytics · Build notes',
     title: 'GGP Tracker',
     mark: 'ggp',
-    body: 'Was it the cards, or was it me? A private analytics tool for my own GGPoker tournaments, and the product decisions that turned out to matter more than the charts.',
+    body: 'A GGPoker tracker and analytics tool.',
     /*
      * Served by kevenex/ggpoker-tracker's own Worker, on its route for
      * kevink.im/ggpoker-tracker*, so this site's Worker never sees the path.
@@ -52,7 +52,6 @@ export const PROJECTS: Project[] = [
       kind: 'image',
       src: '/projects/ggp-tracker.webp',
       alt: 'GGP Tracker’s Key Stats panel: a win rate and eight preflop and flop figures as coloured rings, then the same figures by seat, on a made-up sample of tournaments.',
-      caption: 'The app on a sample I made up. None of these results are mine.',
       width: 1600,
       height: 1000,
     },
@@ -61,12 +60,9 @@ export const PROJECTS: Project[] = [
     eyebrow: 'AI agent experiment',
     title: 'Project Wick',
     mark: 'wick',
-    body: 'I gave an agent the open web, a place to write and no task, and let it run on its own for nineteen days. It named itself, wrote 349 journal entries, and then stopped being curious.',
+    body: 'I gave an agent the open web, a place to write and no task, and let it run on its own for nineteen days.',
     link: { href: '/project-wick/', label: 'Write-up in progress', locked: true },
-    visual: {
-      kind: 'wick-flow',
-      caption: 'One run. A single score decided whether it wrote anything at all.',
-    },
+    visual: { kind: 'wick-flow' },
   },
 ];
 
