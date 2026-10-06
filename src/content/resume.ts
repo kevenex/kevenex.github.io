@@ -227,7 +227,7 @@ export const FIT = {
       body: 'Two sets of systems, and nobody is sure which numbers are right. I’ve led that kind of migration and I know where it usually gets stuck.',
     },
     {
-      title: 'You want a PM who builds the prototype before proposing the idea.',
+      title: 'You want a PM who shows a working prototype, not just a PRD.',
       body: 'I build quick prototypes with AI tools to see if an idea holds up before engineering spends time on it.',
       link: { href: '/how-i-use-ai/', label: 'How I use AI' },
     },
