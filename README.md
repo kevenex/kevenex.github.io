@@ -64,8 +64,8 @@ public/
   memoji/kevin.webp        The Memoji, cut out of a recording — see Memoji, below
   memoji/thinking.webp     …and two more expressions for How I use AI
   memoji/grin.webp
-  ai/                      Screenshots for How I use AI (flyer-fable.webp is unused while archived)
-  projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects — see below
+  ai/                      Screenshots for How I use AI (both unused while Wick and Flyer Fable are off it)
+  projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects and How I use AI — see below
   logos/                   Company and school marks, 160px tiles shown at 40px
   app/index.html           Redirects the retired /app/ to / where the host can't — see below
   favicon.svg
@@ -274,7 +274,7 @@ node scripts/build-memoji.mjs EmojiMovie812735414.mov 9.45 1 public/memoji/grin.
 ## How I use AI (`/how-i-use-ai/`)
 
 A sub-page modelled on the structure of tariquekhan.ca/how-i-use-ai: what
-Kevin uses AI for, two things built with it (Project Wick and this site),
+Kevin uses AI for, two things built with it (GGP Tracker and this site),
 how he keeps an assistant in context, the tools he reaches for,
 and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
 → `src/main-ai.tsx` → `src/pages/HowIUseAI.tsx`), registered in
@@ -287,10 +287,12 @@ and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
   counter, because it is read top to bottom rather than scrubbed. The
   colophon is the shared one, with `top="#top"` so *Back to the start* lands
   on this page's header.
-- **The screenshots are static.** `public/ai/` holds a frame of
-  `/project-wick/` taken with Playwright at 1600×1000. Retake it if the page
-  changes noticeably. `flyer-fable.webp` (mid-flight, after *Start Flying*)
-  is kept for the archived Flyer Fable and is not shown.
+- **The screenshot is shared with Projects.** GGP Tracker's entry shows
+  `public/projects/ggp-tracker.webp` (see Projects, below), with a caption
+  saying the data is invented, since this page captions its pictures and
+  Projects does not. `public/ai/` keeps `project-wick.webp` (a frame of
+  `/project-wick/` at 1600×1000) and `flyer-fable.webp` (mid-flight, after
+  *Start Flying*); neither is shown while those projects are off the page.
 
 The home page links to it from the prototyping case under Where I fit and
 from the colophon.
@@ -311,11 +313,14 @@ It lists two projects, by decision. Flyer Fable is archived (see below) and
 Chloe stays unlisted.
 
 - **Project Wick's write-up is locked while it is redone.** Its link carries
-  `locked: true` in both `projects.ts` and `ai.ts`, which renders
+  `locked: true` in `projects.ts`, which renders
   `LockedLink` — "Write-up in progress" behind a lock, with no anchor —
   instead of `DrawnLink`. `/project-wick/` itself is still served and still
   reachable by URL; nothing on the site links to it. To reopen it, delete
-  the flag in both files and put the label back to "Read about Project Wick".
+  the flag and put the label back to "Read about Project Wick". Wick is also
+  off How I use AI, where GGP Tracker took its place; bringing it back there
+  means re-adding its entry to `AI_TRYING.projects` in `ai.ts` (the
+  screenshot is still in `public/ai/`).
 - **`WickFlow.tsx` restates the "How it worked" diagram on `/project-wick/`,**
   cut down to one run: no heartbeat, and no cadence, because that page says
   the schedule drifted. It makes no claim the one-pager does not, so change
@@ -333,14 +338,20 @@ Chloe stays unlisted.
   no caption under either picture, by decision. It shows Key
   Stats, so retake it when that panel changes noticeably.
 
-- **GGP Tracker's write-up is not in this repository.** It lives in
-  [`kevenex/ggpoker-tracker`](https://github.com/kevenex/ggpoker-tracker) at
-  `web/public/readme/index.html`, and that repo's own Worker serves it at
-  `/ggpoker-tracker/readme/` through its route for `kevink.im/ggpoker-tracker*`,
-  so this site's Worker never sees the path. The link is root-relative, which
-  keeps it on the same origin (and the theme with it), but it only resolves on
-  kevink.im: on the GitHub Pages copy it 404s, and under `vite dev` or
-  `vite preview` it falls back to this site. The write-up also loads
+- **GGP Tracker is linked as the app, at an absolute URL.** Projects and How
+  I use AI both point at `https://kevink.im/ggpoker-tracker/`, which
+  [`kevenex/ggpoker-tracker`](https://github.com/kevenex/ggpoker-tracker)'s
+  own Worker serves through its route for `kevink.im/ggpoker-tracker*`, so
+  this site's Worker never sees the path. That route covers the apex only,
+  and nothing here sends `www` to the apex, so a root-relative link clicked on
+  `www.kevink.im` would land on this site's SPA fallback and show the home
+  page. The absolute URL resolves from either host, the GitHub Pages copy and
+  `vite dev`; the cost is that a reader on `www` arrives on another origin,
+  where the theme they picked is not stored.
+- **GGP Tracker's write-up is not in this repository, and nothing here links
+  to it.** It lives in that repo at `web/public/readme/index.html`, served at
+  `/ggpoker-tracker/readme/`, and is where the copy on both pages gets its
+  facts — change it first and bring these along. It loads
   `/project-wick/wick.css` from here, so moving or renaming that file breaks
   its styling.
 - **`GgpMark.tsx` is a copy of the chip drawn inline in that write-up's

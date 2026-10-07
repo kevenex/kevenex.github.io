@@ -12,7 +12,7 @@ export const AI_BACK = { href: '/', label: 'Back to the site' };
 export const AI_HERO = {
   title: 'How I use AI.',
   intro: [
-    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into an agent or this website.',
+    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into a product I use myself, an agent, or this website.',
     'It does a lot of the typing. I decide what the problem is, what holds up, and what goes out under my name.',
   ],
   jump: 'A few things I’ve been working on',
@@ -43,26 +43,26 @@ export interface AiProject {
 }
 
 export const AI_TRYING = {
-  heading: 'From a question to something useful.',
-  sub: 'Sometimes that means a prototype before a meeting. Sometimes it turns into something I keep building.',
+  heading: 'Start with the problem, not the model.',
+  sub: 'The model is rarely the hard part. The hard part is finding a gap worth closing and deciding what a right answer looks like before anything gets built.',
   callout: {
-    title: 'Before the spec.',
-    body: 'When an idea comes up at work, I build a rough version with AI tools before anyone writes a spec. People give better feedback on a working screen than on a document, and it shows quickly whether the idea holds up before engineering spends time on it.',
-    quote: 'A prototype shows whether an idea works. Whether anyone needs it is still a question for the people who’d use it.',
+    title: 'Define it, then build it.',
+    body: 'When an idea comes up at work, I write down what a right answer looks like first: what counts, what doesn’t, and how I’d tell it was wrong. Then I build a rough version with AI tools and put it in front of the people who’d use it. A working screen gets better feedback than a document, and it shows where the idea breaks before engineering spends time on it.',
+    quote: 'AI makes the first version cheap. Deciding what the numbers mean, and what to leave out, is still the job.',
   },
   projects: [
     {
-      eyebrow: 'An agent I ran',
-      title: 'Project Wick',
-      body: 'I gave an agent internet access, a place to write and nothing to finish, and let it run on a server for nineteen days. It named itself, wrote 349 journal entries, and then stopped being curious.',
+      eyebrow: 'A data product, live',
+      title: 'GGP Tracker',
+      body: 'GGPoker shows outcomes, like tournament winnings, but not the reasons behind them, and it deletes hand histories after three months. I saw a gap: import GG’s own exports, keep every hand in a private Supabase archive, and analyse the whole history instead of the last quarter. One row per hand, with the detail nothing queries packed into a single column, fits about three years of heavy play in the free tier. I built the product with Claude Code, on top of an open-source poker engine.',
       check:
-        'what it can do without asking. It could write to three folders and nothing else. Git, posting, spending and deleting had no tool at all, so the only way to any of them was to ask me.',
-      // The write-up is being redone, so the way in is shut for now.
-      link: { href: '/project-wick/', label: 'Write-up in progress', locked: true },
+        'what the numbers mean. A satellite seat isn’t income, a hand with no matching tournament is counted rather than dropped, and a result only reads as winning or losing once its 95% confidence interval clears zero.',
+      // Absolute: the app's route covers the apex only. See the note in projects.ts.
+      link: { href: 'https://kevink.im/ggpoker-tracker/', label: 'Open GGP Tracker' },
       image: {
-        src: '/ai/project-wick.webp',
-        alt: 'The Project Wick page, headed “Give an agent the internet and no task. See what it does with it.”',
-        caption: 'The one-pager. The journal behind it has every entry the agent wrote.',
+        src: '/projects/ggp-tracker.webp',
+        alt: 'GGP Tracker’s Key Stats panel: a win rate and eight preflop and flop figures as coloured rings, then the same figures by seat, on a made-up sample of tournaments.',
+        caption: 'Key Stats on an invented sample of tournaments, not my own play.',
         width: 1600,
         height: 1000,
       },
@@ -109,7 +109,7 @@ export const AI_TOOLS = {
     {
       use: 'Building things',
       tool: 'Claude Code',
-      body: 'This site and Project Wick. I describe what I want, read what comes back, and keep correcting it until it’s right.',
+      body: 'GGP Tracker, this site and Project Wick. I describe what I want, read what comes back, and keep correcting it until it’s right.',
     },
     {
       use: 'Thinking things through',
