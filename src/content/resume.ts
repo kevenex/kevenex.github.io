@@ -15,7 +15,7 @@ export const IDENTITY = {
   name: 'Kevin Kim',
   title: 'Product Manager & Builder',
   location: 'Toronto, ON',
-  greeting: 'Hi. I’m Kevin.',
+  greeting: 'Hello, I’m Kevin!',
   lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m a data product manager at Plusgrade, with a view across all of its data and the products that depend on it.',
   how: 'I’m good at taking a problem nobody has pinned down yet and getting it to launch.',
 };
@@ -79,16 +79,7 @@ export const FEATURED = {
   gist: 'The data foundation for finance, risk and AI',
   team: 'Data engineering, finance, risk, analytics and partner operations',
   headline: 'Making the company’s data reliable enough to build on.',
-  body: 'I’m one of Plusgrade’s data product managers, and I look at the whole picture: all of the company’s data, and how it works with our products. I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and partner operations run on that data, and so do the AI products the company is building. Plusgrade has grown by buying other companies, so a lot of the work is getting each one onto the same foundation, reliably and at global scale.',
-  /** Drawn as the teams' chips standing on one base: who depends on the work, and what it is. */
-  foundation: {
-    label: 'Built on it',
-    on: ['Finance', 'Risk', 'Analytics', 'Partner operations'],
-    /** Set apart in the accent: the one the rest of the roadmap is heading toward. */
-    accent: 'AI products',
-    base: 'Data foundation',
-    note: 'Plusgrade and the companies it bought, on one platform',
-  },
+  body: 'I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and the company’s AI products run on that data, and much of the work is bringing acquired companies onto one foundation.',
   closer: [
     {
       icon: 'compass',
@@ -119,7 +110,7 @@ export const ROLES: Role[] = [
     gist: 'Card platform launches with banks',
     headline: 'Moving traditional banks onto a modern card platform.',
     flow: ['Traditional banking', 'Modular card issuing'],
-    body: 'Brim sells a card issuing platform to banks, and the banks offer the cards to their own customers. I led major integrations with banks in North America and Europe from 0 to 1: discovery, partner communications, delivery, and stabilizing things after launch. I ran a team of PMs and QA analysts, turned loose ideas into decisions engineering could act on, and worked directly with the executive team, directors and SVPs on each rollout.',
+    body: 'Brim sells a card issuing platform to banks. I led major bank integrations across North America and Europe from 0 to 1, managing PMs and QA analysts and working with executives on each rollout.',
     learnt: [
       'Building 0 to 1 at a fast-moving startup means there’s no playbook. I wrote the process as we went and kept only what helped us ship.',
       'Scope is never settled at that stage. The real skill is deciding what ships now and what waits for version two.',
@@ -142,10 +133,9 @@ export const ROLES: Role[] = [
     gist: 'Inventory data for a store-in-store rollout',
     headline: 'Keeping inventory data straight after an acquisition.',
     flow: ['Acquired inventory', 'Nationwide rollout'],
-    body: 'My first job out of school. Canadian Tire had bought another retailer and was opening it as a store-in-store across the country. I tracked its inventory across several ERP systems and kept the data consistent and accurate as the rollout reached hundreds of locations. My analysis turned into recommendations the category team used, and excess stock went down.',
+    body: 'Canadian Tire was rolling out an acquired retailer as a store-in-store nationwide. I kept its inventory data consistent across several ERP systems and helped bring excess stock down.',
     learnt: [
       'In a company the size of Canadian Tire, progress comes from knowing who owns each decision and getting them the numbers early.',
-      'Every number has several owners. I brought them into the analysis early, so they already agreed with the recommendation by the time it landed.',
       'Managing many stakeholders means framing the same analysis around what each team is measured on.',
     ],
     figure: {
@@ -166,11 +156,10 @@ export const ROLES: Role[] = [
     gist: 'A prototype greenlit by senior management',
     headline: 'From a problem statement to a greenlit prototype.',
     flow: ['Problem statement', 'Greenlit prototype'],
-    body: 'IBM ran the program like Dragon’s Den: three months to take a problem statement, find the pain points and the opening in it, and build something that works. I worked with three engineers and set what we built first, and we made a proof of concept that helped Java applications start faster. I pitched it to IBM’s senior management in New York, and it was greenlit for further development after the internship ended.',
+    body: 'IBM ran the program like Dragon’s Den. I set what we built first, and our proof of concept, which helped Java applications start faster, was greenlit after I pitched it to senior management.',
     learnt: [
       'A working prototype settles questions that weeks of slides can’t.',
       'With three months and three engineers, deciding what not to build was most of the job.',
-      'Senior leaders back a problem they already feel, not a clever piece of technology.',
     ],
     figure: {
       label: 'Scale of the work',
@@ -190,7 +179,7 @@ export const ROLES: Role[] = [
     gist: 'A first funding round',
     headline: 'Working next to the founders in Seoul.',
     flow: ['Investor meetings', 'First funding round'],
-    body: 'I worked directly with the founders and their advisors on the company’s first funding round. I also looked after relationships with investors and partners, and helped get new products to market.',
+    body: 'I worked with the founders on the first funding round, investor relationships and product launches.',
     learnt: [
       'With nobody to hand things to, ownership isn’t a title. I took whatever was unclear and made it concrete.',
       'Small teams move by deciding with what they have and adjusting later.',

@@ -27,7 +27,7 @@ import { useScrollTo } from '../lib/lenis-context';
  * drawn-rule links, the dark colophon to close — but no spine, rail or year
  * counter: it is one essay read top to bottom, not a map to scrub.
  *
- * Structure: what it is, three things built with it, how the context is
+ * Structure: what it is, two things built with it, how the context is
  * kept, the tools, and a way to get in touch. All copy is in content/ai.ts.
  */
 

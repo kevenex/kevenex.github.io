@@ -2,8 +2,9 @@
  * Every word on the Projects page, in one place — the same rule as resume.ts
  * and ai.ts: the page lays it out and carries no copy of its own.
  *
- * Each project has a page of its own, and this one only points at it. The
- * lines below say no more than those pages do, so the two cannot disagree on
+ * Each project has a page of its own, and this one only points at it: GGP
+ * Tracker at the app, Project Wick at its write-up. The lines below say no
+ * more than each project's own write-up does, so the two cannot disagree on
  * a fact. Project Wick's write-up is being redone, so
  * its link is locked for now: the label says so and nothing is clickable.
  */
@@ -38,16 +39,18 @@ export interface Project {
 /** Newest first, like the career. */
 export const PROJECTS: Project[] = [
   {
-    eyebrow: 'Poker analytics · Build notes',
+    eyebrow: 'Poker analytics · Live app',
     title: 'GGP Tracker',
     mark: 'ggp',
-    body: 'A GGPoker tracker and analytics tool.',
+    body: 'GGPoker shows what you won, not why, and deletes your hand histories after three months. GGP Tracker keeps every hand in a private archive and shows where you win, where you leak chips, and how much of it was luck.',
     /*
-     * Served by kevenex/ggpoker-tracker's own Worker, on its route for
-     * kevink.im/ggpoker-tracker*, so this site's Worker never sees the path.
-     * Root-relative on purpose: it is the same origin, so the theme carries.
+     * The app itself, served by kevenex/ggpoker-tracker's own Worker on its
+     * route for kevink.im/ggpoker-tracker*. Absolute on purpose: that route
+     * covers the apex only, and this site's Worker does not send www to the
+     * apex, so a root-relative link clicked on www.kevink.im would fall to
+     * this site's app shell and show the home page.
      */
-    link: { href: '/ggpoker-tracker/readme/', label: 'Read the build notes' },
+    link: { href: 'https://kevink.im/ggpoker-tracker/', label: 'Open GGP Tracker' },
     visual: {
       kind: 'image',
       src: '/projects/ggp-tracker.webp',
