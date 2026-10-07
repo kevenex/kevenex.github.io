@@ -80,15 +80,6 @@ export const FEATURED = {
   team: 'Data engineering, finance, risk, analytics and partner operations',
   headline: 'Making the company’s data reliable enough to build on.',
   body: 'I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and the company’s AI products run on that data, and much of the work is bringing acquired companies onto one foundation.',
-  /** Drawn as the teams' chips standing on one base: who depends on the work, and what it is. */
-  foundation: {
-    label: 'Built on it',
-    on: ['Finance', 'Risk', 'Analytics', 'Partner operations'],
-    /** Set apart in the accent: the one the rest of the roadmap is heading toward. */
-    accent: 'AI products',
-    base: 'Data foundation',
-    note: 'Plusgrade and the companies it bought, on one platform',
-  },
   closer: [
     {
       icon: 'compass',
@@ -145,7 +136,6 @@ export const ROLES: Role[] = [
     body: 'Canadian Tire was rolling out an acquired retailer as a store-in-store nationwide. I kept its inventory data consistent across several ERP systems and helped bring excess stock down.',
     learnt: [
       'In a company the size of Canadian Tire, progress comes from knowing who owns each decision and getting them the numbers early.',
-      'Every number has several owners. I brought them into the analysis early, so they already agreed with the recommendation by the time it landed.',
       'Managing many stakeholders means framing the same analysis around what each team is measured on.',
     ],
     figure: {
@@ -170,7 +160,6 @@ export const ROLES: Role[] = [
     learnt: [
       'A working prototype settles questions that weeks of slides can’t.',
       'With three months and three engineers, deciding what not to build was most of the job.',
-      'Senior leaders back a problem they already feel, not a clever piece of technology.',
     ],
     figure: {
       label: 'Scale of the work',

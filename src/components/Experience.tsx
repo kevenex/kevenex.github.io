@@ -33,7 +33,7 @@ const ICONS: Record<Closer['icon'], typeof Database> = {
   compass: Compass,
 };
 
-/** The before-and-after chips in Flow, and the accented chip in Foundation. */
+/** The before-and-after chips in Flow. */
 const CHIP = 'border border-oxide/35 bg-oxide/[0.07] px-3 py-1.5 text-oxide';
 
 /*
@@ -156,38 +156,6 @@ function More({ about, children }: { about: string; children: ReactNode }) {
   );
 }
 
-/**
- * What the current role is, drawn: the teams that depend on it as chips,
- * standing on one base under the same short heavy rule the facts column
- * opens with. The chips wrap rather than divide the width, so a long name
- * never squeezes its neighbours at phone width. Source order is the reading
- * order — who depends on it, then what it is — so a screen reader hears the
- * drawing as a sentence.
- */
-function Foundation() {
-  const { label, on, accent, base, note } = FEATURED.foundation;
-
-  return (
-    <div className="mt-10">
-      <p className="font-mono text-label uppercase text-muted">{label}</p>
-
-      <ul className="mt-4 flex flex-wrap gap-2 font-sans text-small">
-        {on.map((team) => (
-          <li key={team} className="border border-ink/15 px-3 py-1.5 text-ink">
-            {team}
-          </li>
-        ))}
-        <li className={CHIP}>{accent}</li>
-      </ul>
-
-      <div className="mt-2 border-t-2 border-ink bg-ink/[0.04] px-4 py-3">
-        <p className="font-mono text-data uppercase tracking-[0.1em] text-ink">{base}</p>
-        <p className="mt-1 font-sans text-small text-muted">{note}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function Experience() {
   const reveal = useReveal();
   const still = usePrefersReducedMotion();
@@ -233,17 +201,6 @@ export default function Experience() {
           My work experience.
         </motion.h2>
 
-        <motion.p
-          className="mt-8 max-w-measure font-sans text-lead text-muted"
-          {...reveal}
-          transition={{ ...reveal.transition, delay: 0.1 }}
-        >
-          I&rsquo;ve worked at five companies, mostly in fintech and payments, with a year in
-          retail. The products have been very different. My part in them has mostly been the
-          same: working out what the problem is and getting it shipped, usually with data at
-          the centre of it.
-        </motion.p>
-
         {/*
          * The index: every company and what the work there was, readable in
          * one glance before any of the detail. Mono for the company, the
@@ -252,7 +209,7 @@ export default function Experience() {
         <motion.dl
           className="mt-14 grid gap-x-12 border-t border-ink/15 sm:grid-cols-2"
           {...reveal}
-          transition={{ ...reveal.transition, delay: 0.15 }}
+          transition={{ ...reveal.transition, delay: 0.05 }}
         >
           {[FEATURED, ...ROLES].map((role) => (
             <div key={role.company} className="border-b border-ink/10 py-4">
@@ -346,9 +303,7 @@ export default function Experience() {
                 <p className="mt-6 max-w-measure font-sans text-body text-muted">{FEATURED.body}</p>
 
                 <More about={FEATURED.company}>
-                  <Foundation />
-
-                  <p className="mt-12 font-mono text-label uppercase text-muted">A closer look</p>
+                  <p className="mt-10 font-mono text-label uppercase text-muted">A closer look</p>
 
                   <ul className="mt-6 flex flex-col gap-6">
                     {FEATURED.closer.map(({ icon, text }) => {

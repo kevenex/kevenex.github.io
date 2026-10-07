@@ -12,10 +12,10 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn
    and *My projects* side by side, and his Memoji.
-2. **Experience** — newest first. The current role is a framed card whose
-   *Built on it* drawing shows the teams that depend on the data foundation
-   as chips on one base, AI products in the accent. Every role before it sits
-   under *Before Plusgrade* and splits in two at xl: a narrow column of facts
+2. **Experience** — newest first, under an index of every company. The
+   current role is a framed card with *A closer look* at the work. Every
+   role before it sits under *Before Plusgrade* and splits in two at xl: a
+   narrow column of facts
    (logo, company, title, years, domain, city, and an optional worded figure
    for scale) under a short heavy rule, and a wide one for the story
    (headline, two flow chips, what happened, *What I learnt*).
