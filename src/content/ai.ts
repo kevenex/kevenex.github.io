@@ -43,7 +43,7 @@ export interface AiProject {
 }
 
 export const AI_TRYING = {
-  heading: 'Start with the problem, not the model.',
+  heading: 'Find a problem, build something to try and solve it.',
   sub: 'The model is rarely the hard part. The hard part is finding a gap worth closing and deciding what a right answer looks like before anything gets built.',
   callout: {
     title: 'Define it, then build it.',
@@ -55,8 +55,6 @@ export const AI_TRYING = {
       eyebrow: 'A data product, live',
       title: 'GGP Tracker',
       body: 'GGPoker shows outcomes, like tournament winnings, but not the reasons behind them, and it deletes hand histories after three months. I saw a gap: import GG’s own exports, keep every hand in a private Supabase archive, and analyse the whole history instead of the last quarter. One row per hand, with the detail nothing queries packed into a single column, fits about three years of heavy play in the free tier. I built the product with Claude Code, on top of an open-source poker engine.',
-      check:
-        'what the numbers mean. A satellite seat isn’t income, a hand with no matching tournament is counted rather than dropped, and a result only reads as winning or losing once its 95% confidence interval clears zero.',
       // Absolute: the app's route covers the apex only. See the note in projects.ts.
       link: { href: 'https://kevink.im/ggpoker-tracker/', label: 'Open GGP Tracker' },
       image: {

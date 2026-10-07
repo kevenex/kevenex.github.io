@@ -229,16 +229,8 @@ export default function Experience() {
   return (
     <section id="experience" className="w-full py-32 sm:py-40">
       <div className={`${RAIL_PAD} ${RAIL_PAD_R}`}>
-        <motion.p className="font-mono text-label uppercase text-muted" {...reveal}>
-          Experience
-        </motion.p>
-
-        <motion.h2
-          className="mt-8 font-serif text-section"
-          {...reveal}
-          transition={{ ...reveal.transition, delay: 0.05 }}
-        >
-          Some of the work.
+        <motion.h2 className="font-serif text-section" {...reveal}>
+          My work experience.
         </motion.h2>
 
         <motion.p
