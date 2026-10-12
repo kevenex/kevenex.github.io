@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Hammer } from 'lucide-react';
 import Colophon from '../components/Colophon';
 import Cursor from '../components/Cursor';
+import DeployFlow from '../components/DeployFlow';
 import DrawnLink from '../components/DrawnLink';
 import KevinKLogo from '../components/KevinKLogo';
 import LockedLink from '../components/LockedLink';
@@ -28,7 +29,9 @@ import { useScrollTo } from '../lib/lenis-context';
  * counter: it is one essay read top to bottom, not a map to scrub.
  *
  * Structure: what it is, two things built with it, how the context is
- * kept, the tools, and a way to get in touch. All copy is in content/ai.ts.
+ * kept, the tools, and a way to get in touch. All copy is in content/ai.ts,
+ * except the deploy diagram's labels, which live with the drawing in
+ * components/DeployFlow.tsx the way WickFlow's do.
  */
 
 /** Content width for the page: the rail inset on the left, the toggle's gutter on the right. */
@@ -61,18 +64,6 @@ function Project({ project, index }: { project: AiProject; index: number }) {
         </p>
       )}
 
-      {project.detail && (
-        <>
-          <blockquote className="mt-10 max-w-measure border-l-2 border-oxide pl-6 sm:pl-8">
-            <p className="font-mono text-label uppercase text-oxide">{project.detail.label}</p>
-            <p className="mt-4 font-serif text-[clamp(24px,2.6vw,32px)] leading-snug text-ink">
-              {project.detail.quote}
-            </p>
-          </blockquote>
-          <p className="mt-8 max-w-measure font-sans text-body text-muted">{project.detail.after}</p>
-        </>
-      )}
-
       {project.link.locked ? (
         <LockedLink className="mt-8">{project.link.label}</LockedLink>
       ) : (
@@ -98,6 +89,45 @@ function Project({ project, index }: { project: AiProject; index: number }) {
           />
           <figcaption className="mt-3 font-sans text-small text-muted">
             {project.image.caption}
+          </figcaption>
+        </figure>
+      )}
+
+      {project.build && (
+        <figure className="mt-12 max-w-3xl">
+          {/*
+           * The screenshot's hairline frame, so the two entries read as a
+           * pair: the stack on top, then the pipeline under a rule. Narrower
+           * than the screenshot so the diagram's type stops near body size;
+           * on a phone it scrolls inside the frame rather than shrinking past
+           * reading, as WickFlow does on Projects.
+           */}
+          <div className="border border-ink/15">
+            <dl className="grid gap-y-5 p-5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-x-6 sm:p-6">
+              {project.build.stack.map(({ label, parts }) => (
+                <div key={label} className="contents">
+                  <dt className="font-mono text-label uppercase text-muted sm:pt-1.5">{label}</dt>
+                  <dd className="-mt-3 sm:mt-0">
+                    <ul className="flex flex-wrap gap-2">
+                      {parts.map((part) => (
+                        <li key={part} className="border border-ink/15 px-2.5 py-1 font-mono text-data text-ink">
+                          {part}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <div className="border-t border-ink/15 p-5 sm:p-6">
+              <p className="font-mono text-label uppercase text-muted">{project.build.flowLabel}</p>
+              <div className="mt-5 overflow-x-auto">
+                <DeployFlow className="min-w-[440px]" />
+              </div>
+            </div>
+          </div>
+          <figcaption className="mt-3 max-w-measure font-sans text-small text-muted">
+            {project.build.caption}
           </figcaption>
         </figure>
       )}
@@ -224,20 +254,23 @@ function Page() {
           {AI_CONTEXT.intro}
         </motion.p>
 
-        <ol className="mt-14 max-w-3xl border-t border-ink/15">
+        {/*
+         * Where I fit's grid from the home page: two columns from md, and
+         * three across from xl, where the column is wide enough to hold them
+         * without the third sitting alone.
+         */}
+        <ol className="mt-12 grid gap-10 border-t border-ink/15 pt-10 md:grid-cols-2 md:gap-x-10 xl:grid-cols-3">
           {AI_CONTEXT.items.map(({ title, body, caption }, index) => (
             <motion.li
               key={title}
-              className="border-b border-ink/15 py-10"
               {...reveal}
               transition={{ ...reveal.transition, delay: index * 0.06 }}
             >
-              <p className="tabular font-serif text-[32px] italic leading-none text-oxide">
-                {String(index + 1).padStart(2, '0')}
+              <p className="font-mono text-label uppercase text-muted">
+                <span className="tabular text-oxide">{String(index + 1).padStart(2, '0')}</span> · {caption}
               </p>
-              <h3 className="mt-4 font-serif text-[clamp(26px,2.8vw,34px)] leading-tight">{title}</h3>
-              <p className="mt-3 max-w-measure font-sans text-body text-muted">{body}</p>
-              <p className="mt-4 font-mono text-label uppercase text-muted">{caption}</p>
+              <h3 className="mt-3 font-sans text-[21px] font-medium leading-snug text-ink">{title}</h3>
+              <p className="mt-3 font-sans text-body text-muted">{body}</p>
             </motion.li>
           ))}
         </ol>
@@ -249,17 +282,17 @@ function Page() {
           {AI_TOOLS.heading}
         </motion.h2>
 
-        <ul className="mt-14 max-w-3xl border-t border-ink/15">
+        {/* The same grid, two by two. */}
+        <ul className="mt-12 grid gap-10 border-t border-ink/15 pt-10 md:grid-cols-2 md:gap-x-10">
           {AI_TOOLS.items.map(({ use, tool, body }, index) => (
             <motion.li
               key={tool}
-              className="border-b border-ink/15 py-10"
               {...reveal}
               transition={{ ...reveal.transition, delay: index * 0.06 }}
             >
-              <h3 className="font-serif text-[clamp(26px,2.8vw,34px)] leading-tight">{use}</h3>
-              <p className="mt-4 font-sans text-[19px] font-medium leading-snug text-ink">{tool}</p>
-              <p className="mt-2 max-w-measure font-sans text-body text-muted">{body}</p>
+              <h3 className="font-sans text-[21px] font-medium leading-snug text-ink">{use}</h3>
+              <p className="mt-1 font-mono text-label uppercase text-oxide">{tool}</p>
+              <p className="mt-3 font-sans text-body text-muted">{body}</p>
             </motion.li>
           ))}
         </ul>

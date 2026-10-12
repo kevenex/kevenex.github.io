@@ -12,8 +12,8 @@ export const AI_BACK = { href: '/', label: 'Back to the site' };
 export const AI_HERO = {
   title: 'How I use AI.',
   intro: [
-    'I’m a product manager working on data and AI, mostly in fintech. I use AI to think a problem through, build a rough version I can put in front of people, and catch what I missed. Sometimes that turns into a prototype for work. Sometimes it turns into a product I use myself, an agent, or this website.',
-    'It does a lot of the typing. I decide what the problem is, what holds up, and what goes out under my name.',
+    'I’m a product manager in data and AI, mostly in fintech. AI does the legwork so I can stay on the thinking, and it lets me take an idea further than I could build alone.',
+    'I decide what the problem is, what holds up, and what goes out under my name.',
   ],
   jump: 'A few things I’ve been working on',
 };
@@ -32,8 +32,15 @@ export interface AiProject {
   body: string;
   /** Read after "What I check:". */
   check?: string;
-  /** A pull-quote set apart from the body, with its own small label. */
-  detail?: { label: string; quote: string; after: string };
+  /**
+   * What it is built from and how it ships, in a frame under the link: a row
+   * of parts per label, then the pipeline drawn by components/DeployFlow.tsx.
+   */
+  build?: {
+    stack: { label: string; parts: string[] }[];
+    flowLabel: string;
+    caption: string;
+  };
   /**
    * `locked` keeps the destination but renders the label without a link, for
    * a write-up that is not ready to be read. Unlocking is deleting the flag.
@@ -54,7 +61,7 @@ export const AI_TRYING = {
     {
       eyebrow: 'A data product, live',
       title: 'GGP Tracker',
-      body: 'GGPoker shows outcomes, like tournament winnings, but not the reasons behind them, and it deletes hand histories after three months. I saw a gap: import GG’s own exports, keep every hand in a private Supabase archive, and analyse the whole history instead of the last quarter. One row per hand, with the detail nothing queries packed into a single column, fits about three years of heavy play in the free tier. I built the product with Claude Code, on top of an open-source poker engine.',
+      body: 'GGPoker shows you what you won, not why, and it deletes your hand histories after three months. So I built the tool I wanted: it imports GG’s own exports, keeps every hand in a private archive, and analyses the whole history instead of the last quarter. One design call keeps it cheap to run: one row per hand, with the detail nothing queries packed into a single column, fits about three years of heavy play in Supabase’s free tier. I built it with Claude Code, on top of an open-source poker engine.',
       // Absolute: the app's route covers the apex only. See the note in projects.ts.
       link: { href: 'https://kevink.im/ggpoker-tracker/', label: 'Open GGP Tracker' },
       image: {
@@ -69,12 +76,22 @@ export const AI_TRYING = {
       eyebrow: 'Live, and still being edited',
       title: 'This website',
       body: 'Built with Claude Code, mostly by talking it through. AI wrote the code and cut my Memoji out of the recordings. I supplied the experience and kept correcting the story.',
-      detail: {
-        label: 'A detail that matters',
-        quote: 'Every outcome on the home page is mine. The numbers stay on my résumé; the page keeps the judgment behind them.',
-        after: 'When I reread a draft, the question is whether I’d say it that way in an interview. If I wouldn’t, it goes.',
-      },
       link: { href: '/', label: 'See the site' },
+      /*
+       * Checked against the code, not memory: this repo's package.json,
+       * wrangler.jsonc and deploy.yml, and kevenex/ggpoker-tracker's
+       * Cargo.toml, web/package.json and deploy-web.yml. Change it when they do.
+       */
+      build: {
+        stack: [
+          { label: 'Built with', parts: ['Claude Code', 'GitHub'] },
+          { label: 'This site', parts: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Framer Motion'] },
+          { label: 'GGP Tracker', parts: ['Rust', 'WebAssembly', 'React', 'TypeScript', 'Vite', 'Supabase'] },
+          { label: 'Hosted on', parts: ['Cloudflare Workers', 'GitHub Pages'] },
+        ],
+        flowLabel: 'How it ships',
+        caption: 'Nothing ships by hand. Every merge here builds and deploys the site, GGP Tracker deploys itself from its own repo, and a daily job keeps the apps built elsewhere up to date.',
+      },
     },
   ] satisfies AiProject[],
 };
@@ -94,8 +111,8 @@ export const AI_CONTEXT = {
       caption: 'Skills',
     },
     {
-      title: 'Memory on the VPS',
-      body: 'Hermes keeps notes between conversations, so the assistant I message picks up where we left off.',
+      title: 'Memory on my own server',
+      body: 'Hermes, the assistant I run on my own server, keeps notes between conversations, so we pick up where we left off.',
       caption: 'Hermes memory',
     },
   ],
@@ -121,13 +138,13 @@ export const AI_TOOLS = {
     },
     {
       use: 'Always on',
-      tool: 'Hermes, on a VPS',
+      tool: 'Hermes, on my own server',
       body: 'An assistant I can message any time, and a place to try out agents.',
     },
   ],
 };
 
 export const AI_CLOSE = {
-  text: 'If you’re building something and want to compare notes, or want to talk about a role:',
+  text: 'Building something and want to compare notes? Hiring for a product role in AI, data or fintech? I’d like to hear from you.',
   link: { href: '/#contact', label: 'Get in touch' },
 };

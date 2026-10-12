@@ -120,6 +120,7 @@ src/
     WickMark.tsx           Project Wick's mark
     GgpMark.tsx            GGP Tracker's mark
     WickFlow.tsx           One Project Wick run, drawn, for Projects
+    DeployFlow.tsx         How this site ships, drawn, for How I use AI
 ```
 
 ## Design system
@@ -293,6 +294,19 @@ and a way to get in touch. It is a second Vite entry (`how-i-use-ai/index.html`
   Projects does not. `public/ai/` keeps `project-wick.webp` (a frame of
   `/project-wick/` at 1600×1000) and `flyer-fable.webp` (mid-flight, after
   *Start Flying*); neither is shown while those projects are off the page.
+- **This website's entry shows how it is built and shipped, not a quote.**
+  Under its link sits a frame with the stack (`build.stack` in `ai.ts`, one
+  row of parts per label) and `DeployFlow.tsx`, which draws the pipeline:
+  Workers Builds deploying kevink.im on every merge, and `deploy.yml` running
+  on merge and daily, committing the sibling apps back and publishing the
+  Pages mirror. Both restate code, not memory — this repo's `package.json`,
+  `wrangler.jsonc` and `deploy.yml`, and kevenex/ggpoker-tracker's
+  `Cargo.toml`, `web/package.json` and `deploy-web.yml` — so change the
+  figure when any of those changes. The diagram's own labels live in the
+  component, the way WickFlow's do.
+- **How I keep the context and What I reach for use Where I fit's grid.**
+  Two columns from md; the context list goes three across from xl, where
+  its three items fit in one row.
 
 The home page links to it from the prototyping case under Where I fit and
 from the colophon.
