@@ -68,9 +68,11 @@ public/
   projects/ggp-tracker.webp  GGP Tracker on invented data, for Projects and How I use AI — see below
   logos/                   Company and school marks, 160px tiles shown at 40px
   app/index.html           Redirects the retired /app/ to / where the host can't — see below
-  favicon.svg
+  favicon.ico              The Memoji at 16, 32 and 48px — built by build-favicon.mjs
+  apple-touch-icon.png     …and at 180px on the paper colour, for iOS home screens
 scripts/
   build-memoji.mjs         Cuts the Memoji still out of a recording
+  build-favicon.mjs        Shrinks that still into the favicons
   sync-wick-journal.mjs    Pulls the agent's repo into public/project-wick/journal.json
   sync-chloe.mjs           Builds kevenex/chloe-web-app into public/chloe/
   make-ggp-sample.mjs      Invented GG exports for the GGP Tracker screenshot
