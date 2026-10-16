@@ -16,7 +16,7 @@ export const IDENTITY = {
   title: 'Product Manager & Builder',
   location: 'Toronto, ON',
   greeting: 'Hello, I’m Kevin!',
-  lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. Right now I’m a data product manager at Plusgrade, with a view across all of its data and the products that depend on it.',
+  lead: 'I’m a product manager working on data and AI, mostly in fintech and payments. At Plusgrade, I lead data products that help teams across the business make better decisions.',
   how: 'I’m good at taking a problem nobody has pinned down yet and getting it to launch.',
 };
 
