@@ -78,8 +78,8 @@ export const FEATURED = {
   domain: 'Travel commerce & payments',
   gist: 'The data foundation for finance, risk and AI',
   team: 'Data engineering, finance, risk, analytics and partner operations',
-  headline: 'Making the company’s data reliable enough to build on.',
-  body: 'I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Finance, risk, analytics and the company’s AI products run on that data, and much of the work is bringing acquired companies onto one foundation.',
+  headline: 'Building a data platform the business can rely on.',
+  body: 'I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Teams across finance, risk, analytics and AI build on that platform, and much of the work is bringing acquired companies onto one foundation.',
   closer: [
     {
       icon: 'compass',
@@ -177,7 +177,7 @@ export const ROLES: Role[] = [
     city: 'Seoul',
     domain: 'Early-stage startup',
     gist: 'A first funding round',
-    headline: 'Working next to the founders in Seoul.',
+    headline: 'My first job, at an early-stage startup.',
     flow: ['Investor meetings', 'First funding round'],
     body: 'I worked with the founders on the first funding round, investor relationships and product launches.',
     learnt: [
