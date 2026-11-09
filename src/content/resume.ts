@@ -42,8 +42,11 @@ export interface Role extends Mark {
   city: string;
   /** What the company does, for a reader who has never heard of it. */
   domain: string;
-  /** One phrase for the index at the top of Experience. */
-  gist: string;
+  /**
+   * What changed because of the work, in one sentence, for the outcomes at
+   * the top of Experience. Optional: a role without one is left out there.
+   */
+  impact?: string;
   headline: string;
   /** The two chips under the headline: what the work started from, and what it turned into. */
   flow: [string, string];
@@ -62,7 +65,7 @@ export interface Figure {
 }
 
 export interface Closer {
-  icon: 'data' | 'ai' | 'compass';
+  icon: 'data' | 'ai' | 'compass' | 'people';
   text: string;
 }
 
@@ -76,22 +79,22 @@ export const FEATURED = {
   span: '2024–',
   city: 'Toronto',
   domain: 'Travel commerce & payments',
-  gist: 'The data foundation for finance, risk and AI',
+  impact: 'Moving acquired companies onto one data platform that finance, risk and AI teams build on.',
   team: 'Data engineering, finance, risk, analytics and partner operations',
-  headline: 'Building a data platform the business can rely on.',
-  body: 'I help define what Data Engineering builds, why it matters, and how we’ll know it worked. Teams across finance, risk, analytics and AI build on that platform, and much of the work is bringing acquired companies onto one foundation.',
+  headline: 'Getting our data ready for AI.',
+  body: 'I work with Data Engineering on what gets built and in what order. Finance, risk, analytics and the AI team all build on our platform, so I spend a lot of my time on what they need and on bringing acquired companies’ data across.',
   closer: [
     {
       icon: 'compass',
-      text: 'Help set what Data Engineering works on: the capability each piece adds, the business outcome behind it, and who owns it.',
-    },
-    {
-      icon: 'data',
-      text: 'Ran a migration over several months that moved data from acquired companies onto one cloud platform, so other teams’ products could depend on it.',
+      text: 'Help shape the Data Engineering roadmap, and make sure every item on it ties back to a business outcome and has an owner.',
     },
     {
       icon: 'ai',
-      text: 'Looked into what was holding back the AI and ML roadmap, and got the data foundation it needed funded.',
+      text: 'Pushed to put modernizing our data infrastructure ahead of other work, because the company’s AI plans depended on it. Part of that was a migration over several months that moved acquired companies’ data onto one cloud platform.',
+    },
+    {
+      icon: 'people',
+      text: 'Support stakeholders from partner operations to finance, who each need something different from the same data.',
     },
   ] satisfies Closer[],
 };
@@ -107,7 +110,7 @@ export const ROLES: Role[] = [
     span: '2021–2023',
     city: 'Toronto',
     domain: 'Card issuing & payments',
-    gist: 'Card platform launches with banks',
+    impact: 'Led major bank integrations across North America and Europe onto a new card issuing platform.',
     headline: 'Moving traditional banks onto a modern card platform.',
     flow: ['Traditional banking', 'Modular card issuing'],
     body: 'Brim sells a card issuing platform to banks. I led major bank integrations across North America and Europe from 0 to 1, managing PMs and QA analysts and working with executives on each rollout.',
@@ -130,7 +133,7 @@ export const ROLES: Role[] = [
     span: '2020–2021',
     city: 'Toronto',
     domain: 'Retail',
-    gist: 'Inventory data for a store-in-store rollout',
+    impact: 'Kept inventory data straight across several ERP systems through a nationwide rollout, and helped bring excess stock down.',
     headline: 'Keeping inventory data straight after an acquisition.',
     flow: ['Acquired inventory', 'Nationwide rollout'],
     body: 'Canadian Tire was rolling out an acquired retailer as a store-in-store nationwide. I kept its inventory data consistent across several ERP systems and helped bring excess stock down.',
@@ -153,7 +156,7 @@ export const ROLES: Role[] = [
     span: '2019',
     city: 'Ottawa',
     domain: 'Enterprise software',
-    gist: 'A prototype greenlit by senior management',
+    impact: 'Pitched senior management a prototype that helped Java applications start faster, and got it greenlit.',
     headline: 'From a problem statement to a greenlit prototype.',
     flow: ['Problem statement', 'Greenlit prototype'],
     body: 'IBM ran the program like Dragon’s Den. I set what we built first, and our proof of concept, which helped Java applications start faster, was greenlit after I pitched it to senior management.',
@@ -176,7 +179,6 @@ export const ROLES: Role[] = [
     span: '2018–2019',
     city: 'Seoul',
     domain: 'Early-stage startup',
-    gist: 'A first funding round',
     headline: 'My first job, at an early-stage startup.',
     flow: ['Investor meetings', 'First funding round'],
     body: 'I worked with the founders on the first funding round, investor relationships and product launches.',

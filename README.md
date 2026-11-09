@@ -12,7 +12,8 @@ reads, and on tariquekhan.ca's plain-spoken version of it:
 
 1. **Arrival** — name, title, location, two lines on what he does, LinkedIn
    and *My projects* side by side, and his Memoji.
-2. **Experience** — newest first, under an index of every company. The
+2. **Experience** — newest first, under one outcome from each role
+   (company and years above it, the result set large in serif). The
    current role is a framed card with *A closer look* at the work. Every
    role before it sits under *Before Plusgrade* and splits in two at xl: a
    narrow column of facts
