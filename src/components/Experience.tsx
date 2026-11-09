@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Compass, Database, Sparkles } from 'lucide-react';
+import { Compass, Database, Sparkles, Users } from 'lucide-react';
 import { FEATURED, ROLES, type Closer } from '../content/resume';
 import {
   EASE,
@@ -31,7 +31,11 @@ const ICONS: Record<Closer['icon'], typeof Database> = {
   data: Database,
   ai: Sparkles,
   compass: Compass,
+  people: Users,
 };
+
+/** The roles with an outcome worth putting at the top, newest first. */
+const OUTCOMES = [FEATURED, ...ROLES].filter((role) => role.impact);
 
 /** The before-and-after chips in Flow. */
 const CHIP = 'border border-oxide/35 bg-oxide/[0.07] px-3 py-1.5 text-oxide';
@@ -198,28 +202,31 @@ export default function Experience() {
     <section id="experience" className="w-full py-32 sm:py-40">
       <div className={`${RAIL_PAD} ${RAIL_PAD_R}`}>
         <motion.h2 className="font-serif text-section" {...reveal}>
-          My work experience.
+          My work so far.
         </motion.h2>
 
         {/*
-         * The index: every company and what the work there was, readable in
-         * one glance before any of the detail. Mono for the company, the
-         * working voice for the phrase.
+         * What changed, before who and when: one outcome per role, set in the
+         * human voice so it reads as a result rather than a duty. The company
+         * and years sit above each in mono, as the facts behind the claim.
          */}
-        <motion.dl
-          className="mt-14 grid gap-x-12 border-t border-ink/15 sm:grid-cols-2"
+        <motion.ul
+          className="mt-14 grid gap-x-12 sm:grid-cols-2"
           {...reveal}
           transition={{ ...reveal.transition, delay: 0.05 }}
         >
-          {[FEATURED, ...ROLES].map((role) => (
-            <div key={role.company} className="border-b border-ink/10 py-4">
-              <dt className="font-mono text-data uppercase tracking-[0.1em] text-ink">
-                {role.company}
-              </dt>
-              <dd className="mt-1 font-sans text-small text-muted">{role.gist}</dd>
-            </div>
+          {OUTCOMES.map((role) => (
+            <li key={role.company} className="border-t border-ink/15 pb-10 pt-5">
+              <p className="flex flex-wrap gap-x-3 font-mono text-data uppercase tracking-[0.1em]">
+                <span className="text-oxide">{role.company}</span>
+                <span className="tabular text-muted">{role.span}</span>
+              </p>
+              <p className="mt-4 max-w-[30ch] font-serif text-[26px] leading-[1.2] text-ink sm:text-[30px]">
+                {role.impact}
+              </p>
+            </li>
           ))}
-        </motion.dl>
+        </motion.ul>
       </div>
 
       {/*
